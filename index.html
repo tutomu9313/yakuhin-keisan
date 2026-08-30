@@ -135,7 +135,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <div class="card">
 <label>新しい薬品を登録</label>
 <input id="newChemName" placeholder="薬品名（濃度も名前に入れる）">
-<input id="newChemDensity" type="number" step="0.01" placeholder="比重" style="margin-top:10px"><input id="newChemCmTsum" type="number" step="0.01" placeholder="cm/t積（任意）" style="margin-top:10px"><label style="margin-top:10px;color:#333"><input id="newChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象（計算結果を赤背景・白文字）</label>
+<input id="newChemDensity" type="number" step="0.01" placeholder="比重" style="margin-top:10px"><input id="newChemOrder" type="number" step="1" min="1" placeholder="並び順（任意）" style="margin-top:10px"><input id="newChemCmTsum" type="number" step="0.01" placeholder="cm/t積（任意）" style="margin-top:10px"><label style="margin-top:10px;color:#333"><input id="newChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象（計算結果を赤背景・白文字）</label>
 <button id="addChemBtn">薬品を登録</button>
 </div>
 <div class="card"><label>登録済み薬品</label><div id="chemList"></div><div id="chemDetail"></div></div>
@@ -158,6 +158,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <input id="modalChemName" type="text">
   <label style="margin-top:12px;color:#222"><input id="modalChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象</label>
   <label style="margin-top:12px">比重</label>
+   <label style="margin-top:12px">並び順</label>
+   <input id="modalChemOrder" type="number" step="1" min="1" placeholder="例：1">
   <input id="modalChemDensity" type="number" step="0.01">
   <label style="margin-top:12px">cm/t積</label>
   <input id="modalChemCmTsum" type="number" step="0.01">
@@ -221,7 +223,7 @@ const defaultChem=[
  {name:"次亜塩素酸",density:1.20}
 ];
 
-let chemicals=load(KEY_C,defaultChem).map(c=>({name:String(c.name),density:Number(c.density),warning:!!c.warning,cmTsum:c.cmTsum!=null&&isFinite(Number(c.cmTsum))?Number(c.cmTsum):null}));
+let chemicals=load(KEY_C,defaultChem).map(c=>({name:String(c.name),density:Number(c.density),sortOrder:c.sortOrder!=null&&isFinite(Number(c.sortOrder))?Number(c.sortOrder):null,warning:!!c.warning,cmTsum:c.cmTsum!=null&&isFinite(Number(c.cmTsum))?Number(c.cmTsum):null}));
 let customers=load(KEY_K,[]);
 let history=load(KEY_H,[]);
 let selectedChem=-1, selectedCustomer=-1, currentResult={kg:0,L:0,m3:0};
@@ -277,9 +279,18 @@ $("dateDisplay").dataset.iso=isoToday();
 
 
 function jpSort(list){return [...list].sort((a,b)=>String(a).localeCompare(String(b),"ja",{numeric:true,sensitivity:"base"}))}
+function chemSortValue(c){
+  const n=Number(c.sortOrder);
+  return c.sortOrder!=null && Number.isFinite(n) && n>=1 ? n : Infinity;
+}
+function chemCompare(a,b){
+  const ao=chemSortValue(a.c), bo=chemSortValue(b.c);
+  if(ao!==bo)return ao-bo;
+  return String(a.c.name).localeCompare(String(b.c.name),"ja",{numeric:true,sensitivity:"base"});
+}
 function renderChemicals(){
  $("chemical").innerHTML="<option value=\"\">薬品を選択</option>";
- chemicals.map((c,i)=>({c,i})).sort((a,b)=>String(a.c.name).localeCompare(String(b.c.name),"ja",{numeric:true,sensitivity:"base"})).forEach(({c,i})=>{
+ chemicals.map((c,i)=>({c,i})).sort(chemCompare).forEach(({c,i})=>{
    const o=document.createElement("option");o.value=i;o.textContent=c.name;$("chemical").appendChild(o);
  });
  $("chemical").value="";
@@ -373,11 +384,14 @@ function showCalcResultDialog(rec,fromHistory=false){
  pendingHistoryRecord=fromHistory?rec:null;
  registeredResultDialog=!fromHistory;
  const warning=rec.warning?'<div style="color:#ff3b30;font-weight:700">※譲受書必須</div>':"";
+ const unit=rec.unit;
+ const orderUnit=formatOrderUnit(unit);
+ const amountText="<div>注文数量："+formatQuantity(rec.amount)+" "+orderUnit+"</div>";
+ const weightText=unit==="kg"?"":"<div>重量："+formatQuantity(rec.kg)+" kg</div>";
+ const volumeText=unit==="L"?"":"<div>容量："+formatQuantity(rec.L)+" L</div>";
+ const cubicText=unit==="m3"?"":"<div>容積："+formatQuantity(rec.m3)+" m³</div>";
  $("calcResultDialog").innerHTML="<div style='font-size:17px;font-weight:700;color:#1c1c1e;margin-bottom:8px'>客先名："+esc(rec.customer||"")+" </div><div><b>"+esc(rec.chemical)+"</b></div>"+warning+
-   "<div>注文数量："+formatQuantity(rec.amount)+" "+formatOrderUnit(rec.unit)+"</div>"+
-   "<div>重量："+formatQuantity(rec.kg)+" kg</div>"+
-   "<div>容量："+formatQuantity(rec.L)+" L</div>"+
-   "<div>容積："+formatQuantity(rec.m3)+" m³</div>"+
+   amountText+weightText+volumeText+cubicText+
    "<div>比重："+Number(rec.density).toFixed(2)+"</div>"+(rec.loadingCm!=null&&Number(rec.loadingCm)!==0?"<div>積込cm："+Number(rec.loadingCm).toFixed(2)+" cm</div>":"");
  $("calcResultLoad").style.display=fromHistory?"block":"none";
  $("calcResultDelete").style.display=fromHistory?"block":"none";
@@ -479,7 +493,19 @@ function renderHistory(){
    const chemStyleWithSize=chemStyle+";font-size:16px;font-weight:700";
    const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
    const orderLabel=orderUnit==="m3"?"m³":orderUnit;
-   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b><div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div><div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div><div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>"+formatQuantity(trunc2(x.kg))+" kg　/　"+formatQuantity(trunc2(x.m3!=null?x.m3:Number(x.L||0)/1000))+" m³</div>"+(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"")+"<div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
+   const histL=formatQuantity(trunc2(x.L!=null?x.L:Number(x.m3||0)*1000));
+   const histM3=formatQuantity(trunc2(x.m3!=null?x.m3:Number(x.L||0)/1000));
+   const histSecondary=orderUnit==="kg"
+     ? "容量："+histL+" L　/　"+histM3+" m³"
+     : orderUnit==="L"
+       ? formatQuantity(trunc2(x.kg))+" kg　/　"+histM3+" m³"
+       : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
+   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b>"
+    +"<div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
+    +"<div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
+    +"<div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>"+histSecondary+"</div>"
+    +(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"")
+    +"<div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
    box.appendChild(div);
  });
 }
@@ -489,7 +515,7 @@ let editingChemIndex=-1;
 /* ===== 薬品登録 ===== */
 function renderChemList(){
  $("chemList").innerHTML="";
- chemicals.map((c,i)=>({c,i})).sort((a,b)=>String(a.c.name).localeCompare(String(b.c.name),"ja",{numeric:true,sensitivity:"base"})).forEach(({c,i})=>{
+ chemicals.map((c,i)=>({c,i})).sort(chemCompare).forEach(({c,i})=>{
    const div=document.createElement("div");div.className="item";div.textContent=c.name;div.onclick=()=>openChemModal(i);$("chemList").appendChild(div);
  });
  $("chemDetail").innerHTML="";
@@ -498,6 +524,7 @@ function openChemModal(i){
  const c=chemicals[i];
  editingChemIndex=i;
  $("modalChemName").value=c.name;
+  $("modalChemOrder").value=c.sortOrder!=null?c.sortOrder:"";
  $("modalChemWarning").checked=!!c.warning;
  $("modalChemDensity").value=c.density;$("modalChemCmTsum").value=c.cmTsum!=null?c.cmTsum:"";
  $("chemModal").classList.remove("hidden");$("chemModal").setAttribute("aria-hidden","false");
@@ -507,10 +534,10 @@ function closeChemModal(){$("chemModal").classList.add("hidden");$("chemModal").
 $("modalCancelChem").onclick=closeChemModal;
 $("modalSaveChem").onclick=()=>{
  const i=editingChemIndex;if(i<0)return;
- const n=$("modalChemName").value.trim(),d=Number($("modalChemDensity").value),ct=$("modalChemCmTsum").value.trim();
+ const n=$("modalChemName").value.trim(),o=$("modalChemOrder").value.trim(),d=Number($("modalChemDensity").value),ct=$("modalChemCmTsum").value.trim();
  if(!n||!isFinite(d)||d<=0){alert("薬品名と比重を確認してください。");return}
  if(ct!==""&&!isFinite(Number(ct))){alert("cm/t積の数値を確認してください。");return}
- chemicals[i]={name:n,density:d,warning:$("modalChemWarning").checked,cmTsum:ct===""?null:Number(ct)};
+ chemicals[i]={name:n,sortOrder:o===""?null:Number(o),density:d,warning:$("modalChemWarning").checked,cmTsum:ct===""?null:Number(ct)};
  save(KEY_C,chemicals);
  closeChemModal();
  renderChemicals();
@@ -547,7 +574,7 @@ function editCustomer(i){
 }
 function deleteCustomer(i){if(confirm(customers[i]+"を削除しますか？")){customers.splice(i,1);save(KEY_K,customers);renderCustomers();updateCustomerSuggest($("customer").value)}}
 function addCustomer(){const n=$("newCustomerName").value.trim();if(!n)return alert("客先名を入力してください。");if(!customers.includes(n))customers.push(n);save(KEY_K,customers);$("newCustomerName").value="";renderCustomers();updateCustomerSuggest("");alert("客先を登録しました。")}
-function addChem(){const n=$("newChemName").value.trim(),d=Number($("newChemDensity").value),ct=$("newChemCmTsum").value.trim();if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");if(ct!==""&&!isFinite(Number(ct)))return alert("cm/t積の数値を確認してください。");chemicals.push({name:n,density:d,warning:$("newChemWarning").checked,cmTsum:ct===""?null:Number(ct)});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemCmTsum").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
+function addChem(){const n=$("newChemName").value.trim(),o=$("newChemOrder").value.trim(),d=Number($("newChemDensity").value),ct=$("newChemCmTsum").value.trim();if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");if(ct!==""&&!isFinite(Number(ct)))return alert("cm/t積の数値を確認してください。");chemicals.push({name:n,sortOrder:o===""?null:Number(o),density:d,warning:$("newChemWarning").checked,cmTsum:ct===""?null:Number(ct)});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemOrder").value="";$("newChemCmTsum").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
 /* ===== 画面切り替え ===== */
 function show(page){
  ["calc","history","chem","customer"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==page));
