@@ -317,6 +317,8 @@ function showCalcResultDialog(rec,fromHistory=false){
    "<div>比重："+Number(rec.density).toFixed(2)+"</div>";
  $("calcResultLoad").style.display=fromHistory?"block":"none";
  $("calcResultDelete").style.display=fromHistory?"block":"none";
+ $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
+ $("calcResultClose").style.gridColumn=fromHistory?"1":"1 / -1";
  $("calcResultModal").classList.remove("hidden");
  $("calcResultModal").setAttribute("aria-hidden","false");
 }
