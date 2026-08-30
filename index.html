@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>薬品配達・容量計算</title>
 <style>
+/* ===== 基本レイアウト ===== */
 *{box-sizing:border-box}
 body{margin:0;background:#fff;color:#111;font-family:Arial,"Yu Gothic",sans-serif}
 .app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#fff;padding-bottom:75px}
 header{text-align:center;font-size:21px;font-weight:bold;padding:10px 16px 15px}
+/* ===== 入力・カード ===== */
 .card{background:#fff;margin:0 14px 12px;padding:16px;border-radius:16px;box-shadow:0 1px 4px #0001}
 label{display:block;color:#666;font-size:13px;margin-bottom:6px}
 input,select{width:100%;height:46px;border:1px solid #ccc;border-radius:11px;padding:0 12px;font-size:17px;background:#fff}
@@ -17,25 +19,25 @@ input[readonly]{background:#f7f7f7}
 .amountrow{display:grid;grid-template-columns:1fr 105px;gap:10px}
 button{width:100%;height:46px;border:0;border-radius:12px;background:#007aff;color:#fff;font-weight:bold;font-size:16px;margin-top:10px}
 button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}
+/* ===== 計算結果 ===== */
 .resultmain{background:#111;color:#fff;border-radius:15px;padding:15px}.resultmain.warning{background:#ff3b30;color:#fff}.resultmain small{opacity:.75}.resultmain strong{display:block;font-size:27px;margin-top:4px}
 .results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.box{background:#f2f2f7;border-radius:12px;padding:11px}.box small{display:block;color:#666}.box strong{display:block;font-size:20px;margin-top:4px}
 .summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary .box{text-align:center}.summary strong{font-size:25px}
+/* ===== 履歴・候補 ===== */
 .item{padding:12px 3px;border-bottom:1px solid #eee;cursor:pointer}.item:last-child{border-bottom:0}.item b{font-size:16px}
 .detail{background:#f2f2f7;border-radius:12px;padding:12px;margin-top:8px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{height:40px;font-size:14px}
+/* ===== ダイアログ・表示制御 ===== */
 .hidden{display:none}
 .modal.hidden{display:none!important}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:100}
 .modal-card{width:350px;max-width:90%;background:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 35px #0004}
 .modal-card h3{margin:0 0 15px;font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}
 .suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}
 .note{font-size:12px;color:#777;margin-top:7px;line-height:1.4}
+/* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(4,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
 </style>
 
-<style>
-/* アプリ本体のみ表示：製作時のスマホモックアップ部分を非表示 */
-.phone-mockup,.phone-frame,.mock-phone,.device-frame,.sample-phone,.sample-device,.demo-phone,.demo-statusbar,.mock-statusbar{display:none!important}
-</style>
 
 <style>
 /* ===== デザインサンプル：機能は変更せず見た目だけ刷新 ===== */
@@ -190,6 +192,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <script>
 (function(){
 "use strict";
+
+/* ===== 定数・初期データ ===== */
 const $=id=>document.getElementById(id);
 const KEY_C="yakuhin_clean_chemicals";
 const KEY_K="yakuhin_clean_customers";
@@ -297,6 +301,7 @@ function loadChem(){
  if(c){$("density").value=c.density;updateResultStyle(c);calc();}
 }
 function trunc2(n){return Math.trunc(Number(n)*100)/100}
+/* ===== 計算処理 ===== */
 function calc(){
  const idx=$("chemical").value;
  const c=idx===""?null:chemicals[Number(idx)];
@@ -334,6 +339,7 @@ function resetDeliveryForm(){
 
 let pendingHistoryRecord=null;
 let registeredResultDialog=false;
+/* ===== 計算結果ダイアログ ===== */
 function showCalcResultDialog(rec,fromHistory=false){
  pendingHistoryRecord=fromHistory?rec:null;
  registeredResultDialog=!fromHistory;
@@ -354,6 +360,7 @@ function closeCalcResultDialog(){
  $("calcResultModal").classList.add("hidden");
  $("calcResultModal").setAttribute("aria-hidden","true");
 }
+/* ===== 計算登録・修正 ===== */
 function saveDelivery(){
  const customer=$("customer").value.trim(), c=chemicals[Number($("chemical").value)], r=calc();
  if(!customer){alert("先に客先名を入力してください。");$("customer").focus();return}
@@ -388,6 +395,7 @@ function saveDelivery(){
 let selectedHistoryRecord=null;
 let editingHistoryRecord=null;
 let editingHistoryIndex=-1;
+/* ===== 履歴操作 ===== */
 function openHistoryModal(x){
  selectedHistoryRecord=x;
  $("historyModal").classList.remove("hidden");
@@ -426,6 +434,7 @@ function loadHistoryRecord(x){
  calc();
  show("calc");
 }
+/* ===== 履歴表示 ===== */
 function renderHistory(){
  const selected=($("historyDate").value)||isoToday();
  $("historyDate").value=selected;
@@ -447,6 +456,7 @@ function renderHistory(){
 
 
 let editingChemIndex=-1;
+/* ===== 薬品登録 ===== */
 function renderChemList(){
  $("chemList").innerHTML="";
  chemicals.map((c,i)=>({c,i})).sort((a,b)=>String(a.c.name).localeCompare(String(b.c.name),"ja",{numeric:true,sensitivity:"base"})).forEach(({c,i})=>{
@@ -480,6 +490,7 @@ $("modalDeleteChem").onclick=()=>{
  if(chemicals.length<=1){alert("薬品は1つ以上必要です。");return}
  if(confirm(chemicals[i].name+"を削除しますか？")){chemicals.splice(i,1);save(KEY_C,chemicals);renderChemicals();closeChemModal()}
 };
+/* ===== 客先登録 ===== */
 function renderCustomers(){
  $("customerList").innerHTML="";
  customers.map((n,i)=>({n,i})).sort((a,b)=>String(a.n).localeCompare(String(b.n),"ja",{numeric:true,sensitivity:"base"})).forEach(({n,i})=>{const div=document.createElement("div");div.className="item";div.textContent=n;div.onclick=()=>showCustomerDetail(i);$("customerList").appendChild(div)});
@@ -506,6 +517,7 @@ function editCustomer(i){
 function deleteCustomer(i){if(confirm(customers[i]+"を削除しますか？")){customers.splice(i,1);save(KEY_K,customers);renderCustomers();updateCustomerSuggest($("customer").value)}}
 function addCustomer(){const n=$("newCustomerName").value.trim();if(!n)return alert("客先名を入力してください。");if(!customers.includes(n))customers.push(n);save(KEY_K,customers);$("newCustomerName").value="";renderCustomers();updateCustomerSuggest("");alert("客先を登録しました。")}
 function addChem(){const n=$("newChemName").value.trim(),d=Number($("newChemDensity").value);if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");chemicals.push({name:n,density:d,warning:$("newChemWarning").checked});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
+/* ===== 画面切り替え ===== */
 function show(page){
  ["calc","history","chem","customer"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==page));
  $("title").textContent=page==="calc"?"薬品配達・容量計算":page==="history"?"配達履歴":page==="chem"?"薬品登録":"客先登録";
