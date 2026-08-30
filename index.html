@@ -512,6 +512,9 @@ function show(page){
  if(page==="history")renderHistory();
  if(page==="chem")renderChemList();
  if(page==="customer")renderCustomers();
+ window.scrollTo(0,0);
+ document.documentElement.scrollTop=0;
+ document.body.scrollTop=0;
 }
 function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
 
