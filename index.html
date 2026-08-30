@@ -116,7 +116,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <div class="box"><small>重量</small><strong id="kg">0.00 kg</strong></div>
 <div class="box"><small>容量</small><strong id="liters">0.00 L</strong></div>
 <div class="box"><small>容積</small><strong id="m3">0.0000 m³</strong></div>
-<div class="box"><small>比重</small><strong id="spec">0.00</strong></div>
+<div class="box"><small>比重</small><strong id="spec">0.00</strong></div><div class="box" id="loadingCmBox"><small>積込cm</small><strong id="loadingCm">—</strong></div>
 </div>
 <button id="saveBtn">計算登録</button><button id="clearBtn" class="gray">入力を消去</button>
 </div>
@@ -135,7 +135,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <div class="card">
 <label>新しい薬品を登録</label>
 <input id="newChemName" placeholder="薬品名（濃度も名前に入れる）">
-<input id="newChemDensity" type="number" step="0.01" placeholder="比重" style="margin-top:10px"><label style="margin-top:10px;color:#333"><input id="newChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象（計算結果を赤背景・白文字）</label>
+<input id="newChemDensity" type="number" step="0.01" placeholder="比重" style="margin-top:10px"><input id="newChemCmTsum" type="number" step="0.01" placeholder="cm/t積（任意）" style="margin-top:10px"><label style="margin-top:10px;color:#333"><input id="newChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象（計算結果を赤背景・白文字）</label>
 <button id="addChemBtn">薬品を登録</button>
 </div>
 <div class="card"><label>登録済み薬品</label><div id="chemList"></div><div id="chemDetail"></div></div>
@@ -159,6 +159,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <label style="margin-top:12px;color:#222"><input id="modalChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象</label>
   <label style="margin-top:12px">比重</label>
   <input id="modalChemDensity" type="number" step="0.01">
+  <label style="margin-top:12px">cm/t積</label>
+  <input id="modalChemCmTsum" type="number" step="0.01">
   <div class="modal-actions">
    <button id="modalSaveChem">保存</button>
    <button id="modalCancelChem" class="gray">キャンセル</button>
@@ -219,7 +221,7 @@ const defaultChem=[
  {name:"次亜塩素酸",density:1.20}
 ];
 
-let chemicals=load(KEY_C,defaultChem).map(c=>({name:String(c.name),density:Number(c.density),warning:!!c.warning}));
+let chemicals=load(KEY_C,defaultChem).map(c=>({name:String(c.name),density:Number(c.density),warning:!!c.warning,cmTsum:c.cmTsum!=null&&isFinite(Number(c.cmTsum))?Number(c.cmTsum):null}));
 let customers=load(KEY_K,[]);
 let history=load(KEY_H,[]);
 let selectedChem=-1, selectedCustomer=-1, currentResult={kg:0,L:0,m3:0};
@@ -319,12 +321,22 @@ function calc(){
  const d=Number($("density").value), a=Number($("amount").value), u=$("unit").value;
  let kg=0,L=0;
  updateResultStyle(c);
- if(!c){$("resultName").textContent="—";$("resultWarning").textContent="";$("kg").textContent="—";$("liters").textContent="—";$("m3").textContent="—";$("spec").textContent="—";currentResult={kg:0,L:0,m3:0};return currentResult}
+ if(!c){$("resultName").textContent="—";$("resultWarning").textContent="";$("kg").textContent="—";$("liters").textContent="—";$("m3").textContent="—";$("spec").textContent="—";currentResult={kg:0,L:0,m3:0,loadingCm:null};$("loadingCm").textContent="—";return currentResult}
  $("resultName").textContent=c.name;$("resultWarning").textContent=c.warning ? "※譲受書必須" : "";
- if(!d||d<=0||!isFinite(a)||a<=0||!u){$("kg").textContent="—";$("liters").textContent="—";$("m3").textContent="—";$("spec").textContent=d?d.toFixed(2):"—";currentResult={kg:0,L:0,m3:0};return currentResult}
+ if(!d||d<=0||!isFinite(a)||a<=0||!u){$("kg").textContent="—";$("liters").textContent="—";$("m3").textContent="—";$("spec").textContent=d?d.toFixed(2):"—";currentResult={kg:0,L:0,m3:0,loadingCm:null};$("loadingCm").textContent="—";return currentResult}
  if(u==="kg"){kg=a;L=kg/d}else if(u==="L"){L=a;kg=L*d}else{L=a*1000;kg=L*d}
- kg=trunc2(kg);L=trunc2(L);currentResult={kg,L,m3:trunc2(L/1000)};
- $("kg").textContent=kg.toFixed(2)+" kg";$("liters").textContent=L.toFixed(2)+" L";$("m3").textContent=trunc2(L/1000).toFixed(2)+" m³";$("spec").textContent=d.toFixed(2);
+ kg=trunc2(kg);L=trunc2(L);
+ // 特殊計算：cm/t積が登録されている薬品は、まず容量(L)を確定し、
+ // 容量(L) × 比重 × cm/t積 ÷ 1000 で積込cmを算出する。
+ const loadingCm=(c.cmTsum!=null&&isFinite(Number(c.cmTsum)))
+   ?trunc2(L*d*Number(c.cmTsum)/1000):null;
+ currentResult={kg,L,m3:trunc2(L/1000),loadingCm};
+ $("kg").textContent=kg.toFixed(2)+" kg";
+ $("liters").textContent=L.toFixed(2)+" L";
+ $("m3").textContent=trunc2(L/1000).toFixed(2)+" m³";
+ $("spec").textContent=d.toFixed(2);
+ $("loadingCm").textContent=loadingCm==null?"—":loadingCm.toFixed(2)+" cm";
+ $("loadingCmBox").style.display=(loadingCm!=null&&loadingCm!==0)?"":"none";
  return currentResult;
 }
 function customerNames(){return [...new Set([...customers,...history.map(x=>x.customer)].filter(Boolean))]}
@@ -351,15 +363,22 @@ function resetDeliveryForm(){
 let pendingHistoryRecord=null;
 let registeredResultDialog=false;
 /* ===== 計算結果ダイアログ ===== */
+function formatOrderUnit(u){return u==="m3"?"m³":(u||"kg")}
+function formatQuantity(value){
+ const n=Number(value);
+ if(!Number.isFinite(n)) return "";
+ return String(Number(n.toFixed(10)));
+}
 function showCalcResultDialog(rec,fromHistory=false){
  pendingHistoryRecord=fromHistory?rec:null;
  registeredResultDialog=!fromHistory;
  const warning=rec.warning?'<div style="color:#ff3b30;font-weight:700">※譲受書必須</div>':"";
  $("calcResultDialog").innerHTML="<div style='font-size:17px;font-weight:700;color:#1c1c1e;margin-bottom:8px'>客先名："+esc(rec.customer||"")+" </div><div><b>"+esc(rec.chemical)+"</b></div>"+warning+
-   "<div>重量："+Number(rec.kg).toFixed(2)+" kg</div>"+
-   "<div>容量："+Number(rec.L).toFixed(2)+" L</div>"+
-   "<div>容積："+Number(rec.m3).toFixed(4)+" m³</div>"+
-   "<div>比重："+Number(rec.density).toFixed(2)+"</div>";
+   "<div>注文数量："+formatQuantity(rec.amount)+" "+formatOrderUnit(rec.unit)+"</div>"+
+   "<div>重量："+formatQuantity(rec.kg)+" kg</div>"+
+   "<div>容量："+formatQuantity(rec.L)+" L</div>"+
+   "<div>容積："+formatQuantity(rec.m3)+" m³</div>"+
+   "<div>比重："+Number(rec.density).toFixed(2)+"</div>"+(rec.loadingCm!=null&&Number(rec.loadingCm)!==0?"<div>積込cm："+Number(rec.loadingCm).toFixed(2)+" cm</div>":"");
  $("calcResultLoad").style.display=fromHistory?"block":"none";
  $("calcResultDelete").style.display=fromHistory?"block":"none";
  $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
@@ -388,7 +407,7 @@ function saveDelivery(){
     warning:!!c.warning,
     unit:$("unit").value,
     amount:Number($("amount").value),
-    kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3)
+    kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum
    };
    history[editingHistoryIndex]=rec;
    save(KEY_H,history);
@@ -397,7 +416,7 @@ function saveDelivery(){
    clearDraft();resetDeliveryForm();renderHistory();
    return;
  }
- const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),created:Date.now()};
+ const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
  history.push(rec);save(KEY_H,history);
  if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
  showCalcResultDialog(rec);clearDraft();resetDeliveryForm();renderHistory();
@@ -460,7 +479,7 @@ function renderHistory(){
    const chemStyleWithSize=chemStyle+";font-size:16px;font-weight:700";
    const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
    const orderLabel=orderUnit==="m3"?"m³":orderUnit;
-   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b><div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div><div style='margin-top:5px;font-size:16px'>注文数量："+orderAmount.toFixed(2)+" "+orderLabel+"</div><div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>"+trunc2(x.kg).toFixed(2)+" kg　/　"+trunc2(x.m3!=null?x.m3:Number(x.L||0)/1000).toFixed(2)+" m³</div><div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
+   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b><div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div><div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div><div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>"+formatQuantity(trunc2(x.kg))+" kg　/　"+formatQuantity(trunc2(x.m3!=null?x.m3:Number(x.L||0)/1000))+" m³</div>"+(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"")+"<div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
    box.appendChild(div);
  });
 }
@@ -480,7 +499,7 @@ function openChemModal(i){
  editingChemIndex=i;
  $("modalChemName").value=c.name;
  $("modalChemWarning").checked=!!c.warning;
- $("modalChemDensity").value=c.density;
+ $("modalChemDensity").value=c.density;$("modalChemCmTsum").value=c.cmTsum!=null?c.cmTsum:"";
  $("chemModal").classList.remove("hidden");$("chemModal").setAttribute("aria-hidden","false");
  $("modalChemName").focus();
 }
@@ -488,9 +507,10 @@ function closeChemModal(){$("chemModal").classList.add("hidden");$("chemModal").
 $("modalCancelChem").onclick=closeChemModal;
 $("modalSaveChem").onclick=()=>{
  const i=editingChemIndex;if(i<0)return;
- const n=$("modalChemName").value.trim(),d=Number($("modalChemDensity").value);
+ const n=$("modalChemName").value.trim(),d=Number($("modalChemDensity").value),ct=$("modalChemCmTsum").value.trim();
  if(!n||!isFinite(d)||d<=0){alert("薬品名と比重を確認してください。");return}
- chemicals[i]={name:n,density:d,warning:$("modalChemWarning").checked};
+ if(ct!==""&&!isFinite(Number(ct))){alert("cm/t積の数値を確認してください。");return}
+ chemicals[i]={name:n,density:d,warning:$("modalChemWarning").checked,cmTsum:ct===""?null:Number(ct)};
  save(KEY_C,chemicals);
  closeChemModal();
  renderChemicals();
@@ -527,7 +547,7 @@ function editCustomer(i){
 }
 function deleteCustomer(i){if(confirm(customers[i]+"を削除しますか？")){customers.splice(i,1);save(KEY_K,customers);renderCustomers();updateCustomerSuggest($("customer").value)}}
 function addCustomer(){const n=$("newCustomerName").value.trim();if(!n)return alert("客先名を入力してください。");if(!customers.includes(n))customers.push(n);save(KEY_K,customers);$("newCustomerName").value="";renderCustomers();updateCustomerSuggest("");alert("客先を登録しました。")}
-function addChem(){const n=$("newChemName").value.trim(),d=Number($("newChemDensity").value);if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");chemicals.push({name:n,density:d,warning:$("newChemWarning").checked});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
+function addChem(){const n=$("newChemName").value.trim(),d=Number($("newChemDensity").value),ct=$("newChemCmTsum").value.trim();if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");if(ct!==""&&!isFinite(Number(ct)))return alert("cm/t積の数値を確認してください。");chemicals.push({name:n,density:d,warning:$("newChemWarning").checked,cmTsum:ct===""?null:Number(ct)});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemCmTsum").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
 /* ===== 画面切り替え ===== */
 function show(page){
  ["calc","history","chem","customer"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==page));
