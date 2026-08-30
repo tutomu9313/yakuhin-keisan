@@ -333,8 +333,10 @@ function resetDeliveryForm(){
 }
 
 let pendingHistoryRecord=null;
+let registeredResultDialog=false;
 function showCalcResultDialog(rec,fromHistory=false){
  pendingHistoryRecord=fromHistory?rec:null;
+ registeredResultDialog=!fromHistory;
  const warning=rec.warning?'<div style="color:#ff3b30;font-weight:700">※譲受書必須</div>':"";
  $("calcResultDialog").innerHTML="<div><b>"+esc(rec.chemical)+"</b></div>"+warning+
    "<div>重量："+Number(rec.kg).toFixed(2)+" kg</div>"+
@@ -556,7 +558,13 @@ $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
-restoreDraft();autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{closeCalcResultDialog();pendingHistoryRecord=null};
+restoreDraft();autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{
+ const goHistory=registeredResultDialog;
+ closeCalcResultDialog();
+ pendingHistoryRecord=null;
+ registeredResultDialog=false;
+ if(goHistory){show("history");renderHistory();}
+};
 $("calcResultLoad").onclick=()=>{if(pendingHistoryRecord){const x=pendingHistoryRecord;pendingHistoryRecord=null;closeCalcResultDialog();loadHistoryRecord(x)}else{closeCalcResultDialog()}};
 $("calcResultDelete").onclick=()=>{
   if(!pendingHistoryRecord)return;
