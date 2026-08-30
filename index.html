@@ -223,7 +223,7 @@ const defaultChem=[
  {name:"次亜塩素酸",density:1.20}
 ];
 
-let chemicals=load(KEY_C,defaultChem).map(c=>({name:String(c.name),density:Number(c.density),sortOrder:c.sortOrder!=null&&isFinite(Number(c.sortOrder))?Number(c.sortOrder):null,warning:!!c.warning,cmTsum:c.cmTsum!=null&&isFinite(Number(c.cmTsum))?Number(c.cmTsum):null}));
+let chemicals = JSON.parse(localStorage.getItem("yakuhin_volume_chemicals") || 'null') || [{"name":"苛性ソーダ 25%","sortOrder":5,"density":1.27,"warning":true,"cmTsum":null},{"name":"塩酸","sortOrder":4,"density":1.18,"warning":true,"cmTsum":10.4},{"name":"第二鉄液","sortOrder":2,"density":1.38,"warning":false,"cmTsum":12.7},{"name":"次亜塩素","sortOrder":1,"density":1.14,"warning":false,"cmTsum":14},{"name":"PAC","sortOrder":3,"density":1.2,"warning":false,"cmTsum":15},{"name":"苛性ソーダ 48%","sortOrder":6,"density":1.5,"warning":true,"cmTsum":null},{"name":"硫酸 75%","sortOrder":7,"density":1.68,"warning":true,"cmTsum":10.8},{"name":"塩酸 95%","sortOrder":8,"density":1.95,"warning":true,"cmTsum":null},{"name":"塩酸 98%","sortOrder":9,"density":1.84,"warning":true,"cmTsum":null}];
 let customers=load(KEY_K,[]);
 let history=load(KEY_H,[]);
 let selectedChem=-1, selectedCustomer=-1, currentResult={kg:0,L:0,m3:0};
