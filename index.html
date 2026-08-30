@@ -338,7 +338,7 @@ function showCalcResultDialog(rec,fromHistory=false){
  pendingHistoryRecord=fromHistory?rec:null;
  registeredResultDialog=!fromHistory;
  const warning=rec.warning?'<div style="color:#ff3b30;font-weight:700">※譲受書必須</div>':"";
- $("calcResultDialog").innerHTML="<div style='font-size:14px;color:#666;margin-bottom:6px'>客先名："+esc(rec.customer||"")+" </div><div><b>"+esc(rec.chemical)+"</b></div>"+warning+
+ $("calcResultDialog").innerHTML="<div style='font-size:17px;font-weight:700;color:#1c1c1e;margin-bottom:8px'>客先名："+esc(rec.customer||"")+" </div><div><b>"+esc(rec.chemical)+"</b></div>"+warning+
    "<div>重量："+Number(rec.kg).toFixed(2)+" kg</div>"+
    "<div>容量："+Number(rec.L).toFixed(2)+" L</div>"+
    "<div>容積："+Number(rec.m3).toFixed(4)+" m³</div>"+
