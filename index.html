@@ -8,7 +8,6 @@
 *{box-sizing:border-box}
 body{margin:0;background:#dfe3e8;color:#111;font-family:Arial,"Yu Gothic",sans-serif}
 .app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#f2f2f7;padding-bottom:75px}
-.status{height:34px;padding:8px 18px 0;font-size:13px;font-weight:bold;display:flex;justify-content:space-between}
 header{text-align:center;font-size:21px;font-weight:bold;padding:10px 16px 15px}
 .card{background:#fff;margin:0 14px 12px;padding:16px;border-radius:16px;box-shadow:0 1px 4px #0001}
 label{display:block;color:#666;font-size:13px;margin-bottom:6px}
@@ -32,10 +31,14 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(4,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
 </style>
+
+<style>
+/* アプリ本体のみ表示：製作時のスマホモックアップ部分を非表示 */
+.phone-mockup,.phone-frame,.mock-phone,.device-frame,.sample-phone,.sample-device,.demo-phone,.demo-statusbar,.mock-statusbar{display:none!important}
+</style>
 </head>
 <body>
 <div class="app">
-<div class="status"><span id="statusTime">9:41</span><span>●●● ▰</span></div>
 <header id="title">薬品配達・容量計算</header>
 
 <section id="calcPage">
@@ -268,6 +271,7 @@ function loadChem(){
  const c=chemicals[Number(idx)];
  if(c){$("density").value=c.density;updateResultStyle(c);calc();}
 }
+function trunc2(n){return Math.trunc(Number(n)*100)/100}
 function calc(){
  const idx=$("chemical").value;
  const c=idx===""?null:chemicals[Number(idx)];
@@ -278,8 +282,8 @@ function calc(){
  $("resultName").textContent=c.name;$("resultWarning").textContent=c.warning ? "※譲受書必須" : "";
  if(!d||d<=0||!isFinite(a)||a<=0||!u){$("kg").textContent="—";$("liters").textContent="—";$("m3").textContent="—";$("spec").textContent=d?d.toFixed(2):"—";currentResult={kg:0,L:0,m3:0};return currentResult}
  if(u==="kg"){kg=a;L=kg/d}else if(u==="L"){L=a;kg=L*d}else{L=a*1000;kg=L*d}
- currentResult={kg,L,m3:L/1000};
- $("kg").textContent=kg.toFixed(2)+" kg";$("liters").textContent=L.toFixed(2)+" L";$("m3").textContent=(L/1000).toFixed(4)+" m³";$("spec").textContent=d.toFixed(2);
+ kg=trunc2(kg);L=trunc2(L);currentResult={kg,L,m3:trunc2(L/1000)};
+ $("kg").textContent=kg.toFixed(2)+" kg";$("liters").textContent=L.toFixed(2)+" L";$("m3").textContent=trunc2(L/1000).toFixed(2)+" m³";$("spec").textContent=d.toFixed(2);
  return currentResult;
 }
 function customerNames(){return [...new Set([...customers,...history.map(x=>x.customer)].filter(Boolean))]}
@@ -298,6 +302,9 @@ function resetDeliveryForm(){
  $("customer").value="";
  $("customerSuggest").classList.add("hidden");
  setCalcEnabled(false);
+ editingHistoryRecord=null;
+ editingHistoryIndex=-1;
+ $("saveBtn").textContent="計算登録";
 }
 
 let pendingHistoryRecord=null;
@@ -322,13 +329,35 @@ function saveDelivery(){
  if(!customer){alert("先に客先名を入力してください。");$("customer").focus();return}
  if(!c||r.kg<=0){alert("薬品・数量・単位・比重を確認してください。");return}
  const now=new Date();
- const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:r.kg,L:r.L,m3:r.m3,created:Date.now()};
+ if(editingHistoryIndex>=0 && history[editingHistoryIndex]){
+   const old=history[editingHistoryIndex];
+   const rec={
+    ...old,
+    date:$("dateDisplay").dataset.iso||old.date||isoToday(),
+    customer,
+    chemical:c.name,
+    density:Number($("density").value),
+    warning:!!c.warning,
+    unit:$("unit").value,
+    amount:Number($("amount").value),
+    kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3)
+   };
+   history[editingHistoryIndex]=rec;
+   save(KEY_H,history);
+   if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
+   showCalcResultDialog(rec);
+   clearDraft();resetDeliveryForm();renderHistory();
+   return;
+ }
+ const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),created:Date.now()};
  history.push(rec);save(KEY_H,history);
  if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
  showCalcResultDialog(rec);clearDraft();resetDeliveryForm();renderHistory();
 }
 
 let selectedHistoryRecord=null;
+let editingHistoryRecord=null;
+let editingHistoryIndex=-1;
 function openHistoryModal(x){
  selectedHistoryRecord=x;
  $("historyModal").classList.remove("hidden");
@@ -350,23 +379,20 @@ function deleteHistoryRecord(x){
  }
 }
 function loadHistoryRecord(x){
+ editingHistoryRecord=x;
+ editingHistoryIndex=history.indexOf(x);
+ if(editingHistoryIndex<0 && x.created!=null) editingHistoryIndex=history.findIndex(r=>r.created===x.created);
+ $("dateDisplay").dataset.iso=x.date||isoToday();
+ $("dateDisplay").value=displayDate($("dateDisplay").dataset.iso);
  $("customer").value=x.customer||"";
  setCalcEnabled(true);
  const idx=chemicals.findIndex(c=>c.name===x.chemical);
  $("chemical").value=idx>=0?String(idx):"";
- $("density").value=x.density|| (idx>=0?chemicals[idx].density:"");
+ $("density").value=x.density!=null?x.density:(idx>=0?chemicals[idx].density:"");
  const savedUnit=x.unit||"kg";
  $("unit").value=savedUnit;
- if(savedUnit==="kg"){
-   $("amount").value=x.kg;
- }else if(savedUnit==="L"){
-   $("amount").value=x.L;
- }else if(savedUnit==="m3"){
-   $("amount").value=x.m3;
- }else{
-   $("amount").value=x.kg;
-   $("unit").value="kg";
- }
+ $("amount").value=x.amount!=null?x.amount:(savedUnit==="kg"?x.kg:savedUnit==="L"?x.L:x.m3);
+ $("saveBtn").textContent="修正";
  calc();
  show("calc");
 }
@@ -381,7 +407,10 @@ function renderHistory(){
  rows.forEach(x=>{
    const div=document.createElement("div");div.className="item";div.onclick=()=>showCalcResultDialog(x,true);
    const chemStyle=x.warning?"color:#ff3b30;font-weight:bold":"font-weight:bold";
-   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b><div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyle+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span>　"+Number(x.kg).toFixed(2)+" kg　/　"+Number(x.L).toFixed(2)+" L</div><div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
+   const chemStyleWithSize=chemStyle+";font-size:16px;font-weight:700";
+   const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
+   const orderLabel=orderUnit==="m3"?"m³":orderUnit;
+   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b><div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div><div style='margin-top:5px;font-size:16px'>注文数量："+orderAmount.toFixed(2)+" "+orderLabel+"</div><div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>"+trunc2(x.kg).toFixed(2)+" kg　/　"+trunc2(x.m3!=null?x.m3:Number(x.L||0)/1000).toFixed(2)+" m³</div><div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
    box.appendChild(div);
  });
 }
