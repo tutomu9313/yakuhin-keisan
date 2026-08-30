@@ -6,8 +6,8 @@
 <title>薬品配達・容量計算</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#dfe3e8;color:#111;font-family:Arial,"Yu Gothic",sans-serif}
-.app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#f2f2f7;padding-bottom:75px}
+body{margin:0;background:#fff;color:#111;font-family:Arial,"Yu Gothic",sans-serif}
+.app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#fff;padding-bottom:75px}
 header{text-align:center;font-size:21px;font-weight:bold;padding:10px 16px 15px}
 .card{background:#fff;margin:0 14px 12px;padding:16px;border-radius:16px;box-shadow:0 1px 4px #0001}
 label{display:block;color:#666;font-size:13px;margin-bottom:6px}
@@ -90,7 +90,6 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
 <div class="box"><small>合計重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
 </div></div>
 <div class="card" id="historyList"></div>
-<div class="card"><button id="clearHistory" class="red">この日の履歴を削除</button></div>
 </section>
 
 <section id="chemPage" class="hidden">
@@ -145,7 +144,7 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
  <div class="modal-card">
   <h3>計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" style="display:flex;gap:10px"><button id="calcResultClose" class="gray" style="flex:1">閉じる</button><button id="calcResultLoad" style="flex:1">読み込む</button></div>
+  <div id="calcResultActions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="calcResultClose" class="gray" style="grid-column:1">閉じる</button><button id="calcResultLoad" style="grid-column:2">読み込む</button><button id="calcResultDelete" class="red" style="grid-column:1/-1">この履歴を削除</button></div>
  </div>
 </div>
 
@@ -317,6 +316,7 @@ function showCalcResultDialog(rec,fromHistory=false){
    "<div>容積："+Number(rec.m3).toFixed(4)+" m³</div>"+
    "<div>比重："+Number(rec.density).toFixed(2)+"</div>";
  $("calcResultLoad").style.display=fromHistory?"block":"none";
+ $("calcResultDelete").style.display=fromHistory?"block":"none";
  $("calcResultModal").classList.remove("hidden");
  $("calcResultModal").setAttribute("aria-hidden","false");
 }
@@ -530,6 +530,20 @@ $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
 restoreDraft();autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{closeCalcResultDialog();pendingHistoryRecord=null};
 $("calcResultLoad").onclick=()=>{if(pendingHistoryRecord){const x=pendingHistoryRecord;pendingHistoryRecord=null;closeCalcResultDialog();loadHistoryRecord(x)}else{closeCalcResultDialog()}};
+$("calcResultDelete").onclick=()=>{
+  if(!pendingHistoryRecord)return;
+  const x=pendingHistoryRecord;
+  if(confirm((x.time?x.time+" ":"")+x.customer+" / "+x.chemical+" の履歴を削除しますか？")){
+    const idx=history.indexOf(x);
+    if(idx>=0){
+      history.splice(idx,1);
+      save(KEY_H,history);
+      pendingHistoryRecord=null;
+      closeCalcResultDialog();
+      renderHistory();
+    }
+  }
+};
 $("calcResultModal").addEventListener("click",e=>{if(e.target===$("calcResultModal"))closeCalcResultDialog});
 $("historyLoadBtn").onclick=()=>{if(selectedHistoryRecord){const x=selectedHistoryRecord;closeHistoryModal();showCalcResultDialog(x,true);}};
 $("historyDeleteBtn").onclick=()=>{if(selectedHistoryRecord)deleteHistoryRecord(selectedHistoryRecord)};
