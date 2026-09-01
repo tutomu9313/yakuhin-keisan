@@ -19,7 +19,7 @@ input[readonly]{background:#f7f7f7}
 .amountrow{display:grid;grid-template-columns:1fr 105px;gap:10px}
 button{width:100%;height:46px;border:0;border-radius:12px;background:#007aff;color:#fff;font-weight:bold;font-size:16px;margin-top:10px}
 button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}
-/* ===== 計算結果 ===== */
+/* ===== 入力計算結果 ===== */
 .resultmain{background:#111;color:#fff;border-radius:15px;padding:15px}.resultmain.warning{background:#ff3b30;color:#fff}.resultmain small{opacity:.75}.resultmain strong{display:block;font-size:27px;margin-top:4px}
 .results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.box{background:#f2f2f7;border-radius:12px;padding:11px}.box small{display:block;color:#666}.box strong{display:block;font-size:20px;margin-top:4px}
 .summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary .box{text-align:center}.summary strong{font-size:25px}
@@ -30,11 +30,11 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 .hidden{display:none}
 .modal.hidden{display:none!important}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:100}
 .modal-card{width:350px;max-width:90%;background:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 35px #0004}
-.modal-card h3{margin:0 0 15px;font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}
+.modal-card h3{margin:0 0 15px;font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}.modal-actions .green{background:#34c759!important;color:#fff!important}
 .suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}
 .note{font-size:12px;color:#777;margin-top:7px;line-height:1.4}
 /* ===== 下部ナビゲーション ===== */
-nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(4,1fr);padding:7px 5px}
+nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(5,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
 </style>
 
@@ -75,6 +75,47 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 /* ダイアログのボタン文字だけ元の16pxに戻す */
 .modal-card button{font-size:16px!important}
 </style>
+
+<style id="v43-delivery-edit-font">
+#deliveryEditModal .modal-card h3{
+  font-size:20px !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+}
+#deliveryEditInfo{
+  font-size:16px !important;
+  line-height:1.8 !important;
+  margin-bottom:10px;
+}
+#deliveryEditInfo b{
+  font-size:17px !important;
+  font-weight:700 !important;
+}
+#deliveryEditModal label{
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.4 !important;
+}
+</style>
+
+
+<style id="v44-delivery-edit-item-font">
+#deliveryEditInfo > span:first-child{
+  font-size:16px !important;
+  font-weight:400 !important;
+}
+</style>
+
+
+<style id="v47-calculation-result-font">
+/* 入力計算結果：取引先を部署名と同じ通常文字にする */
+#resultModal .result-customer,
+#calculationResultModal .result-customer {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -86,16 +127,20 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 </div>
 
 <div class="card">
-<label>客先名</label>
-<input id="customer" placeholder="客先名を入力" autocomplete="off" style="width:100%;box-sizing:border-box">
+<label>取引先</label>
+<input id="customer" placeholder="取引先を入力" autocomplete="off" style="width:100%;box-sizing:border-box">
 <div id="customerSuggest" class="suggest hidden"></div>
+<label style="margin-top:12px">部署名</label>
+<input id="department" placeholder="部署名を入力" autocomplete="off" style="width:100%;box-sizing:border-box">
+<div id="departmentSuggest" class="suggest hidden"></div>
+<datalist id="departmentList"></datalist>
 </div>
 
 <div class="card">
 <label>薬品名　　比重</label>
 <div class="amountrow">
 <select id="chemical"><option value="" selected>薬品を選択</option></select>
-<input id="density" type="number" step="0.01" aria-label="比重" placeholder="—">
+<input id="density" type="text" aria-label="比重" placeholder="—" readonly>
 </div>
 <div class="note">薬品を選択すると登録済みの比重が表示されます。必要に応じて変更できます。</div>
 </div>
@@ -107,35 +152,68 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <select id="unit"><option value="" selected>単位</option><option value="kg">kg</option><option value="L">L</option><option value="m3">m³</option></select>
 </div>
 
-<div class="note">計算結果を確認して「配達を保存」を押してください。</div>
+<div class="note">入力計算結果を確認して「配達を保存」を押してください。</div>
 </div>
 
-<div class="card">
-<div id="resultMain" class="resultmain"><small>計算結果</small><strong id="resultName" style="display:block;font-weight:700">—</strong><strong id="resultWarning" style="display:block;margin-top:4px;font-weight:700"></strong></div>
+<div id="resultCard" class="card" style="display:none">
+<div id="resultMain" class="resultmain"><small>入力計算結果</small><strong id="resultName" style="display:block;font-weight:700">—</strong><strong id="resultWarning" style="display:block;margin-top:4px;font-weight:700"></strong></div>
 <div class="results">
 <div class="box"><small>重量</small><strong id="kg">0.00 kg</strong></div>
 <div class="box"><small>容量</small><strong id="liters">0.00 L</strong></div>
 <div class="box"><small>容積</small><strong id="m3">0.0000 m³</strong></div>
 <div class="box"><small>比重</small><strong id="spec">0.00</strong></div><div class="box" id="loadingCmBox"><small>積込cm</small><strong id="loadingCm">—</strong></div>
 </div>
-<button id="saveBtn">計算登録</button><button id="clearBtn" class="gray">入力を消去</button>
+<button id="saveBtn">計算登録</button>
 </div>
 </section>
 
 <section id="historyPage" class="hidden">
 <div class="card"><label for="historyDate">表示する日付</label><input id="historyDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div>
 <div class="card"><div class="summary">
-<div class="box"><small>配達件数</small><strong id="count">0</strong><small>件</small></div>
-<div class="box"><small>合計重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
+<div class="box"><small>注文件数</small><strong id="count">0</strong><small>件</small></div>
+<div class="box"><small>合計注文重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
 </div></div>
 <div class="card" id="historyList"></div>
 </section>
 
+<section id="deliveryHistoryPage" class="hidden">
+ <div class="card"><label for="deliveryHistoryDate">表示する日付</label><input id="deliveryHistoryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div>
+ <div class="card"><div class="summary">
+   <div class="box"><small>納品件数</small><strong id="deliveryCount">0</strong><small>件</small></div>
+   <div class="box"><small>合計納品重量</small><strong id="deliveryTotalKg">0.00</strong><small>kg</small></div>
+ </div></div>
+ <div class="card" id="deliveryHistoryList"></div>
+</section>
+
+<section id="deliveryPage" class="hidden">
+ <div class="card"><label>納品登録</label><div class="detail">
+  <div><b id="deliveryCustomer">—</b></div>
+  <div style="margin-top:6px"><b id="deliveryChemical">—</b></div>
+  <div id="deliveryWarningNotice" style="display:none"></div>
+ </div></div>
+ <div class="card">
+  <label for="deliveryDate">納品日</label>
+  <input id="deliveryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold">
+ </div>
+ <div class="card"><label>注文数量</label><div class="grid2">
+  <div class="box"><small>重量</small><strong id="deliveryOrderKg">—</strong></div>
+  <div class="box"><small>容量</small><strong id="deliveryOrderL">—</strong></div>
+ </div></div>
+ <div class="card">
+  <label style="margin-top:4px">正味重量（Kg）</label>
+  <input id="deliveryKg" type="number" inputmode="decimal" step="0.01" placeholder="正味重量">
+  <label style="margin-top:14px">納品容量（L）</label>
+  <input id="deliveryL" type="text" readonly placeholder="自動計算">
+ </div>
+ <div class="card">
+  <button id="deliverySaveBtn">納品を保存</button><button id="deliveryCancelBtn" class="gray">キャンセル</button>
+ </div>
+</section>
 <section id="chemPage" class="hidden">
 <div class="card">
 <label>新しい薬品を登録</label>
 <input id="newChemName" placeholder="薬品名（濃度も名前に入れる）">
-<input id="newChemDensity" type="number" step="0.01" placeholder="比重" style="margin-top:10px"><input id="newChemOrder" type="number" step="1" min="1" placeholder="並び順（任意）" style="margin-top:10px"><input id="newChemCmTsum" type="number" step="0.01" placeholder="cm/t積（任意）" style="margin-top:10px"><label style="margin-top:10px;color:#333"><input id="newChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象（計算結果を赤背景・白文字）</label>
+<input id="newChemDensity" type="number" step="0.01" placeholder="比重" style="margin-top:10px"><input id="newChemOrder" type="number" step="1" min="1" placeholder="並び順（任意）" style="margin-top:10px"><input id="newChemCmTsum" type="number" step="0.01" placeholder="cm/t積（任意）" style="margin-top:10px"><label style="margin-top:10px;color:#333"><input id="newChemWarning" type="checkbox" style="width:auto;height:auto;margin-right:7px">警告対象（入力計算結果を赤背景・白文字）</label>
 <button id="addChemBtn">薬品を登録</button>
 </div>
 <div class="card"><label>登録済み薬品</label><div id="chemList"></div><div id="chemDetail"></div></div>
@@ -144,7 +222,9 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <section id="customerPage" class="hidden">
 <div class="card">
 <label>新しい客先を登録</label>
-<input id="newCustomerName" placeholder="客先名">
+<input id="newCustomerName" placeholder="取引先">
+<label style="margin-top:12px">部署名</label>
+<input id="newDepartmentName" placeholder="部署名">
 <button id="addCustomerBtn">客先を登録</button>
 </div>
 <div class="card"><label>登録済み客先</label><div id="customerList"></div><div id="customerDetail"></div></div>
@@ -171,6 +251,33 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  </div>
 </div>
 
+<div id="customerModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>客先を編集</h3>
+  <label>取引先</label>
+  <input id="modalCustomerName" type="text">
+  <label style="margin-top:12px">部署名</label>
+  <textarea id="modalCustomerDepartment" rows="3" placeholder="部署名を入力（複数ある場合は1行ずつ）" style="display:block;width:100%;box-sizing:border-box;"></textarea>
+  <div style="font-size:12px;color:#777;margin-top:5px">複数の部署がある場合は、1行に1つずつ入力できます。</div>
+  <div class="modal-actions">
+   <button id="modalSaveCustomer">保存</button>
+   <button id="modalCancelCustomer" class="gray">キャンセル</button>
+   <button id="modalDeleteCustomer" class="red full">削除</button>
+  </div>
+ </div>
+</div>
+
+<div id="settingsModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>設定</h3>
+  <div class="modal-actions">
+   <button id="settingsChemBtn">薬品設定</button>
+   <button id="settingsCustomerBtn">客先設定</button>
+   <button id="settingsCancelBtn" class="gray full">キャンセル</button>
+  </div>
+ </div>
+</div>
+
 <div id="historyModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
   <h3>履歴をどうしますか？</h3>
@@ -185,22 +292,35 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 
 <div id="calcResultModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
-  <h3>計算結果</h3>
+  <h3>入力計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="calcResultClose" class="gray" style="grid-column:1">閉じる</button><button id="calcResultLoad" style="grid-column:2">読み込む</button><button id="calcResultDelete" class="red" style="grid-column:1/-1">この履歴を削除</button></div>
+  <div id="calcResultActions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="calcResultClose" class="gray" style="grid-column:1">閉じる</button><button id="calcResultLoad" style="grid-column:2">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green" style="grid-column:1/-1;background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red" style="grid-column:1/-1">この注文データを削除</button></div>
  </div>
 </div>
 
-<div class="card" id="backupCard" style="margin:12px">
- <label>バックアップ</label>
- <button id="backupBtn">バックアップを保存</button>
- <div class="note">登録・編集・削除・計算登録のたびに自動バックアップされます。</div>
+<div class="card" id="inputCancelCard" style="margin:12px">
+ <button id="inputCancelBtn" class="gray">入力キャンセル</button>
+</div>
+<div id="deliveryEditModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>納品データの編集</h3>
+  <div id="deliveryEditInfo" style="line-height:1.8;margin-bottom:10px"></div>
+  <label style="color:#000">実納品重量（kg）</label>
+  <input id="deliveryEditKg" type="number" inputmode="decimal" step="0.01">
+  <label style="margin-top:12px;color:#000">実納品容量（L）</label>
+  <input id="deliveryEditL" type="text" readonly>
+  <div id="deliveryEditCapacityDiff" style="font-size:13px;margin-top:6px;color:#000">容量差：— L</div>
+  <div id="deliveryEditWeightDiff" style="font-size:13px;margin-top:3px;color:#000">重量差：— kg</div>
+  <button id="deliveryEditSaveBtn">保存</button>
+  <button id="deliveryEditDeleteBtn" class="red">この納品データを削除</button>
+  <button id="deliveryEditCancelBtn" class="gray">キャンセル</button>
+ </div>
 </div>
 <nav>
-<button id="navCalc">計算</button>
-<button id="navHistory">履歴</button>
-<button id="navChem">薬品</button>
-<button id="navCustomer">客先</button>
+<button id="navCalc" type="button" onclick="window.show('calc')">入力</button>
+<button id="navHistory" type="button" onclick="window.show('history')">注文履歴</button>
+<button id="navDeliveryHistory" type="button" onclick="window.show('deliveryHistory')">納品履歴</button>
+<button id="navSettings" type="button">設定</button>
 </nav>
 </div>
 
@@ -214,6 +334,7 @@ const KEY_C="yakuhin_clean_chemicals";
 const KEY_K="yakuhin_clean_customers";
 const KEY_H="yakuhin_clean_history";
 const KEY_D="yakuhin_clean_draft";
+const KEY_P="yakuhin_clean_departments";
 const KEY_B="yakuhin_clean_autobackup";
 
 const defaultChem=[
@@ -226,6 +347,7 @@ const defaultChem=[
 let chemicals = JSON.parse(localStorage.getItem("yakuhin_volume_chemicals") || 'null') || [{"name":"苛性ソーダ 25%","sortOrder":5,"density":1.27,"warning":true,"cmTsum":null},{"name":"塩酸","sortOrder":4,"density":1.18,"warning":true,"cmTsum":10.4},{"name":"第二鉄液","sortOrder":2,"density":1.38,"warning":false,"cmTsum":12.7},{"name":"次亜塩素","sortOrder":1,"density":1.14,"warning":false,"cmTsum":14},{"name":"PAC","sortOrder":3,"density":1.2,"warning":false,"cmTsum":15},{"name":"苛性ソーダ 48%","sortOrder":6,"density":1.5,"warning":true,"cmTsum":null},{"name":"硫酸 75%","sortOrder":7,"density":1.68,"warning":true,"cmTsum":10.8},{"name":"塩酸 95%","sortOrder":8,"density":1.95,"warning":true,"cmTsum":null},{"name":"塩酸 98%","sortOrder":9,"density":1.84,"warning":true,"cmTsum":null}];
 let customers=load(KEY_K,[]);
 let history=load(KEY_H,[]);
+let departments=(()=>{try{const v=JSON.parse(localStorage.getItem(KEY_P)||"{}");return v&&typeof v==="object"&&!Array.isArray(v)?v:{};}catch(e){return {}}})();
 let selectedChem=-1, selectedCustomer=-1, currentResult={kg:0,L:0,m3:0};
 
 function load(k,d){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:d}catch(e){return d}}
@@ -240,6 +362,7 @@ function autoBackup(){
    savedAt:new Date().toISOString(),
    chemicals:JSON.parse(localStorage.getItem(KEY_C)||"[]"),
    customers:JSON.parse(localStorage.getItem(KEY_K)||"[]"),
+   departments:JSON.parse(localStorage.getItem(KEY_P)||"{}"),
    history:JSON.parse(localStorage.getItem(KEY_H)||"[]")
   };
   localStorage.setItem(KEY_B,JSON.stringify(backup));
@@ -251,7 +374,7 @@ function displayDate(iso){const p=iso.split("-");return p[0].slice(2)+"/"+p[1]+"
 function validISO(s){return /^20\d\d-\d\d-\d\d$/.test(s)}
 function saveDraft(){
  try{
-  const d={date:$("dateDisplay").dataset.iso||isoToday(),customer:$("customer").value,
+  const d={date:$("dateDisplay").dataset.iso||isoToday(),customer:$("customer").value,department:$("department").value,
    chemical:$("chemical").value,density:$("density").value,amount:$("amount").value,unit:$("unit").value};
   localStorage.setItem(KEY_D,JSON.stringify(d));
  }catch(e){}
@@ -263,6 +386,7 @@ function restoreDraft(){
   $("dateDisplay").dataset.iso=d.date||isoToday();
   $("dateDisplay").value=displayDate($("dateDisplay").dataset.iso);
   $("customer").value=d.customer||"";
+  $("department").value=d.department||"";
   if(d.customer)setCalcEnabled(true);
   if(d.chemical!==undefined)$("chemical").value=d.chemical;
   if(d.density!==undefined)$("density").value=d.density;
@@ -327,9 +451,12 @@ function loadChem(){
 function trunc2(n){return Math.trunc(Number(n)*100)/100}
 /* ===== 計算処理 ===== */
 function calc(){
+ const unit=$("unit").value;
+ const resultCard=$("resultCard");
+ if(resultCard) resultCard.style.display=unit ? "block" : "none";
  const idx=$("chemical").value;
  const c=idx===""?null:chemicals[Number(idx)];
- const d=Number($("density").value), a=Number($("amount").value), u=$("unit").value;
+ const d=Number($("density").value), a=Number($("amount").value), u=unit;
  let kg=0,L=0;
  updateResultStyle(c);
  if(!c){$("resultName").textContent="—";$("resultWarning").textContent="";$("kg").textContent="—";$("liters").textContent="—";$("m3").textContent="—";$("spec").textContent="—";currentResult={kg:0,L:0,m3:0,loadingCm:null};$("loadingCm").textContent="—";return currentResult}
@@ -350,13 +477,38 @@ function calc(){
  $("loadingCmBox").style.display=(loadingCm!=null&&loadingCm!==0)?"":"none";
  return currentResult;
 }
-function customerNames(){return [...new Set([...customers,...history.map(x=>x.customer)].filter(Boolean))]}
+function customerNames(){return [...new Set(customers.filter(Boolean))]}
+function updateDepartmentSuggestions(){
+ const c=$("customer"), list=$("departmentList"), box=$("departmentSuggest");
+ if(!c||!list||!box)return;
+ const name=(c.value||"").trim();
+ const deps=departmentNames(name);
+ list.innerHTML="";
+ box.innerHTML="";
+ deps.forEach(d=>{
+   const o=document.createElement("option");
+   o.value=d;
+   list.appendChild(o);
+   const div=document.createElement("div");
+   div.textContent=d;
+   div.onclick=()=>{
+     $("department").value=d;
+     box.classList.add("hidden");
+     saveDraft();
+   };
+   box.appendChild(div);
+ });
+ box.classList.toggle("hidden",deps.length===0);
+}
 function updateCustomerSuggest(filter){
  const q=(filter||"").toLowerCase(), list=customerNames().filter(n=>!q||n.toLowerCase().includes(q)).sort((a,b)=>String(a).localeCompare(String(b),"ja",{numeric:true,sensitivity:"base"}));
  const box=$("customerSuggest");box.innerHTML="";
  list.forEach(n=>{const div=document.createElement("div");div.textContent=n;div.onclick=()=>{
    $("customer").value=n;
    box.classList.add("hidden");
+   updateDepartmentSuggestions();
+   $("department").value="";
+   saveDraft();
    ["chemical","density","amount","unit","saveBtn"].forEach(id=>$(id).disabled=false);
    calc();
  };box.appendChild(div)});
@@ -364,7 +516,9 @@ function updateCustomerSuggest(filter){
 }
 function resetDeliveryForm(){
  $("customer").value="";
+ $("department").value="";
  $("customerSuggest").classList.add("hidden");
+ if($("resultCard")) $("resultCard").style.display="none";
  setCalcEnabled(false);
  editingHistoryRecord=null;
  editingHistoryIndex=-1;
@@ -373,28 +527,56 @@ function resetDeliveryForm(){
 
 let pendingHistoryRecord=null;
 let registeredResultDialog=false;
-/* ===== 計算結果ダイアログ ===== */
+/* ===== 入力計算結果ダイアログ ===== */
 function formatOrderUnit(u){return u==="m3"?"m³":(u||"kg")}
 function formatQuantity(value){
  const n=Number(value);
  if(!Number.isFinite(n)) return "";
  return String(Number(n.toFixed(10)));
 }
+function deliveryOrderKey(rec){
+ return [rec.date||"",rec.time||"",rec.customer||"",rec.chemical||"",rec.unit||"",Number(rec.amount)||0].join("|");
+}
 function showCalcResultDialog(rec,fromHistory=false){
  pendingHistoryRecord=fromHistory?rec:null;
  registeredResultDialog=!fromHistory;
+
  const warning=rec.warning?'<div style="color:#ff3b30;font-weight:700">※譲受書必須</div>':"";
- const unit=rec.unit;
- const orderUnit=formatOrderUnit(unit);
- const amountText="<div>注文数量："+formatQuantity(rec.amount)+" "+orderUnit+"</div>";
- const weightText=unit==="kg"?"":"<div>重量："+formatQuantity(rec.kg)+" kg</div>";
- const volumeText=unit==="L"?"":"<div>容量："+formatQuantity(rec.L)+" L</div>";
- const cubicText=unit==="m3"?"":"<div>容積："+formatQuantity(rec.m3)+" m³</div>";
- $("calcResultDialog").innerHTML="<div style='font-size:17px;font-weight:700;color:#1c1c1e;margin-bottom:8px'>客先名："+esc(rec.customer||"")+" </div><div><b>"+esc(rec.chemical)+"</b></div>"+warning+
-   amountText+weightText+volumeText+cubicText+
-   "<div>比重："+Number(rec.density).toFixed(2)+"</div>"+(rec.loadingCm!=null&&Number(rec.loadingCm)!==0?"<div>積込cm："+Number(rec.loadingCm).toFixed(2)+" cm</div>":"");
+ const orderUnit=formatOrderUnit(rec.unit);
+ const orderAmount=rec.amount!=null
+   ? formatQuantity(rec.amount)
+   : formatQuantity(rec.unit==="kg"?rec.kg:rec.unit==="L"?rec.L:rec.m3);
+
+ const histL=formatQuantity(trunc2(rec.L!=null?rec.L:Number(rec.m3||0)*1000));
+ const histM3=formatQuantity(trunc2(rec.m3!=null?rec.m3:Number(rec.L||0)/1000));
+ const histSecondary=rec.unit==="kg"
+   ? "容量："+histL+" L　/　"+histM3+" m³"
+   : rec.unit==="L"
+     ? formatQuantity(trunc2(rec.kg))+" kg　/　"+histM3+" m³"
+     : formatQuantity(trunc2(rec.kg))+" kg　/　"+histL+" L";
+
+ const customerText="<div>取引先："+esc(rec.customer||"")+"</div>";
+ const departmentText=rec.department?"<div>部署名："+esc(rec.department)+"</div>":"";
+ const chemicalText="<div><b>薬品名："+esc(rec.chemical||"")+"</b></div>";
+
+ $("calcResultDialog").innerHTML=
+   customerText+
+   departmentText+
+   chemicalText+
+   warning+
+   "<div>注文数量："+orderAmount+" "+orderUnit+"</div>"+
+   "<div>"+histSecondary+"</div>"+
+   (rec.loadingCm!=null&&Number(rec.loadingCm)!==0
+     ?"<div>積込cm "+Number(rec.loadingCm).toFixed(2)+" cm</div>":"")+
+   "<div>比重："+Number(rec.density).toFixed(2)+"</div>";
+
  $("calcResultLoad").style.display=fromHistory?"block":"none";
  $("calcResultDelete").style.display=fromHistory?"block":"none";
+ $("deliveryRegisterBtn").style.display=fromHistory?"block":"none";
+ const alreadyDelivered=fromHistory && deliveryHistory.some(d=>d.orderKey===deliveryOrderKey(rec));
+ $("deliveryRegisterBtn").disabled=alreadyDelivered;
+ $("deliveryRegisterBtn").style.background=alreadyDelivered?"#8e8e93":"#34c759";
+ $("deliveryRegisterBtn").textContent=alreadyDelivered?"納品登録済み":"納品登録";
  $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
  $("calcResultClose").style.gridColumn=fromHistory?"1":"1 / -1";
  $("calcResultModal").classList.remove("hidden");
@@ -406,8 +588,8 @@ function closeCalcResultDialog(){
 }
 /* ===== 計算登録・修正 ===== */
 function saveDelivery(){
- const customer=$("customer").value.trim(), c=chemicals[Number($("chemical").value)], r=calc();
- if(!customer){alert("先に客先名を入力してください。");$("customer").focus();return}
+ const customer=$("customer").value.trim(), department=$("department").value.trim(), c=chemicals[Number($("chemical").value)], r=calc();
+ if(!customer){alert("先に取引先を入力してください。");$("customer").focus();return}
  if(!c||r.kg<=0){alert("薬品・数量・単位・比重を確認してください。");return}
  const now=new Date();
  if(editingHistoryIndex>=0 && history[editingHistoryIndex]){
@@ -416,6 +598,7 @@ function saveDelivery(){
     ...old,
     date:$("dateDisplay").dataset.iso||old.date||isoToday(),
     customer,
+    department,
     chemical:c.name,
     density:Number($("density").value),
     warning:!!c.warning,
@@ -426,16 +609,177 @@ function saveDelivery(){
    history[editingHistoryIndex]=rec;
    save(KEY_H,history);
    if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
+   if(department){
+     if(!Array.isArray(departments[customer])) departments[customer]=[];
+     if(!departments[customer].includes(department)){departments[customer].push(department);saveDepartments();}
+   }
    showCalcResultDialog(rec);
    clearDraft();resetDeliveryForm();renderHistory();
    return;
  }
- const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
+ const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,department,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
  history.push(rec);save(KEY_H,history);
  if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
+ if(department){
+   if(!Array.isArray(departments[customer])) departments[customer]=[];
+   if(!departments[customer].includes(department)){
+     departments[customer].push(department);
+     saveDepartments();
+   }
+ }
  showCalcResultDialog(rec);clearDraft();resetDeliveryForm();renderHistory();
 }
 
+let deliverySourceOrder=null;
+let deliveryHistory=JSON.parse(localStorage.getItem("yakuhin_delivery_history")||"[]");
+deliveryHistory=deliveryHistory.map(d=>{
+  let department=d.department||"";
+  if(!department){
+    const src=history.find(h=>h && h.customer===d.customer && h.chemical===d.chemical &&
+      (d.orderKey ? deliveryOrderKey(h)===d.orderKey : true));
+    if(src) department=src.department||"";
+  }
+  return {...d,department,orderKey:d.orderKey||deliveryOrderKey(d)};
+});
+
+function isDeliveryWarning(rec){
+  if(rec && rec.warning===true)return true;
+  const c=(chemicals||[]).find(c=>c && c.name===rec.chemical);
+  return !!(c&&c.warning);
+}
+function renderDeliveryHistory(){
+  const box=$("deliveryHistoryList");
+  if(!box)return;
+  const dateInput=$("deliveryHistoryDate");
+  const selected=dateInput ? (dateInput.value||isoToday()) : isoToday();
+  if(dateInput)dateInput.value=selected;
+  const rows=deliveryHistory.filter(x=>(x.date||"")===selected);
+  $("deliveryCount").textContent=rows.length;
+  $("deliveryTotalKg").textContent=rows.reduce((s,x)=>s+Number(x.deliveryKg||0),0).toFixed(2);
+  box.innerHTML="";
+  if(!rows.length){
+    box.innerHTML="<div class='card' style='text-align:center;color:#777'>この日の配達記録はありません。</div>";
+    return;
+  }
+  rows.forEach(x=>{
+    const i=deliveryHistory.indexOf(x);
+    const div=document.createElement("div");
+    div.className="card";
+    div.style.cursor="pointer";
+    div.style.marginLeft="0";
+    div.style.marginRight="0";
+    div.style.paddingLeft="3px";
+    const weightDifference=Number(x.deliveryKg)-Number(x.orderKg);
+    const weightDifferenceText=Number.isFinite(weightDifference)
+      ? (weightDifference>0 ? "+"+formatQuantity(weightDifference) : formatQuantity(weightDifference))
+      : "—";
+
+    const orderUnit=x.orderUnit||"kg";
+    const orderAmount=Number(x.orderAmount);
+    const density=Number(x.density);
+    let orderL=NaN;
+    if(Number.isFinite(orderAmount)){
+      if(orderUnit==="L") orderL=orderAmount;
+      else if(orderUnit==="m3" || orderUnit==="m³") orderL=orderAmount*1000;
+      else if(orderUnit==="kg" && density>0) orderL=orderAmount/density;
+    }
+    let deliveryL=Number(x.deliveryL);
+    if(!Number.isFinite(deliveryL)){
+      const deliveryKg=Number(x.deliveryKg);
+      if(Number.isFinite(deliveryKg)&&density>0) deliveryL=deliveryKg/density;
+    }
+    const capacityDifference=Number.isFinite(orderL)&&Number.isFinite(deliveryL)
+      ? deliveryL-orderL : NaN;
+    const capacityDifferenceText=Number.isFinite(capacityDifference)
+      ? (capacityDifference>0 ? "+"+formatQuantity(capacityDifference) : formatQuantity(capacityDifference))
+      : "—";
+
+    div.innerHTML=
+      "<div style='font-size:16px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
+      (x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
+      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:16px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
+      "<div style='color:#000;font-size:16px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>注文重量："+formatQuantity(x.orderKg)+" kg</div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>納品重量："+formatQuantity(x.deliveryKg)+" kg <span style='font-size:14px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:700'>納品容量："+formatQuantity(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+capacityDifferenceText+" L</span></div>";
+    div.addEventListener("click",()=>openDeliveryEdit(i));
+    box.appendChild(div);
+  });
+}
+
+let deliveryEditIndex=-1;
+function getDeliveryEditOrderL(x){
+  const unit=x.orderUnit||"kg";
+  const amount=Number(x.orderAmount);
+  const density=Number(x.density);
+  if(Number.isFinite(amount)){
+    if(unit==="L")return amount;
+    if(unit==="m3"||unit==="m³")return amount*1000;
+    if(unit==="kg"&&density>0)return amount/density;
+  }
+  const fallback=Number(x.orderL);
+  return Number.isFinite(fallback)?fallback:NaN;
+}
+function updateDeliveryEditDifferences(){
+  if(deliveryEditIndex<0)return;
+  const x=deliveryHistory[deliveryEditIndex];
+  if(!x)return;
+  const orderKg=Number(x.orderKg);
+  const deliveryKg=Number($("deliveryEditKg").value);
+  const orderL=getDeliveryEditOrderL(x);
+  const deliveryL=Number($("deliveryEditL").value);
+  const weightDiff=Number.isFinite(orderKg)&&Number.isFinite(deliveryKg)?deliveryKg-orderKg:NaN;
+  const capacityDiff=Number.isFinite(orderL)&&Number.isFinite(deliveryL)?deliveryL-orderL:NaN;
+  const signed=(v)=>Number.isFinite(v)?(v>0?"+"+formatQuantity(v):formatQuantity(v)):"—";
+  $("deliveryEditWeightDiff").textContent="重量差："+signed(weightDiff)+" kg";
+  $("deliveryEditCapacityDiff").textContent="容量差："+signed(capacityDiff)+" L";
+}
+function openDeliveryEdit(i){
+  const x=deliveryHistory[i];
+  if(!x)return;
+  deliveryEditIndex=i;
+  $("deliveryEditInfo").innerHTML=
+    "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px'>薬品名："+esc(x.chemical||"")+"</span>"+
+    "<br>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+
+    "<br>注文重量："+formatQuantity(x.orderKg)+" kg";
+  $("deliveryEditKg").value=x.deliveryKg??"";
+  const editChem=(chemicals||[]).find(c=>c && c.name===x.chemical);
+  const editDensity=Number(x.density)>0?Number(x.density):(editChem&&Number(editChem.density)>0?Number(editChem.density):0);
+  $("deliveryEditL").value=(Number(x.deliveryKg)>0&&editDensity>0)?(Number(x.deliveryKg)/editDensity).toFixed(1):"";
+  updateDeliveryEditDifferences();
+  $("deliveryEditModal").classList.remove("hidden");
+  $("deliveryEditModal").setAttribute("aria-hidden","false");
+}
+function closeDeliveryEdit(){
+  deliveryEditIndex=-1;
+  $("deliveryEditModal").classList.add("hidden");
+  $("deliveryEditModal").setAttribute("aria-hidden","true");
+}
+function openDeliveryRegistration(x){
+  deliverySourceOrder=x;
+  $("deliveryCustomer").textContent=x.customer||"—";
+  $("deliveryChemical").textContent=x.chemical||"—";
+  const warningNameStyle=x.warning ? "color:#ff3b30;font-weight:700" : "font-weight:700";
+  $("deliveryCustomer").style.cssText=warningNameStyle;
+  $("deliveryChemical").style.cssText=warningNameStyle;
+  const warningNotice=$("deliveryWarningNotice");
+  if(warningNotice){
+    warningNotice.textContent=x.warning?"※譲受書必須※":"";
+    warningNotice.style.cssText=x.warning?"color:#ff3b30;font-weight:700;margin-top:6px":"display:none";
+  }
+  $("deliveryOrderKg").textContent=formatQuantity(x.kg)+" kg";
+  $("deliveryOrderL").textContent=formatQuantity(x.L)+" L";
+  $("deliveryDate").value=x.date||isoToday();
+  $("deliveryKg").value="";
+  $("deliveryL").value="";
+  show("delivery");
+  $("deliveryKg").focus();
+}
+function calcDeliveryAmount(){
+  if(!deliverySourceOrder)return;
+  const kg=Number($("deliveryKg").value), d=Number(deliverySourceOrder.density);
+  $("deliveryL").value=(Number.isFinite(kg)&&kg>0&&d>0)?(kg/d).toFixed(1):"";
+}
 let selectedHistoryRecord=null;
 let editingHistoryRecord=null;
 let editingHistoryIndex=-1;
@@ -467,6 +811,8 @@ function loadHistoryRecord(x){
  $("dateDisplay").dataset.iso=x.date||isoToday();
  $("dateDisplay").value=displayDate($("dateDisplay").dataset.iso);
  $("customer").value=x.customer||"";
+ 
+ $("department").value=x.department||"";
  setCalcEnabled(true);
  const idx=chemicals.findIndex(c=>c.name===x.chemical);
  $("chemical").value=idx>=0?String(idx):"";
@@ -478,6 +824,9 @@ function loadHistoryRecord(x){
  calc();
  show("calc");
 }
+
+
+
 /* ===== 履歴表示 ===== */
 function renderHistory(){
  const selected=($("historyDate").value)||isoToday();
@@ -500,11 +849,13 @@ function renderHistory(){
      : orderUnit==="L"
        ? formatQuantity(trunc2(x.kg))+" kg　/　"+histM3+" m³"
        : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
-   div.innerHTML="<b>"+(x.time?esc(x.time)+"　":"")+esc(x.customer)+"</b>"
-    +"<div style='color:#666;font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>"+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
+   div.innerHTML=(x.time?"<div style='font-size:14px;font-weight:400'>"+esc(x.time)+"</div>":"")
+    +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
+    +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
+    +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
     +"<div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
-    +"<div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>"+histSecondary+"</div>"
-    +(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='color:#555;font-size:13px;margin-top:3px;font-weight:700'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"")
+    +"<div style='font-size:13px;margin-top:3px'>"+histSecondary+"</div>"
+    +(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='font-size:13px;margin-top:3px'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"")
     +"<div style='color:#777;font-size:12px;margin-top:3px'>比重 "+Number(x.density).toFixed(2)+"</div>";
    box.appendChild(div);
  });
@@ -549,84 +900,173 @@ $("modalDeleteChem").onclick=()=>{
  if(confirm(chemicals[i].name+"を削除しますか？")){chemicals.splice(i,1);save(KEY_C,chemicals);renderChemicals();closeChemModal()}
 };
 /* ===== 客先登録 ===== */
+let editingCustomerIndex=-1;
 function renderCustomers(){
  $("customerList").innerHTML="";
- customers.map((n,i)=>({n,i})).sort((a,b)=>String(a.n).localeCompare(String(b.n),"ja",{numeric:true,sensitivity:"base"})).forEach(({n,i})=>{const div=document.createElement("div");div.className="item";div.textContent=n;div.onclick=()=>showCustomerDetail(i);$("customerList").appendChild(div)});
+ customers.map((n,i)=>({n,i})).sort((a,b)=>String(a.n).localeCompare(String(b.n),"ja",{numeric:true,sensitivity:"base"})).forEach(({n,i})=>{
+ const div=document.createElement("div");div.className="item";
+ const dept=departmentNames(n);
+ div.innerHTML="<div>"+esc(n)+"</div>"+(dept.length?"<div style='margin-top:5px;color:#666;font-size:13px'>部署："+dept.map(esc).join(" / ")+"</div>":"");
+ div.onclick=()=>openCustomerModal(i);
+ $("customerList").appendChild(div);
+});
  if(!customers.length)$("customerList").innerHTML="<div style='color:#777;text-align:center;padding:10px'>登録済み客先はありません。</div>";
- $("customerDetail").innerHTML="<div style='color:#777;text-align:center;padding:10px'>客先名を選択してください。</div>";
+ $("customerDetail").innerHTML="";
 }
-function showCustomerDetail(i){const n=customers[i];selectedCustomer=i;$("customerDetail").innerHTML='<div class="detail"><b>'+esc(n)+'</b><div class="actions"><button id="editCustomerBtn">編集</button><button id="delCustomerBtn" class="red">削除</button></div></div>';$("editCustomerBtn").onclick=()=>editCustomer(i);$("delCustomerBtn").onclick=()=>deleteCustomer(i)}
-function editCustomer(i){
- const oldName=customers[i];
- const newName=prompt("客先名を編集",oldName);
- if(newName===null)return;
- const n=newName.trim();
- if(!n)return alert("客先名を入力してください。");
- if(n!==oldName && customers.includes(n))return alert("同じ客先名が既に登録されています。");
- customers[i]=n;
+function openCustomerModal(i){
+ const n=customers[i];if(n===undefined)return;
+ editingCustomerIndex=i;
+ $("modalCustomerName").value=n;
+ $("modalCustomerDepartment").value=departmentNames(n).join("\n");
+ $("customerModal").classList.remove("hidden");
+ $("customerModal").setAttribute("aria-hidden","false");
+ $("modalCustomerName").focus();
+}
+function closeCustomerModal(){
+ $("customerModal").classList.add("hidden");
+ $("customerModal").setAttribute("aria-hidden","true");
+ editingCustomerIndex=-1;
+}
+$("modalCancelCustomer").onclick=closeCustomerModal;
+$("modalSaveCustomer").onclick=()=>{
+ const i=editingCustomerIndex;if(i<0)return;
+ const oldName=customers[i],n=$("modalCustomerName").value.trim();
+ if(!n){alert("取引先を入力してください。");return}
+ if(n!==oldName&&customers.includes(n)){alert("同じ取引先が既に登録されています。");return}
+ const deptText=$("modalCustomerDepartment").value||"";
+ const newDepartments=[...new Set(deptText.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))];
+ customers[i]=n;save(KEY_K,customers);
+ if(oldName!==n && Object.prototype.hasOwnProperty.call(departments,oldName)) delete departments[oldName];
+ departments[n]=newDepartments;saveDepartments();
+ history.forEach(x=>{if(x.customer===oldName)x.customer=n});save(KEY_H,history);
+ try{
+   const draft=JSON.parse(localStorage.getItem(KEY_D)||"null");
+   if(draft && draft.customer===oldName){
+     draft.customer=n;
+     localStorage.setItem(KEY_D,JSON.stringify(draft));
+   }
+ }catch(e){}
+ closeCustomerModal();renderCustomers();updateCustomerSuggest($("customer").value);
+};
+$("modalDeleteCustomer").onclick=()=>{
+ const i=editingCustomerIndex;if(i<0)return;
+ if(confirm(customers[i]+"を削除しますか？")){
+  const deletedName=customers[i];
+  customers.splice(i,1);save(KEY_K,customers);
+  delete departments[deletedName];saveDepartments();
+  closeCustomerModal();renderCustomers();updateCustomerSuggest($("customer").value);
+ }
+};
+function departmentNames(customer){
+ const list=departments[customer];
+ return Array.isArray(list)?list.filter(Boolean):[];
+}
+function saveDepartments(){
+ localStorage.setItem(KEY_P,JSON.stringify(departments));
+}
+function addCustomer(){
+ const n=$("newCustomerName").value.trim();
+ const dept=$("newDepartmentName").value.trim();
+ if(!n)return alert("取引先を入力してください。");
+ if(!Array.isArray(departments[n]))departments[n]=[];
+ if(dept){
+   if(departmentNames(n).includes(dept)){alert("同じ部署名が既に登録されています。");return;}
+   departments[n].push(dept);
+   saveDepartments();
+ }
+ if(!customers.includes(n))customers.push(n);
  save(KEY_K,customers);
- // 客先名を変更した場合、過去の履歴に残っている客先名も同じ名前に統一
- history.forEach(x=>{if(x.customer===oldName)x.customer=n});
- save(KEY_H,history);
+ $("newCustomerName").value="";
+ $("newDepartmentName").value="";
  renderCustomers();
- updateCustomerSuggest($("customer").value);
-
+ updateCustomerSuggest("");
+ alert(dept?"客先と部署を登録しました。":"客先を登録しました。");
 }
-function deleteCustomer(i){if(confirm(customers[i]+"を削除しますか？")){customers.splice(i,1);save(KEY_K,customers);renderCustomers();updateCustomerSuggest($("customer").value)}}
-function addCustomer(){const n=$("newCustomerName").value.trim();if(!n)return alert("客先名を入力してください。");if(!customers.includes(n))customers.push(n);save(KEY_K,customers);$("newCustomerName").value="";renderCustomers();updateCustomerSuggest("");alert("客先を登録しました。")}
 function addChem(){const n=$("newChemName").value.trim(),o=$("newChemOrder").value.trim(),d=Number($("newChemDensity").value),ct=$("newChemCmTsum").value.trim();if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");if(ct!==""&&!isFinite(Number(ct)))return alert("cm/t積の数値を確認してください。");chemicals.push({name:n,sortOrder:o===""?null:Number(o),density:d,warning:$("newChemWarning").checked,cmTsum:ct===""?null:Number(ct)});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemOrder").value="";$("newChemCmTsum").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
 /* ===== 画面切り替え ===== */
 function show(page){
- ["calc","history","chem","customer"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==page));
- $("title").textContent=page==="calc"?"薬品配達・容量計算":page==="history"?"配達履歴":page==="chem"?"薬品登録":"客先登録";
- if(page==="history")renderHistory();
- if(page==="chem")renderChemList();
- if(page==="customer")renderCustomers();
- window.scrollTo(0,0);
- document.documentElement.scrollTop=0;
- document.body.scrollTop=0;
+  const pages=["calc","history","delivery","deliveryHistory","chem","customer"];
+  pages.forEach(p=>{
+    const el=$(p+"Page");
+    if(el) el.classList.toggle("hidden", p!==page);
+  });
+
+  const titles={
+    calc:"薬品配達・容量計算",
+    history:"注文履歴",
+    delivery:"納品登録",
+    deliveryHistory:"納品履歴",
+    chem:"薬品登録",
+    customer:"客先登録"
+  };
+  if($("title")) $("title").textContent=titles[page]||"薬品配達・容量計算";
+
+  if(page==="history" && typeof renderHistory==="function") renderHistory();
+  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") renderDeliveryHistory();
+  if(page==="chem" && typeof renderChemList==="function") renderChemList();
+  if(page==="customer" && typeof renderCustomers==="function") renderCustomers();
+
+  window.scrollTo(0,0);
 }
+window.show=show;
+
+function openSettings(){
+ $("settingsModal").classList.remove("hidden");
+ $("settingsModal").setAttribute("aria-hidden","false");
+}
+function closeSettings(){
+ $("settingsModal").classList.add("hidden");
+ $("settingsModal").setAttribute("aria-hidden","true");
+}
+$("navSettings").onclick=openSettings;
+$("settingsChemBtn").onclick=()=>{closeSettings();show("chem");};
+$("settingsCustomerBtn").onclick=()=>{closeSettings();show("customer");};
+$("settingsCancelBtn").onclick=closeSettings;
+$("settingsModal").addEventListener("click",e=>{if(e.target===$("settingsModal"))closeSettings()});
+
 function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
 
 $("chemical").onchange=loadChem;
-$("customer").addEventListener("input",()=>{
- const enabled=$("customer").value.trim().length>0;
- ["chemical","density","amount","unit","saveBtn"].forEach(id=>$(id).disabled=!enabled);
- if(enabled){
-   updateCustomerSuggest($("customer").value);
- }else{
-   $("chemical").value="";
-   $("density").value="";
-   $("amount").value="";
-   $("unit").value="";
-   calc();
- }
-});
-
 $("density").oninput=calc;
 $("amount").oninput=calc;
 $("unit").onchange=calc;
 
 $("saveBtn").onclick=saveDelivery;
+$("inputCancelBtn").onclick=()=>{resetDeliveryForm();show("calc");};
 $("customer").onfocus=()=>updateCustomerSuggest($("customer").value);
-$("customer").oninput=()=>updateCustomerSuggest($("customer").value);
-document.addEventListener("click",e=>{if(!e.target.closest("#customer")&&!e.target.closest("#customerSuggest"))$("customerSuggest").classList.add("hidden")});
+$("customer").oninput=()=>{updateCustomerSuggest($("customer").value);};
+$("department").onfocus=updateDepartmentSuggestions;
+$("department").oninput=()=>{
+ const name=$("customer").value.trim();
+ const q=$("department").value.trim().toLowerCase();
+ const box=$("departmentSuggest");
+ if(!box)return;
+ const deps=departmentNames(name).filter(d=>!q||String(d).toLowerCase().includes(q));
+ box.innerHTML="";
+ deps.forEach(d=>{
+   const div=document.createElement("div");
+   div.textContent=d;
+   div.onclick=()=>{
+     $("department").value=d;
+     box.classList.add("hidden");
+     saveDraft();
+   };
+   box.appendChild(div);
+ });
+ box.classList.toggle("hidden",deps.length===0);
+ saveDraft();
+};
+document.addEventListener("click",e=>{
+ if(!e.target.closest("#customer")&&!e.target.closest("#customerSuggest"))$("customerSuggest").classList.add("hidden");
+ if(!e.target.closest("#department")&&!e.target.closest("#departmentSuggest"))$("departmentSuggest").classList.add("hidden");
+});
 $("addChemBtn").onclick=addChem;
 $("addCustomerBtn").onclick=addCustomer;
 $("chemModal").addEventListener("click",e=>{if(e.target===$("chemModal"))closeChemModal()});
-$("backupBtn").onclick=()=>{
- const backup={version:1,savedAt:new Date().toISOString(),
-  chemicals:JSON.parse(localStorage.getItem(KEY_C)||"[]"),
-  customers:JSON.parse(localStorage.getItem(KEY_K)||"[]"),
-  history:JSON.parse(localStorage.getItem(KEY_H)||"[]")};
- const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);
- const d=new Date(),name="薬品配達バックアップ_"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+".json";
- a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-};
-$("navCalc").onclick=()=>show("calc");$("navHistory").onclick=()=>show("history");$("navChem").onclick=()=>show("chem");$("navCustomer").onclick=()=>show("customer");
 
-renderChemicals();renderCustomers();setCalcEnabled(false);calc();$("customer").addEventListener("input",saveDraft);
+
+
+renderChemicals();renderCustomers();setCalcEnabled(false);$("resultCard").style.display="none";calc();$("customer").addEventListener("input",saveDraft);
 $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
@@ -658,8 +1098,117 @@ $("historyLoadBtn").onclick=()=>{if(selectedHistoryRecord){const x=selectedHisto
 $("historyDeleteBtn").onclick=()=>{if(selectedHistoryRecord)deleteHistoryRecord(selectedHistoryRecord)};
 $("historyCancelBtn").onclick=closeHistoryModal;
 $("historyModal").addEventListener("click",e=>{if(e.target===$("historyModal"))closeHistoryModal()});
-$("clearBtn").onclick=()=>{clearDraft();resetDeliveryForm();};
+
+
+
+
+
+
+
+$("deliveryRegisterBtn").onclick=function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  if(!pendingHistoryRecord)return;
+  const x=pendingHistoryRecord;
+  closeCalcResultDialog();
+  openDeliveryRegistration(x);
+};
+$("deliveryKg").oninput=calcDeliveryAmount;
+$("deliveryHistoryDate").addEventListener("change",renderDeliveryHistory);
+$("deliveryEditKg").addEventListener("input",function(){
+  if(deliveryEditIndex<0)return;
+  const x=deliveryHistory[deliveryEditIndex];
+  const kg=Number(this.value);
+  const chem=(chemicals||[]).find(c=>c&&c.name===x.chemical);
+  const d=Number(x.density)>0?Number(x.density):(chem&&Number(chem.density)>0?Number(chem.density):0);
+  $("deliveryEditL").value=(Number.isFinite(kg)&&kg>0&&d>0)?(kg/d).toFixed(1):"";
+  updateDeliveryEditDifferences();
+});
+$("deliveryEditSaveBtn").onclick=function(){
+  if(deliveryEditIndex<0)return;
+  const x=deliveryHistory[deliveryEditIndex];
+  const kg=Number($("deliveryEditKg").value),d=Number(x.density);
+  if(!Number.isFinite(kg)||kg<=0){alert("実納品重量を入力してください。");return;}
+  x.deliveryKg=trunc2(kg);
+  x.deliveryL=trunc2(kg/d);
+  deliveryHistory[deliveryEditIndex]=x;
+  localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
+  closeDeliveryEdit();
+  renderDeliveryHistory();
+};
+$("deliveryEditDeleteBtn").onclick=function(){
+  if(deliveryEditIndex<0)return;
+  const x=deliveryHistory[deliveryEditIndex];
+  if(!confirm("この納品データを削除しますか？"))return;
+  deliveryHistory.splice(deliveryEditIndex,1);
+  localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
+  closeDeliveryEdit();
+  renderDeliveryHistory();
+};
+$("deliveryEditCancelBtn").onclick=closeDeliveryEdit;
+$("deliveryEditModal").addEventListener("click",function(e){
+  if(e.target===$("deliveryEditModal"))closeDeliveryEdit();
+});
+
+$("deliverySaveBtn").onclick=function(){
+  if(!deliverySourceOrder)return;
+  const kg=Number($("deliveryKg").value);
+  const d=Number(deliverySourceOrder.density);
+  if(!Number.isFinite(kg)||kg<=0){
+    alert("実納品重量を入力してください。");
+    $("deliveryKg").focus();
+    return;
+  }
+  const deliveryDate=$("deliveryDate").value;
+  if(!validISO(deliveryDate)){
+    alert("納品日を指定してください。");
+    $("deliveryDate").focus();
+    return;
+  }
+  const orderKey=deliveryOrderKey(deliverySourceOrder);
+  if(deliveryHistory.some(d=>d.orderKey===orderKey)){
+    alert("この注文はすでに納品登録されています。");
+    deliverySourceOrder=null;
+    show("history");
+    return;
+  }
+  const rec={
+    date:deliveryDate,
+    time:new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"}),
+    customer:deliverySourceOrder.customer||"",
+    department:deliverySourceOrder.department||"",
+    chemical:deliverySourceOrder.chemical||"",
+    warning:!!deliverySourceOrder.warning,
+    orderAmount:deliverySourceOrder.amount,
+    orderUnit:formatOrderUnit(deliverySourceOrder.unit),
+    orderKg:trunc2(Number(deliverySourceOrder.kg)),
+    orderL:trunc2(Number(deliverySourceOrder.L)),
+    orderKey:orderKey,
+    deliveryKg:trunc2(kg),
+    deliveryL:trunc2(kg/d)
+  };
+  deliveryHistory.unshift(rec);
+  localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
+  deliverySourceOrder=null;
+  if($("deliveryHistoryDate")) $("deliveryHistoryDate").value=deliveryDate;
+  show("deliveryHistory");
+  renderDeliveryHistory();
+};
+
+$("deliveryCancelBtn").onclick=()=>{deliverySourceOrder=null;show("history");};
+
+$("deliveryKg").oninput=calcDeliveryAmount;
+
+
 })();
+document.addEventListener("DOMContentLoaded",function(){
+  document.getElementById("navCalc").onclick=function(){window.show("calc");};
+  document.getElementById("navHistory").onclick=function(){window.show("history");};
+  document.getElementById("navDeliveryHistory").onclick=function(){window.show("deliveryHistory");};
+  window.show("calc");
+});
+
+
 </script>
 </body>
 </html>
