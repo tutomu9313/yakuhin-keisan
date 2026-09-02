@@ -123,7 +123,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 
 <section id="calcPage">
 <div class="card">
-<div><label>日付</label><input id="dateDisplay" readonly></div>
+<div><label>日付</label><input id="dateDisplay" type="date"></div>
 </div>
 
 <div class="card">
@@ -383,8 +383,9 @@ function restoreDraft(){
  try{
   const d=JSON.parse(localStorage.getItem(KEY_D)||"null");
   if(!d)return;
-  $("dateDisplay").dataset.iso=d.date||isoToday();
-  $("dateDisplay").value=displayDate($("dateDisplay").dataset.iso);
+  // 起動時は保存済み下書きの日付を使わず、必ず今日の日付にする
+  $("dateDisplay").dataset.iso=isoToday();
+  $("dateDisplay").value=$("dateDisplay").dataset.iso;
   $("customer").value=d.customer||"";
   $("department").value=d.department||"";
   if(d.customer)setCalcEnabled(true);
@@ -398,8 +399,8 @@ function restoreDraft(){
 function clearDraft(){try{localStorage.removeItem(KEY_D)}catch(e){}}
 
 
-$("chemModal").classList.add("hidden");$("chemModal").setAttribute("aria-hidden","true");$("dateDisplay").value=displayDate(isoToday());$("historyDate").value=isoToday();
-$("dateDisplay").dataset.iso=isoToday();
+$("chemModal").classList.add("hidden");$("chemModal").setAttribute("aria-hidden","true");$("dateDisplay").value=isoToday();$("dateDisplay").dataset.iso=isoToday();$("historyDate").value=isoToday();
+$("dateDisplay").addEventListener("change",()=>{ if(validISO($("dateDisplay").value)){ $("dateDisplay").dataset.iso=$("dateDisplay").value; saveDraft(); } });
 
 
 function jpSort(list){return [...list].sort((a,b)=>String(a).localeCompare(String(b),"ja",{numeric:true,sensitivity:"base"}))}
@@ -617,7 +618,8 @@ function saveDelivery(){
    clearDraft();resetDeliveryForm();renderHistory();
    return;
  }
- const rec={date:$("dateDisplay").dataset.iso||isoToday(),time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,department,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
+ const selectedDate=$("dateDisplay").value||$("dateDisplay").dataset.iso||isoToday();
+ const rec={date:selectedDate,time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,department,chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
  history.push(rec);save(KEY_H,history);
  if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
  if(department){
@@ -627,7 +629,9 @@ function saveDelivery(){
      saveDepartments();
    }
  }
- showCalcResultDialog(rec);clearDraft();resetDeliveryForm();renderHistory();
+ showCalcResultDialog(rec);clearDraft();resetDeliveryForm();
+ if($("historyDate"))$("historyDate").value=rec.date;
+ renderHistory();
 }
 
 let deliverySourceOrder=null;
@@ -676,12 +680,17 @@ function renderDeliveryHistory(){
 
     const orderUnit=x.orderUnit||"kg";
     const orderAmount=Number(x.orderAmount);
-    const density=Number(x.density);
+    const chemForDensity=(chemicals||[]).find(c=>c && c.name===x.chemical);
+    const density=Number(x.density)>0?Number(x.density):(chemForDensity&&Number(chemForDensity.density)>0?Number(chemForDensity.density):0);
     let orderL=NaN;
     if(Number.isFinite(orderAmount)){
       if(orderUnit==="L") orderL=orderAmount;
       else if(orderUnit==="m3" || orderUnit==="m³") orderL=orderAmount*1000;
       else if(orderUnit==="kg" && density>0) orderL=orderAmount/density;
+    }
+    if(!Number.isFinite(orderL)){
+      const fallbackOrderL=Number(x.orderL);
+      if(Number.isFinite(fallbackOrderL)) orderL=fallbackOrderL;
     }
     let deliveryL=Number(x.deliveryL);
     if(!Number.isFinite(deliveryL)){
@@ -809,7 +818,7 @@ function loadHistoryRecord(x){
  editingHistoryIndex=history.indexOf(x);
  if(editingHistoryIndex<0 && x.created!=null) editingHistoryIndex=history.findIndex(r=>r.created===x.created);
  $("dateDisplay").dataset.iso=x.date||isoToday();
- $("dateDisplay").value=displayDate($("dateDisplay").dataset.iso);
+ $("dateDisplay").value=$("dateDisplay").dataset.iso;
  $("customer").value=x.customer||"";
  
  $("department").value=x.department||"";
@@ -838,6 +847,7 @@ function renderHistory(){
  if(!rows.length){box.innerHTML="<div style='color:#777;text-align:center;padding:18px'>この日の配達履歴はありません。</div>";return}
  rows.forEach(x=>{
    const div=document.createElement("div");div.className="item";div.onclick=()=>showCalcResultDialog(x,true);
+   const isDelivered=deliveryHistory.some(d=>d && d.orderKey===deliveryOrderKey(x));
    const chemStyle=x.warning?"color:#ff3b30;font-weight:bold":"font-weight:bold";
    const chemStyleWithSize=chemStyle+";font-size:16px;font-weight:700";
    const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
@@ -849,7 +859,7 @@ function renderHistory(){
      : orderUnit==="L"
        ? formatQuantity(trunc2(x.kg))+" kg　/　"+histM3+" m³"
        : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
-   div.innerHTML=(x.time?"<div style='font-size:14px;font-weight:400'>"+esc(x.time)+"</div>":"")
+   div.innerHTML=(x.time?"<div style='font-size:14px;font-weight:400'>"+esc(x.time)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
     +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
     +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
     +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
@@ -1034,7 +1044,12 @@ $("unit").onchange=calc;
 $("saveBtn").onclick=saveDelivery;
 $("inputCancelBtn").onclick=()=>{resetDeliveryForm();show("calc");};
 $("customer").onfocus=()=>updateCustomerSuggest($("customer").value);
-$("customer").oninput=()=>{updateCustomerSuggest($("customer").value);};
+$("customer").oninput=()=>{
+ const name=$("customer").value.trim();
+ updateCustomerSuggest($("customer").value);
+ setCalcEnabled(!!name);
+ if(name) updateDepartmentSuggestions();
+};
 $("department").onfocus=updateDepartmentSuggestions;
 $("department").oninput=()=>{
  const name=$("customer").value.trim();
@@ -1071,7 +1086,7 @@ $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
-restoreDraft();autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{
+restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{
  const goHistory=registeredResultDialog;
  closeCalcResultDialog();
  pendingHistoryRecord=null;
@@ -1127,8 +1142,12 @@ $("deliveryEditKg").addEventListener("input",function(){
 $("deliveryEditSaveBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
   const x=deliveryHistory[deliveryEditIndex];
-  const kg=Number($("deliveryEditKg").value),d=Number(x.density);
+  const kg=Number($("deliveryEditKg").value);
+  const chem=(chemicals||[]).find(c=>c&&c.name===x.chemical);
+  const d=Number(x.density)>0?Number(x.density):(chem&&Number(chem.density)>0?Number(chem.density):0);
   if(!Number.isFinite(kg)||kg<=0){alert("実納品重量を入力してください。");return;}
+  if(!(d>0)){alert("比重を確認してください。");return;}
+  x.density=d;
   x.deliveryKg=trunc2(kg);
   x.deliveryL=trunc2(kg/d);
   deliveryHistory[deliveryEditIndex]=x;
@@ -1183,6 +1202,7 @@ $("deliverySaveBtn").onclick=function(){
     orderUnit:formatOrderUnit(deliverySourceOrder.unit),
     orderKg:trunc2(Number(deliverySourceOrder.kg)),
     orderL:trunc2(Number(deliverySourceOrder.L)),
+    density:Number(deliverySourceOrder.density),
     orderKey:orderKey,
     deliveryKg:trunc2(kg),
     deliveryL:trunc2(kg/d)
