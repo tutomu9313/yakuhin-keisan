@@ -701,7 +701,10 @@ function renderDeliveryHistory(){
     const capacityDifference=Number.isFinite(orderL)&&Number.isFinite(deliveryL)
       ? deliveryL-orderL : NaN;
     const capacityDifferenceText=Number.isFinite(capacityDifference)
-      ? (capacityDifference>0 ? "+"+formatQuantity(capacityDifference) : formatQuantity(capacityDifference))
+      ? (Math.trunc(capacityDifference*100)/100).toFixed(2)
+      : "—";
+    const signedCapacityDifferenceText=Number.isFinite(capacityDifference)
+      ? ((Math.trunc(capacityDifference*100)/100)>0 ? "+"+(Math.trunc(capacityDifference*100)/100).toFixed(2) : (Math.trunc(capacityDifference*100)/100).toFixed(2))
       : "—";
 
     div.innerHTML=
@@ -711,7 +714,7 @@ function renderDeliveryHistory(){
       "<div style='color:#000;font-size:16px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
       "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>注文重量："+formatQuantity(x.orderKg)+" kg</div>"+
       "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>納品重量："+formatQuantity(x.deliveryKg)+" kg <span style='font-size:14px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
-      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:700'>納品容量："+formatQuantity(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+capacityDifferenceText+" L</span></div>";
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:700'>納品容量："+formatQuantity(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>";
     div.addEventListener("click",()=>openDeliveryEdit(i));
     box.appendChild(div);
   });
@@ -721,7 +724,8 @@ let deliveryEditIndex=-1;
 function getDeliveryEditOrderL(x){
   const unit=x.orderUnit||"kg";
   const amount=Number(x.orderAmount);
-  const density=Number(x.density);
+  const chem=(chemicals||[]).find(c=>c&&c.name===x.chemical);
+  const density=Number(x.density)>0?Number(x.density):(chem&&Number(chem.density)>0?Number(chem.density):0);
   if(Number.isFinite(amount)){
     if(unit==="L")return amount;
     if(unit==="m3"||unit==="m³")return amount*1000;
@@ -741,8 +745,13 @@ function updateDeliveryEditDifferences(){
   const weightDiff=Number.isFinite(orderKg)&&Number.isFinite(deliveryKg)?deliveryKg-orderKg:NaN;
   const capacityDiff=Number.isFinite(orderL)&&Number.isFinite(deliveryL)?deliveryL-orderL:NaN;
   const signed=(v)=>Number.isFinite(v)?(v>0?"+"+formatQuantity(v):formatQuantity(v)):"—";
+  const signedCapacity=(v)=>{
+    if(!Number.isFinite(v))return "—";
+    const t=Math.trunc(v*100)/100;
+    return t>0?"+"+t.toFixed(2):t.toFixed(2);
+  };
   $("deliveryEditWeightDiff").textContent="重量差："+signed(weightDiff)+" kg";
-  $("deliveryEditCapacityDiff").textContent="容量差："+signed(capacityDiff)+" L";
+  $("deliveryEditCapacityDiff").textContent="容量差："+signedCapacity(capacityDiff)+" L";
 }
 function openDeliveryEdit(i){
   const x=deliveryHistory[i];
@@ -755,7 +764,10 @@ function openDeliveryEdit(i){
   $("deliveryEditKg").value=x.deliveryKg??"";
   const editChem=(chemicals||[]).find(c=>c && c.name===x.chemical);
   const editDensity=Number(x.density)>0?Number(x.density):(editChem&&Number(editChem.density)>0?Number(editChem.density):0);
-  $("deliveryEditL").value=(Number(x.deliveryKg)>0&&editDensity>0)?(Number(x.deliveryKg)/editDensity).toFixed(1):"";
+  const savedDeliveryL=Number(x.deliveryL);
+  $("deliveryEditL").value=Number.isFinite(savedDeliveryL)
+    ? String(Math.trunc(savedDeliveryL*100)/100)
+    : ((Number(x.deliveryKg)>0&&editDensity>0)?String(Math.trunc((Number(x.deliveryKg)/editDensity)*100)/100):"");
   updateDeliveryEditDifferences();
   $("deliveryEditModal").classList.remove("hidden");
   $("deliveryEditModal").setAttribute("aria-hidden","false");
@@ -1137,7 +1149,7 @@ $("deliveryEditKg").addEventListener("input",function(){
   const kg=Number(this.value);
   const chem=(chemicals||[]).find(c=>c&&c.name===x.chemical);
   const d=Number(x.density)>0?Number(x.density):(chem&&Number(chem.density)>0?Number(chem.density):0);
-  $("deliveryEditL").value=(Number.isFinite(kg)&&kg>0&&d>0)?(kg/d).toFixed(1):"";
+  $("deliveryEditL").value=(Number.isFinite(kg)&&kg>0&&d>0)?String(Math.trunc((kg/d)*100)/100):"";
   updateDeliveryEditDifferences();
 });
 $("deliveryEditSaveBtn").onclick=function(){
