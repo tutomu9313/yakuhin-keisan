@@ -242,6 +242,79 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 }
 </style>
 
+
+<style id="daily-delivery-header-17px">
+#dailyDeliverySection > h3{font-size:17px !important;}
+#dailyDeliveryCount{font-size:17px !important;}
+</style>
+
+<style id="daily-compact-run-worktime">
+/* 日報：運行情報・勤務時間カードをコンパクト化（機能変更なし） */
+#dailyRunSection, #dailyWorkTimeSection{
+  padding:12px !important;
+  margin-bottom:10px !important;
+}
+#dailyRunSection .daily-run-header{
+  margin:0 0 8px !important;
+  gap:8px !important;
+}
+#dailyRunSection .daily-run-header h3{
+  font-size:17px !important;
+}
+#dailyRunSection .daily-run-vehicle{
+  gap:5px !important;
+}
+#dailyRunSection .daily-run-vehicle label{
+  font-size:12px !important;
+}
+#dailyRunSection .daily-run-vehicle select,
+#dailyRunSection input{
+  height:40px !important;
+}
+#dailyRunSection .grid2{
+  gap:8px !important;
+}
+#dailyRunSection .detail{
+  margin-top:8px !important;
+  padding:9px 10px !important;
+}
+#dailyDistance{
+  font-size:17px !important;
+}
+#dailyWorkTimeSection h3{
+  margin:0 0 8px !important;
+  font-size:17px !important;
+}
+#dailyWorkTimeSection .detail{
+  margin-top:0 !important;
+  padding:9px 10px !important;
+}
+#dailyWorkTimeSection .grid2{
+  gap:8px !important;
+}
+#dailyWorkTimeSection input[type="time"]{
+  height:40px !important;
+}
+#dailyWorkTimeSection .grid2 + .grid2{
+  margin-top:8px !important;
+}
+#dailyWorkTimeSection .box{
+  padding:8px 10px !important;
+  min-height:64px;
+}
+#dailyWorkTimeSection .box strong{
+  font-size:18px !important;
+  margin-top:2px !important;
+}
+#dailyWorkTimeSection #dailyOvertime{
+  height:38px !important;
+  font-size:16px !important;
+  padding:0 10px !important;
+}
+#dailyWorkTimeSection .box span{
+  font-size:13px !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -334,7 +407,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   </div>
   <input id="dailyReportDate" type="date" style="display:none">
  </div>
- <div class="card">
+ <div class="card" id="dailyRunSection">
   <div class="daily-run-header">
    <h3>運行情報</h3>
    <div class="daily-run-vehicle"><label for="dailyVehicleType">車種</label><select id="dailyVehicleType"><option value="4t">4t</option><option value="10t">10t</option></select></div>
@@ -354,7 +427,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
    </div>
    <div class="grid2" style="gap:8px;margin-top:10px">
     <div class="box"><small>勤務時間</small><strong id="dailyWorkDuration">0時間00分</strong></div>
-    <div class="box"><small>残業時間</small><input id="dailyOvertime" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="0.0" aria-label="残業時間"><span style="margin-left:4px">時間</span></div>
+    <div class="box"><small>残業時間</small><input id="dailyOvertime" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="0.0" aria-label="残業時間"></div>
    </div>
   </div>
  </div>
@@ -544,8 +617,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <button id="navCalc" type="button" onclick="window.show('calc')">入力</button>
 <button id="navHistory" type="button" onclick="window.show('history')">注文履歴</button>
 <button id="navDeliveryHistory" type="button" onclick="window.show('deliveryHistory')">納品履歴</button>
-<button id="navDaily" type="button" onclick="window.show('daily')">日報</button>
 <button id="navWeekly" type="button" onclick="window.show('weekly')">週間日報</button>
+<button id="navDaily" type="button" onclick="window.show('daily')">運転日報</button>
 <button id="navSettings" type="button">設定</button>
 </nav>
 </div>
@@ -1701,7 +1774,7 @@ function show(page){
     history:"注文履歴",
     delivery:"納品登録",
     deliveryHistory:"納品履歴",
-    daily:"日報",
+    daily:"運転日報",
     chem:"薬品登録",
     customer:"取引先"
   };
