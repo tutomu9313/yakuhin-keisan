@@ -42,6 +42,8 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
 .registered-listbox-option{min-height:32px;padding:5px 9px;box-sizing:border-box;font-size:17px;line-height:22px;border-radius:7px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .registered-listbox-option:hover,.registered-listbox-option:active{background:#e5e5ea}
+<style>
+#deliveryEditModal .modal-card button{margin-top:8px !important;}
 </style>
 
 
@@ -310,7 +312,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
    <button id="cloudRefreshBtn">クラウドから再読込</button>
    <button id="cloudSaveBtn">クラウドへ保存</button>
    <button id="cloudLogoutBtn" class="gray">ログアウト</button>
-   <button id="settingsCancelBtn" class="gray full">キャンセル</button>
+   <button id="settingsCancelBtn" class="gray full">閉じる</button>
   </div>
  </div>
 </div>
@@ -331,7 +333,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="modal-card">
   <h3>入力計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><button id="calcResultClose" class="gray" style="grid-column:1">閉じる</button><button id="calcResultLoad" style="grid-column:2">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green" style="grid-column:1/-1;background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red" style="grid-column:1/-1">この注文データを削除</button></div>
+  <div id="calcResultActions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button id="calcResultClose" class="gray" style="grid-column:1">閉じる</button><button id="calcResultLoad" style="grid-column:2">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green" style="grid-column:1/-1;background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red" style="grid-column:1/-1">この注文データを削除</button></div>
  </div>
 </div>
 
