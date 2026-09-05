@@ -2203,3 +2203,31 @@ restoreLastVehicleType();
 </script>
 </body>
 </html>
+
+<style id="daily-worktime-spacing-background">
+/* 運転日報：勤務時間カードの上下余白と背景を他カードに統一 */
+#dailyRunSection,
+#dailyWorkTimeSection{
+  background:#fff !important;
+  padding:12px !important;
+  margin-bottom:10px !important;
+}
+#dailyWorkTimeSection h3{
+  margin:0 0 8px !important;
+}
+#dailyWorkTimeSection .detail{
+  margin-top:0 !important;
+  padding:8px 10px !important;
+  background:#f2f2f7 !important;
+}
+#dailyWorkTimeSection .detail > .grid2:first-child{
+  gap:8px !important;
+}
+#dailyWorkTimeSection .detail > .grid2 + .grid2{
+  margin-top:8px !important;
+}
+#dailyWorkTimeSection .box{
+  padding:7px 10px !important;
+  min-height:58px !important;
+}
+</style>
