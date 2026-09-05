@@ -568,7 +568,8 @@ function restoreDraft(){
   $("dateDisplay").value=$("dateDisplay").dataset.iso;
   $("customer").value=d.customer||"";
   $("department").value=d.department||"";
-   $("plannedTime").value=d.plannedTime||"";
+   // アプリ起動時は予定時間を必ずリセットする
+   $("plannedTime").value="";
   if(d.vehicleType==="4t"||d.vehicleType==="10t") $("vehicleType").value=d.vehicleType;
   else restoreLastVehicleType();
   if(d.customer)setCalcEnabled(true);
