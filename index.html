@@ -99,6 +99,11 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 }
 #dailyDeliveryDetailModal #dailyDeliveryDetailCloseBtn{
   margin-top:10px !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#dailyDeliveryDetailModal .modal-actions{
+  grid-template-columns:1fr !important;
 }
 </style>
 
@@ -340,6 +345,19 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   </div>
   <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
  </div>
+ <div class="card" id="dailyWorkTimeSection">
+  <h3 style="margin:0 0 14px">勤務時間</h3>
+  <div class="detail">
+   <div class="grid2" style="gap:8px">
+    <input id="dailyStartTime" type="time" aria-label="始業時間">
+    <input id="dailyEndTime" type="time" aria-label="終業時間">
+   </div>
+   <div class="grid2" style="gap:8px;margin-top:10px">
+    <div class="box"><small>勤務時間</small><strong id="dailyWorkDuration">0時間00分</strong></div>
+    <div class="box"><small>残業時間</small><input id="dailyOvertime" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="0.0" aria-label="残業時間"><span style="margin-left:4px">時間</span></div>
+   </div>
+  </div>
+ </div>
  <div class="card" id="dailyDeliverySection">
   <h3 style="margin:0 0 14px">配達実績 <strong id="dailyDeliveryCount" class="daily-report-value" style="float:right;font-size:22px">0 回</strong></h3>
   <div id="dailyDeliveryCards"></div>
@@ -350,7 +368,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
    <div>距離歩合 <span id="dailyDistanceFormula" style="float:right">0 km × 0円 = 0円</span></div>
    <div style="margin-top:10px">回数歩合 <span id="dailyCountFormula" style="float:right">0回 × 0円 = 0円</span></div>
   </div>
-  <div class="daily-report-total" style="margin-top:12px"><small>合計歩合給</small><strong id="dailyCommissionTotal">0円</strong></div>
+  <div style="margin-top:10px">合計歩合給 <span id="dailyCommissionTotal" style="float:right">0円</span></div>
  </div>
  <div class="card">
   <div class="grid2" style="gap:8px">
@@ -1468,6 +1486,23 @@ function updateDailyCalc(){
  $("dailyCountFormula").textContent=count+"回 × "+Number(rate.count).toLocaleString("ja-JP")+"円 = "+cp.toLocaleString("ja-JP")+"円";
  $("dailyCommissionTotal").textContent=total.toLocaleString("ja-JP")+"円";
 }
+function formatDailyMinutes(mins){
+ const n=Math.max(0,Math.round(Number(mins)||0));
+ const h=Math.floor(n/60),m=n%60;
+ return h+"時間"+String(m).padStart(2,"0")+"分";
+}
+function updateDailyWorkDuration(){
+ const st=$("dailyStartTime"), et=$("dailyEndTime"), out=$("dailyWorkDuration");
+ if(!st||!et||!out)return;
+ const sv=st.value, ev=et.value;
+ if(!/^\d{2}:\d{2}$/.test(sv)||!/^\d{2}:\d{2}$/.test(ev)){out.textContent="0時間00分";return;}
+ const [sh,sm]=sv.split(":").map(Number),[eh,em]=ev.split(":").map(Number);
+ let diff=(eh*60+em)-(sh*60+sm);
+ if(diff<0)diff+=24*60;
+ // 休憩1時間を差し引いた実働時間
+ diff=Math.max(0,diff-60);
+ out.textContent=formatDailyMinutes(diff);
+}
 function renderDailyReport(){
  const dateInput=$("dailyReportDate"); if(!dateInput)return;
  const iso=dateInput.value||isoToday(); dateInput.value=iso;
@@ -1475,15 +1510,23 @@ function renderDailyReport(){
  const saved=dailyReports[iso];
  const lastVehicle=localStorage.getItem("yakuhin_last_vehicle_type");
  const defaultDailyVehicle=(lastVehicle==="10t"||lastVehicle==="4t")?lastVehicle:"4t";
+ const defaultStartTime="06:00", defaultEndTime="15:00";
  const vehicle=(saved&& (saved.vehicleType==="10t"||saved.vehicleType==="4t"))?saved.vehicleType:defaultDailyVehicle;
  $("dailyVehicleType").value=vehicle;
  if(saved){
    $("outOdometer").value=saved.outOdometer!=null?saved.outOdometer:"";
    $("inOdometer").value=saved.inOdometer!=null?saved.inOdometer:"";
+   $("dailyStartTime").value=saved.startTime||defaultStartTime;
+   $("dailyEndTime").value=saved.endTime||defaultEndTime;
+   $("dailyOvertime").value=saved.overtimeHours!=null?saved.overtimeHours:"";
  }else{
    $("outOdometer").value="";
    $("inOdometer").value="";
+   $("dailyStartTime").value=defaultStartTime;
+   $("dailyEndTime").value=defaultEndTime;
+   $("dailyOvertime").value="";
  }
+ updateDailyWorkDuration();
  const rows=dailyDeliveriesForDate(iso);
  const count=saved&&Number.isFinite(Number(saved.deliveryCount))?Number(saved.deliveryCount):rows.length;
  $("dailyDeliveryCount").textContent=count+" 回";
@@ -1615,6 +1658,8 @@ function deleteDailyReport(){
  alert("日報を削除しました。");
 }
 window.deleteDailyReport=deleteDailyReport;
+["dailyStartTime","dailyEndTime"].forEach(id=>{const el=$(id);if(el){el.addEventListener("input",updateDailyWorkDuration);el.addEventListener("change",updateDailyWorkDuration);}});
+if($("dailyOvertime")){$("dailyOvertime").addEventListener("change",()=>{const el=$("dailyOvertime");if(el.value!==""){let v=Number(el.value);if(!Number.isFinite(v))v=0;v=Math.round(v*2)/2;v=Math.max(0,Math.min(24,v));el.value=String(v);}});}
 function saveDailyReport(){
  const iso=$("dailyReportDate").value||isoToday(),vehicle=$("dailyVehicleType").value;
  const outRaw=String($("outOdometer").value||"").trim();
@@ -1630,7 +1675,7 @@ function saveDailyReport(){
        rate=commissionRates[vehicle]||defaultCommissionRates()["4t"],
        dp=hasReturn?dist*Number(rate.distance):0,
        cp=hasReturn?count*Number(rate.count):0;
- dailyReports[iso]={date:iso,vehicleType:vehicle,outOdometer:out,inOdometer:hasReturn?inn:null,distance:dist,deliveryCount:count,distanceRate:Number(rate.distance),countRate:Number(rate.count),distanceCommission:dp,countCommission:cp,totalCommission:dp+cp,savedAt:new Date().toISOString()};
+ dailyReports[iso]={date:iso,vehicleType:vehicle,outOdometer:out,inOdometer:hasReturn?inn:null,distance:dist,deliveryCount:count,distanceRate:Number(rate.distance),countRate:Number(rate.count),distanceCommission:dp,countCommission:cp,totalCommission:dp+cp,startTime:$("dailyStartTime").value||"",endTime:$("dailyEndTime").value||"",overtimeHours:$("dailyOvertime").value===""?null:Number($("dailyOvertime").value),savedAt:new Date().toISOString()};
  localStorage.setItem(KEY_DR,JSON.stringify(dailyReports));
  try{scheduleCloudSync();}catch(e){console.warn("日報のクラウド同期予約に失敗しました",e);}
  localStorage.setItem("yakuhin_last_vehicle_type",vehicle);
