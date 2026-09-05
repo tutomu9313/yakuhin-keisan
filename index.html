@@ -321,6 +321,36 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   font-size:13px !important;
 }
 </style>
+
+<style id="daily-worktime-iphone-fit">
+/* iPhone等の狭い画面で始業・終業の時刻入力欄が重ならないように調整 */
+#dailyWorkTimeSection .detail > .grid2:first-child{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:8px !important;
+  width:100% !important;
+}
+#dailyWorkTimeSection .detail > .grid2:first-child > *{
+  min-width:0 !important;
+  width:100% !important;
+}
+#dailyWorkTimeSection input[type="time"]{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  box-sizing:border-box !important;
+  padding-left:10px !important;
+  padding-right:10px !important;
+  font-size:17px !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+@media (max-width:420px){
+  #dailyWorkTimeSection .detail > .grid2:first-child{gap:6px !important;}
+  #dailyWorkTimeSection input[type="time"]{padding-left:8px !important;padding-right:8px !important;}
+}
+</style>
 </head>
 <body>
 <div id="authGate">
