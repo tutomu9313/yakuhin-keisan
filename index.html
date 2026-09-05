@@ -758,10 +758,11 @@ function showCalcResultDialog(rec,fromHistory=false,returnPage="history"){
  $("calcResultLoad").style.display=fromHistory?"block":"none";
  $("calcResultDelete").style.display=fromHistory?"block":"none";
  $("deliveryRegisterBtn").style.display=fromHistory?"block":"none";
- const alreadyDelivered=fromHistory && deliveryHistory.some(d=>d.orderKey===deliveryOrderKey(rec));
- $("deliveryRegisterBtn").disabled=alreadyDelivered;
+ const linkedDelivery=fromHistory ? deliveryHistory.find(d=>d && d.orderKey===deliveryOrderKey(rec)) : null;
+ const alreadyDelivered=!!linkedDelivery;
+ $("deliveryRegisterBtn").disabled=false;
  $("deliveryRegisterBtn").style.background=alreadyDelivered?"#8e8e93":"#34c759";
- $("deliveryRegisterBtn").textContent=alreadyDelivered?"納品登録済み":"納品登録";
+ $("deliveryRegisterBtn").textContent=alreadyDelivered?"納品履歴":"納品登録";
  $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
  $("calcResultClose").style.gridColumn=fromHistory?"1":"1 / -1";
  $("calcResultModal").classList.remove("hidden");
@@ -1403,8 +1404,14 @@ $("deliveryRegisterBtn").onclick=function(e){
   e.stopPropagation();
   if(!pendingHistoryRecord)return;
   const x=pendingHistoryRecord;
+  const linkedDelivery=deliveryHistory.find(d=>d && d.orderKey===deliveryOrderKey(x));
   closeCalcResultDialog();
-  openDeliveryRegistration(x);
+  if(linkedDelivery){
+    const deliveryIndex=deliveryHistory.indexOf(linkedDelivery);
+    openDeliveryEdit(deliveryIndex);
+  }else{
+    openDeliveryRegistration(x);
+  }
 };
 $("deliveryKg").oninput=calcDeliveryAmount;
 $("deliveryHistoryDate").addEventListener("change",renderDeliveryHistory);
