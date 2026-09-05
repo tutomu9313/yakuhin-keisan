@@ -77,6 +77,31 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 .modal-card h3{font-size:20px}
 </style>
 
+<style id="v48-daily-detail-compact">
+/* 日報の個別配達ダイアログ：スクロールなしで全項目を表示 */
+#dailyDeliveryDetailModal .modal-card{
+  max-height:none !important;
+  overflow:visible !important;
+  padding:16px 18px !important;
+}
+#dailyDeliveryDetailModal #dailyDeliveryDetailList{
+  max-height:none !important;
+  overflow:visible !important;
+}
+#dailyDeliveryDetailModal #dailyDeliveryDetailList > div{
+  line-height:1.35 !important;
+}
+#dailyDeliveryDetailModal #dailyDeliveryDetailList > div > div{
+  margin-top:4px !important;
+}
+#dailyDeliveryDetailModal #dailyDeliveryDetailList b{
+  font-size:15px !important;
+}
+#dailyDeliveryDetailModal #dailyDeliveryDetailCloseBtn{
+  margin-top:10px !important;
+}
+</style>
+
 <style>
 /* ダイアログ内のフォントサイズを一律 +3px（ボタンのサイズは変更しない） */
 .modal-card{font-size:calc(1em + 3px)}
@@ -116,6 +141,15 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   font-size:16px !important;
   font-weight:400 !important;
 }
+#dailyDeliveryDetailList .item{
+  cursor:default !important;
+  user-select:text;
+}
+#dailyDeliveryDetailList .item + .item{
+  border-top:1px solid #ddd;
+  margin-top:14px;
+  padding-top:14px;
+}
 </style>
 
 
@@ -144,6 +178,65 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 .daily-run-vehicle label{margin:0;white-space:nowrap;font-size:13px}
 .daily-run-vehicle select{width:112px;margin:0}
 </style>
+
+<style id="daily-delivery-card-clean">
+.daily-delivery-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+  box-sizing:border-box;
+  margin:0 0 8px;
+  padding:10px 12px;
+  border:1px solid #e2e2e7;
+  border-radius:10px;
+  background:#fff;
+  color:inherit;
+  text-align:left;
+  box-shadow:none;
+}
+.daily-delivery-card:last-child{margin-bottom:0;}
+.daily-delivery-card:active{opacity:.72;}
+.daily-delivery-card-main{
+  min-width:0;
+  flex:1;
+}
+.daily-delivery-card-customer{
+  font-size:14px;
+  font-weight:700;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.daily-delivery-card-chemical{
+  margin-top:3px;
+  font-size:12px;
+  color:#666;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.daily-delivery-card-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:0 0 auto;
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.daily-delivery-card .daily-delivery-chevron{
+  position:static;
+  transform:none;
+  font-size:20px;
+  line-height:1;
+  color:#999;
+}
+</style>
+
 </head>
 <body>
 <div id="authGate">
@@ -248,11 +341,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
  </div>
  <div class="card" id="dailyDeliverySection">
-  <h3 style="margin:0 0 14px">配達実績</h3>
-  <button id="dailyDeliverySummaryBtn" type="button" class="detail daily-delivery-summary" onclick="window.openDailyDeliveryDetail()" aria-label="配達明細を表示">
-   <span>配達回数</span><strong id="dailyDeliveryCount" class="daily-report-value" style="float:right">0 回</strong><span class="daily-delivery-chevron" aria-hidden="true">›</span><div style="clear:both"></div>
-   <small>タップして配達明細を表示</small>
-  </button>
+  <h3 style="margin:0 0 14px">配達実績 <strong id="dailyDeliveryCount" class="daily-report-value" style="float:right;font-size:22px">0 回</strong></h3>
+  <div id="dailyDeliveryCards"></div>
  </div>
  <div class="card" id="dailyCommissionSection">
   <h3 style="margin:0 0 14px">歩合給</h3>
@@ -317,7 +407,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 
 <div id="dailyDeliveryDetailModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
-  <h3>配達明細</h3>
+  <h3>配達内容</h3>
   <div id="dailyDeliveryDetailDate" class="note" style="margin-bottom:10px"></div>
   <div id="dailyDeliveryDetailList" class="daily-report-list"></div>
   <div class="modal-actions"><button id="dailyDeliveryDetailCloseBtn" type="button" class="gray" onclick="window.closeDailyDeliveryDetail()">閉じる</button></div>
@@ -1397,6 +1487,7 @@ function renderDailyReport(){
  const rows=dailyDeliveriesForDate(iso);
  const count=saved&&Number.isFinite(Number(saved.deliveryCount))?Number(saved.deliveryCount):rows.length;
  $("dailyDeliveryCount").textContent=count+" 回";
+ renderDailyDeliveryCards(rows);
 
  if(saved){
    const dist=Number.isFinite(Number(saved.distance))?Number(saved.distance):dailyDistanceValue();
@@ -1423,30 +1514,57 @@ function goDailyDate(delta){
  renderDailyReport();
  window.scrollTo(0,0);
 }
-function openDailyDeliveryDetail(){
+function renderDailyDeliveryCards(rows){
+ const wrap=$("dailyDeliveryCards");
+ if(!wrap)return;
+ wrap.innerHTML="";
+ if(!rows.length){
+   wrap.innerHTML='<div class="note" style="padding:10px 4px;text-align:center">この日の配達記録はありません。</div>';
+   return;
+ }
+ rows.forEach((x,i)=>{
+   const card=document.createElement("button");
+   card.type="button";
+   card.className="daily-delivery-card";
+   const kg=Number(x.deliveryKg);
+   const kgText=Number.isFinite(kg)?formatQuantity(kg)+" kg":"—";
+   card.innerHTML="<div class='daily-delivery-card-main'>"+
+     "<div class='daily-delivery-card-customer'>"+esc(x.customer||"")+"</div>"+
+     "<div class='daily-delivery-card-chemical'>"+esc(x.chemical||"")+"</div>"+
+     "</div>"+
+     "<div class='daily-delivery-card-meta'><span>"+kgText+"</span><span class='daily-delivery-chevron' aria-hidden='true'>›</span></div>";
+   card.addEventListener("click",()=>openDailyDeliveryDetail(i));
+   wrap.appendChild(card);
+ });
+}
+function openDailyDeliveryDetail(index){
  const iso=$("dailyReportDate").value||isoToday();
  const rows=dailyDeliveriesForDate(iso);
+ const idx=Number(index);
+ const x=rows[idx];
  const d=iso.split("-").map(Number);
- $("dailyDeliveryDetailDate").textContent=d[0]+"年"+d[1]+"月"+d[2]+"日の配達明細";
+ $("dailyDeliveryDetailDate").textContent=d[0]+"年"+d[1]+"月"+d[2]+"日　"+(Number.isFinite(idx)?(idx+1)+"件目":"");
  const list=$("dailyDeliveryDetailList"); list.innerHTML="";
- if(!rows.length){
-   list.innerHTML='<div class="note" style="padding:14px 4px;text-align:center">この日の配達記録はありません。</div>';
+ if(!x){
+   list.innerHTML='<div class="note" style="padding:14px 4px;text-align:center">この配達記録は見つかりません。</div>';
  }else{
-   rows.forEach((x,i)=>{
-     const el=document.createElement("div");
-     el.className="item";
-     const kg=Number(x.deliveryKg||0);
-     const time=x.plannedTime||x.time||"";
-     el.innerHTML="<b>"+(i+1)+". "+esc(x.customer||"")+"</b>"+
-       "<div style='margin-top:5px'>"+esc(x.chemical||"")+"　"+formatQuantity(trunc2(kg))+" kg</div>"+
-       (time?"<div style='margin-top:4px;color:#777;font-size:12px'>予定時間："+esc(time)+"</div>":"");
-     list.appendChild(el);
-   });
+   const safeOrderAmount=x.orderAmount!=null?formatQuantity(x.orderAmount):"—";
+   const safeOrderUnit=x.orderUnit?esc(x.orderUnit):"";
+   const actualKg=Number.isFinite(Number(x.deliveryKg))?formatQuantity(x.deliveryKg):"—";
+   const actualL=Number.isFinite(Number(x.deliveryL))?formatQuantity(x.deliveryL):"—";
+   list.innerHTML=
+     "<div style='line-height:1.9'>"+
+     "<div><b>取引先</b><br>"+esc(x.customer||"—")+"</div>"+
+     "<div style='margin-top:8px'><b>部署</b><br>"+esc(x.department||"—")+"</div>"+
+     "<div style='margin-top:8px'><b>薬品</b><br>"+esc(x.chemical||"—")+"</div>"+
+     "<div style='margin-top:8px'><b>注文数量</b><br>"+safeOrderAmount+" "+safeOrderUnit+"</div>"+
+     "<div style='margin-top:8px'><b>実納品重量</b><br>"+actualKg+" kg</div>"+
+     "<div style='margin-top:8px'><b>実納品容量</b><br>"+actualL+" L</div>"+
+     "</div>";
  }
  $("dailyDeliveryDetailModal").classList.remove("hidden");
  $("dailyDeliveryDetailModal").setAttribute("aria-hidden","false");
 }
-window.openDailyDeliveryDetail=openDailyDeliveryDetail;
 function closeDailyDeliveryDetail(){
  $("dailyDeliveryDetailModal").classList.add("hidden");
  $("dailyDeliveryDetailModal").setAttribute("aria-hidden","true");
