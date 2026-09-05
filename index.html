@@ -36,7 +36,7 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 /* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(6,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
-.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
+.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
@@ -399,6 +399,10 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 </section>
 
 <section id="dailyPage" class="hidden">
+ <div class="card daily-view-tabs">
+  <button id="dailyViewToggleBtn" type="button">一覧を見る</button>
+ </div>
+ <div id="dailyDetailView">
  <div class="card">
   <div class="daily-report-date-nav">
    <button id="dailyPrevBtn" class="gray" type="button" onclick="window.goDailyDate(-1)">‹</button>
@@ -447,6 +451,13 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div class="grid2" style="gap:8px">
     <button id="dailyReportDeleteBtn" class="red" type="button" onclick="window.deleteDailyReport()">日報を削除</button>
     <button id="dailyReportSaveBtn" type="button" onclick="window.saveDailyReport()">日報を保存</button>
+  </div>
+ </div>
+ </div>
+ <div id="dailyListView" class="hidden">
+  <div class="card">
+   <div id="dailyListPeriod" class="daily-list-period"></div>
+   <table class="daily-list-table"><thead><tr><th>日付</th><th>車種</th><th>走行</th><th>配達</th><th>勤務</th><th>残業</th><th>歩合</th></tr></thead><tbody id="dailyListBody"></tbody></table>
   </div>
  </div>
 </section>
@@ -550,11 +561,22 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
    <button id="settingsChemBtn">薬品設定</button>
    <button id="settingsCustomerBtn">客先設定</button>
    <button id="settingsCommissionBtn">歩合給設定</button>
+   <button id="settingsCutoffBtn">運転日報締め日設定</button>
    <button id="cloudRefreshBtn">クラウドから再読込</button>
    <button id="cloudSaveBtn">クラウドへ保存</button>
    <button id="cloudLogoutBtn" class="gray">ログアウト</button>
    <button id="settingsCancelBtn" class="gray full">閉じる</button>
   </div>
+ </div>
+</div>
+
+<div id="cutoffModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>運転日報締め日設定</h3>
+  <label for="dailyCutoffDay">締め日</label>
+  <input id="dailyCutoffDay" type="number" min="1" max="31" step="1" inputmode="numeric" style="margin-top:8px">
+  <div class="cutoff-note">例：20日なら「20日～翌月19日」が1期間です。</div>
+  <div class="modal-actions"><button id="cutoffSaveBtn" type="button">保存</button><button id="cutoffCancelBtn" type="button" class="gray">キャンセル</button></div>
  </div>
 </div>
 
@@ -617,8 +639,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <button id="navCalc" type="button" onclick="window.show('calc')">入力</button>
 <button id="navHistory" type="button" onclick="window.show('history')">注文履歴</button>
 <button id="navDeliveryHistory" type="button" onclick="window.show('deliveryHistory')">納品履歴</button>
-<button id="navWeekly" type="button" onclick="window.show('weekly')">週間日報</button>
 <button id="navDaily" type="button" onclick="window.show('daily')">運転日報</button>
+<button id="navWeekly" type="button" onclick="window.show('weekly')">週間日報</button>
 <button id="navSettings" type="button">設定</button>
 </nav>
 </div>
@@ -780,6 +802,7 @@ const KEY_D="yakuhin_clean_draft";
 const KEY_P="yakuhin_clean_departments";
 const KEY_B="yakuhin_clean_autobackup";
 const KEY_DR="yakuhin_clean_daily_reports";
+const KEY_DRCUTOFF="yakuhin_daily_report_cutoff_day";
 const KEY_CR="yakuhin_clean_commission_rates";
 
 const defaultChem=[
@@ -797,6 +820,7 @@ let selectedChem=-1, selectedCustomer=-1, currentResult={kg:0,L:0,m3:0};
 function defaultCommissionRates(){return {"4t":{distance:10,count:500},"10t":{distance:12,count:600}}}
 function normalizeCommissionRates(v){const d=defaultCommissionRates();["4t","10t"].forEach(t=>{if(v&&v[t]){const a=Number(v[t].distance),b=Number(v[t].count);if(Number.isFinite(a)&&a>=0)d[t].distance=a;if(Number.isFinite(b)&&b>=0)d[t].count=b;}});return d}
 let dailyReports=(()=>{try{const v=JSON.parse(localStorage.getItem(KEY_DR)||"{}");return v&&typeof v==="object"&&!Array.isArray(v)?v:{};}catch(e){return {}}})();
+let dailyReportCutoffDay=(()=>{const n=parseInt(localStorage.getItem(KEY_DRCUTOFF)||"20",10);return Number.isFinite(n)?Math.min(31,Math.max(1,n)):20;})();
 let commissionRates=(()=>{try{return normalizeCommissionRates(JSON.parse(localStorage.getItem(KEY_CR)||"null")||defaultCommissionRates());}catch(e){return defaultCommissionRates()}})();
 
 function load(k,d){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:d}catch(e){return d}}
@@ -1576,6 +1600,32 @@ function updateDailyWorkDuration(){
  diff=Math.max(0,diff-60);
  out.textContent=formatDailyMinutes(diff);
 }
+function dailyCutoffPeriodFor(refISO){
+ const d=localDateFromISO(refISO||isoToday());
+ let y=d.getFullYear(),m=d.getMonth(),day=d.getDate();
+ if(day<dailyReportCutoffDay){m-=1;}
+ const fromDay=Math.min(dailyReportCutoffDay,new Date(y,m+1,0).getDate());
+ const from=new Date(y,m,fromDay);
+ const nextMonth=new Date(from.getFullYear(),from.getMonth()+1,1);
+ const nextEndDay=Math.min(Math.max(1,dailyReportCutoffDay-1),new Date(nextMonth.getFullYear(),nextMonth.getMonth()+1,0).getDate());
+ const to=new Date(nextMonth.getFullYear(),nextMonth.getMonth(),nextEndDay);
+ return {from:isoFromLocalDate(from),to:isoFromLocalDate(to)};
+}
+function formatDailyListDate(iso){const d=localDateFromISO(iso);return (d.getMonth()+1)+"/"+d.getDate()+"（"+["日","月","火","水","木","金","土"][d.getDay()]+"）";}
+function renderDailyList(){
+ const body=$("dailyListBody"),period=$("dailyListPeriod"); if(!body||!period)return;
+ const ref=$("dailyReportDate")?.value||isoToday(); const range=dailyCutoffPeriodFor(ref);
+ const fd=localDateFromISO(range.from),td=localDateFromISO(range.to);
+ period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日 ～ "+(td.getMonth()+1)+"月"+td.getDate()+"日（締め日："+dailyReportCutoffDay+"日）";
+ const rows=Object.values(dailyReports||{}).filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ body.innerHTML="";
+ if(!rows.length){body.innerHTML='<tr><td colspan="7" class="daily-list-empty">この期間の運転日報はありません。</td></tr>';return;}
+ rows.forEach(x=>{const tr=document.createElement("tr");tr.dataset.date=x.date;const work=x.startTime&&x.endTime?calcDailyWorkDurationText(x.startTime,x.endTime):"—";const ot=x.overtimeHours==null?"—":Number(x.overtimeHours).toLocaleString("ja-JP")+"h";const comm=(Number(x.totalCommission)||0).toLocaleString("ja-JP")+"円";tr.innerHTML="<td>"+formatDailyListDate(x.date)+"</td><td>"+esc(x.vehicleType||"—")+"</td><td class='num'>"+(x.distance==null?"—":formatQuantity(x.distance)+"km")+"</td><td class='num'>"+(Number(x.deliveryCount)||0)+"回</td><td class='num'>"+work+"</td><td class='num'>"+ot+"</td><td class='num'>"+comm+"</td>";tr.onclick=()=>{$("dailyReportDate").value=x.date;showDailyDetailView();renderDailyReport();};body.appendChild(tr);});
+}
+function calcDailyWorkDurationText(st,ev){const m=(t)=>{const [h,n]=String(t).split(":").map(Number);return h*60+n;};let diff=m(ev)-m(st);if(diff<0)diff+=1440;diff=Math.max(0,diff-60);return formatDailyMinutes(diff);}
+function updateDailyViewToggle(){const b=$("dailyViewToggleBtn"); if(!b)return; const listHidden=$("dailyListView")?.classList.contains("hidden"); b.textContent=listHidden?"一覧を見る":"日報に戻る";}
+function showDailyDetailView(){const d=$("dailyDetailView"),l=$("dailyListView");if(d)d.classList.remove("hidden");if(l)l.classList.add("hidden");updateDailyViewToggle();}
+function showDailyListView(){const d=$("dailyDetailView"),l=$("dailyListView");if(d)d.classList.add("hidden");if(l)l.classList.remove("hidden");updateDailyViewToggle();renderDailyList();}
 function renderDailyReport(){
  const dateInput=$("dailyReportDate"); if(!dateInput)return;
  const iso=dateInput.value||isoToday(); dateInput.value=iso;
@@ -1803,6 +1853,12 @@ $("navSettings").onclick=()=>{updateCloudAccountUI();openSettings();};
 $("settingsChemBtn").onclick=()=>{closeSettings();show("chem");};
 $("settingsCustomerBtn").onclick=()=>{closeSettings();show("customer");};
 $("settingsCommissionBtn").onclick=()=>{closeSettings();openCommissionModal();};
+function openCutoffModal(){$("dailyCutoffDay").value=dailyReportCutoffDay;$("cutoffModal").classList.remove("hidden");$("cutoffModal").setAttribute("aria-hidden","false");}
+function closeCutoffModal(){$("cutoffModal").classList.add("hidden");$("cutoffModal").setAttribute("aria-hidden","true");}
+$("settingsCutoffBtn").onclick=()=>{closeSettings();openCutoffModal();};
+$("cutoffCancelBtn").onclick=closeCutoffModal;
+$("cutoffSaveBtn").onclick=()=>{let n=parseInt($("dailyCutoffDay").value||"20",10);if(!Number.isFinite(n))n=20;n=Math.min(31,Math.max(1,n));dailyReportCutoffDay=n;localStorage.setItem(KEY_DRCUTOFF,String(n));closeCutoffModal();if(!$("dailyListView").classList.contains("hidden"))renderDailyList();alert("運転日報の締め日を保存しました。");};
+$("cutoffModal").addEventListener("click",e=>{if(e.target===$("cutoffModal"))closeCutoffModal();});
 $("cloudRefreshBtn").onclick=()=>cloudLoadNow(true);
 $("cloudSaveBtn").onclick=()=>cloudSaveNow();
 $("cloudLogoutBtn").onclick=async()=>{
@@ -1882,6 +1938,7 @@ $("authSignupBtn").onclick=async()=>{
 updateCloudAccountUI();
 initCloud();
 
+$("dailyViewToggleBtn").onclick=()=>{if($("dailyListView")?.classList.contains("hidden"))showDailyListView();else showDailyDetailView();}; updateDailyViewToggle();
 renderChemicals();renderCustomers();if($("weeklyDate")){$("weeklyDate").value=isoToday();$("weeklyDate").addEventListener("change",renderWeeklyReport);}setCalcEnabled(false);$("resultCard").style.display="none";calc();$("customer").addEventListener("input",saveDraft);
 $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
