@@ -1085,7 +1085,7 @@ function renderHistory(){
    div.innerHTML=(x.time?"<div style='font-size:14px;font-weight:400'>"+esc(x.time)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
     +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
     +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
-    +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+"</div>":"")
+    +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
      +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
     +"<div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
     +"<div style='font-size:13px;margin-top:3px'>"+histSecondary+"</div>"
