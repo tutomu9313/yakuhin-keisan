@@ -747,8 +747,9 @@ function showCalcResultDialog(rec,fromHistory=false,returnPage="history"){
  const customerText="<div>取引先："+esc(rec.customer||"")+"</div>";
  const departmentText=rec.department?"<div>部署名："+esc(rec.department)+"</div>":"";
  const chemicalText="<div><b>薬品名："+esc(rec.chemical||"")+"</b></div>";
- const plannedTimeText=rec.plannedTime?"<div>予定時間："+esc(rec.plannedTime)+"</div>":"";
-  const vehicleTypeText=rec.vehicleType?"<div>車種："+esc(rec.vehicleType)+"</div>":"";
+ const plannedTimeText=rec.plannedTime
+   ?"<div>予定時間："+esc(rec.plannedTime)+(rec.vehicleType?"　　車種："+esc(rec.vehicleType):"")+"</div>"
+   :(rec.vehicleType?"<div>車種："+esc(rec.vehicleType)+"</div>":"");
 
  $("calcResultDialog").innerHTML=
    customerText+
