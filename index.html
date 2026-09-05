@@ -555,7 +555,7 @@ function validISO(s){return /^20\d\d-\d\d-\d\d$/.test(s)}
 function saveDraft(){
  try{
   const d={date:$("dateDisplay").dataset.iso||isoToday(),customer:$("customer").value,department:$("department").value,
-   plannedTime:$("plannedTime").value,vehicleType:x.vehicleType||"",chemical:$("chemical").value,density:$("density").value,amount:$("amount").value,unit:$("unit").value};
+   plannedTime:$("plannedTime").value,vehicleType:$("vehicleType").value||"",chemical:$("chemical").value,density:$("density").value,amount:$("amount").value,unit:$("unit").value};
   localStorage.setItem(KEY_D,JSON.stringify(d));
  }catch(e){}
 }
@@ -569,6 +569,8 @@ function restoreDraft(){
   $("customer").value=d.customer||"";
   $("department").value=d.department||"";
    $("plannedTime").value=d.plannedTime||"";
+  if(d.vehicleType==="4t"||d.vehicleType==="10t") $("vehicleType").value=d.vehicleType;
+  else restoreLastVehicleType();
   if(d.customer)setCalcEnabled(true);
   if(d.chemical!==undefined)$("chemical").value=d.chemical;
   if(d.density!==undefined)$("density").value=d.density;
@@ -790,7 +792,7 @@ function saveDelivery(){
     date:$("dateDisplay").dataset.iso||old.date||isoToday(),
     customer,
     department,
-    plannedTime:$("plannedTime").value,vehicleType:x.vehicleType||"",
+    plannedTime:$("plannedTime").value,vehicleType:$("vehicleType").value||"",
     chemical:c.name,
     density:Number($("density").value),
     warning:!!c.warning,
@@ -810,7 +812,7 @@ function saveDelivery(){
    return;
  }
  const selectedDate=$("dateDisplay").value||$("dateDisplay").dataset.iso||isoToday();
- const rec={date:selectedDate,time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,department,plannedTime:$("plannedTime").value,vehicleType:x.vehicleType||"",chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
+ const rec={date:selectedDate,time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"),customer,department,plannedTime:$("plannedTime").value,vehicleType:$("vehicleType").value||"",chemical:c.name,density:Number($("density").value),warning:!!c.warning,unit:$("unit").value,amount:Number($("amount").value),kg:trunc2(r.kg),L:trunc2(r.L),m3:trunc2(r.m3),loadingCm:r.loadingCm,cmTsum:c.cmTsum,created:Date.now()};
  history.push(rec);save(KEY_H,history);
  if(!customers.includes(customer)){customers.push(customer);save(KEY_K,customers)}
  if(department){
@@ -1311,6 +1313,7 @@ $("customer").oninput=()=>{
 };
 $("department").onfocus=updateDepartmentSuggestions;
 $("plannedTime").addEventListener("input",saveDraft);
+$("vehicleType").addEventListener("change",saveDraft);
 $("department").oninput=()=>{
  const name=$("customer").value.trim();
  const q=$("department").value.trim().toLowerCase();
@@ -1489,7 +1492,7 @@ $("deliverySaveBtn").onclick=function(){
     time:new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"}),
     customer:deliverySourceOrder.customer||"",
     department:deliverySourceOrder.department||"",
-    plannedTime:deliverySourceOrder.plannedTime||"",vehicleType:x.vehicleType||"",
+    plannedTime:deliverySourceOrder.plannedTime||"",vehicleType:deliverySourceOrder.vehicleType||"",
     chemical:deliverySourceOrder.chemical||"",
     warning:!!deliverySourceOrder.warning,
     orderAmount:deliverySourceOrder.amount,
