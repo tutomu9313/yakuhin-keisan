@@ -333,7 +333,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="modal-card">
   <h3>入力計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button id="calcResultClose" class="gray" style="grid-column:1">閉じる</button><button id="calcResultLoad" style="grid-column:2">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green" style="grid-column:1/-1;background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red" style="grid-column:1/-1">この注文データを削除</button></div>
+  <div id="calcResultActions" class="modal-actions"><button id="calcResultClose" class="gray">閉じる</button><button id="calcResultLoad">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green full" style="background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red full">この注文データを削除</button></div>
  </div>
 </div>
 
@@ -347,9 +347,11 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <input id="deliveryEditL" type="text" readonly>
   <div id="deliveryEditCapacityDiff" style="font-size:13px;margin-top:6px;color:#000">容量差：— L</div>
   <div id="deliveryEditWeightDiff" style="font-size:13px;margin-top:3px;color:#000">重量差：— kg</div>
-  <button id="deliveryEditSaveBtn">保存</button>
-  <button id="deliveryEditDeleteBtn" class="red">この納品データを削除</button>
-  <button id="deliveryEditCancelBtn" class="gray">キャンセル</button>
+  <div class="modal-actions">
+   <button id="deliveryEditSaveBtn">保存</button>
+   <button id="deliveryEditDeleteBtn" class="red">この納品データを削除</button>
+   <button id="deliveryEditCancelBtn" class="gray full">キャンセル</button>
+  </div>
  </div>
 </div>
 <nav>
