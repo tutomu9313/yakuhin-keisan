@@ -2201,6 +2201,19 @@ $("vehicleType").addEventListener("change",()=>{
 });
 restoreLastVehicleType();
 </script>
+
+<style id="daily-worktime-final-align">
+/* 運転日報：勤務時間の表示を中央揃え、勤務時間・残業時間のボックスを白に統一 */
+#dailyWorkTimeSection input[type="time"]{
+  text-align:center !important;
+  line-height:40px !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
+#dailyWorkTimeSection .box{
+  background:#fff !important;
+}
+</style>
 </body>
 </html>
 
