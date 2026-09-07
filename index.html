@@ -2391,6 +2391,80 @@ restoreLastVehicleType();
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();
 </script>
+
+<style id="history-calendar-custom-picker">
+#historyCustomCalendar{
+  position:fixed; z-index:99999; width:320px; max-width:calc(100vw - 24px);
+  background:#fff; border:1px solid #d1d1d6; border-radius:14px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18); padding:12px; display:none;
+  box-sizing:border-box;
+}
+#historyCustomCalendar .hcc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+#historyCustomCalendar .hcc-head button{border:0;background:#f2f2f7;border-radius:9px;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer}
+#historyCustomCalendar .hcc-title{font-weight:700;font-size:17px}
+#historyCustomCalendar .hcc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
+#historyCustomCalendar .hcc-week div{text-align:center;font-size:12px;color:#666;padding:4px 0}
+#historyCustomCalendar .hcc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+#historyCustomCalendar .hcc-day{height:38px;border:0;background:#fff;border-radius:9px;font-size:15px;cursor:pointer}
+#historyCustomCalendar .hcc-day:hover{background:#f2f2f7}
+#historyCustomCalendar .hcc-day.other{color:#aaa}
+#historyCustomCalendar .hcc-day.today{font-weight:700;box-shadow:inset 0 0 0 1.5px #007aff}
+#historyCustomCalendar .hcc-day.selected{background:#007aff;color:#fff;font-weight:700}
+@media(max-width:420px){#historyCustomCalendar{width:calc(100vw - 20px)}}
+</style>
+<script id="history-calendar-custom-picker-script">
+(function(){
+  const CFG={
+    historyDate:{button:'historyDateText',label:'historyDateLabel',render:()=>{try{window.renderHistory&&window.renderHistory();}catch(e){}}},
+    deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){}}}
+  };
+  let activeInput=null, viewYear=0, viewMonth=0;
+  function isoParts(v){const m=/^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
+  function isoDate(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+  function label(y,m,d){const dt=new Date(y,m,d); const wd=['日','月','火','水','木','金','土']; return `${y}年${m+1}月${d}日（${wd[dt.getDay()]}）`;}
+  function getToday(){const d=new Date(); return [d.getFullYear(),d.getMonth(),d.getDate()];}
+  function ensureValue(input){let p=isoParts(input.value); if(!p){p=getToday(); input.value=isoDate(...p);} return p;}
+  function build(){
+    let cal=document.getElementById('historyCustomCalendar');
+    if(cal) return cal;
+    cal=document.createElement('div'); cal.id='historyCustomCalendar'; cal.setAttribute('role','dialog'); cal.setAttribute('aria-modal','true');
+    cal.innerHTML='<div class="hcc-head"><button type="button" data-act="prev" aria-label="前月">‹</button><div class="hcc-title"></div><button type="button" data-act="next" aria-label="次月">›</button></div><div class="hcc-week">'+['日','月','火','水','木','金','土'].map(x=>`<div>${x}</div>`).join('')+'</div><div class="hcc-grid"></div>';
+    document.body.appendChild(cal);
+    cal.addEventListener('click',e=>{
+      const act=e.target.closest('[data-act]'); if(act){if(act.dataset.act==='prev') changeMonth(-1); else changeMonth(1); return;}
+      const day=e.target.closest('.hcc-day'); if(day&&!day.disabled) choose(+day.dataset.y,+day.dataset.m,+day.dataset.d);
+    });
+    document.addEventListener('click',e=>{if(cal.style.display==='none')return; if(e.target.closest('#historyCustomCalendar')||e.target.closest('#historyDateText')||e.target.closest('#deliveryHistoryDateText'))return; close();},true);
+    window.addEventListener('resize',position);
+    window.addEventListener('scroll',position,true);
+    return cal;
+  }
+  function render(){
+    const cal=build(), title=cal.querySelector('.hcc-title'), grid=cal.querySelector('.hcc-grid');
+    title.textContent=`${viewYear}年${viewMonth+1}月`;
+    const selected=activeInput?isoParts(activeInput.value):null, today=getToday();
+    const first=new Date(viewYear,viewMonth,1).getDay(); const days=new Date(viewYear,viewMonth+1,0).getDate(); const prevDays=new Date(viewYear,viewMonth,0).getDate();
+    let html='';
+    for(let i=0;i<42;i++){
+      const n=i-first+1; let y=viewYear,m=viewMonth,d=n,other=false;
+      if(n<1){m--;if(m<0){m=11;y--;}d=prevDays+n;other=true;}
+      else if(n>days){m++;if(m>11){m=0;y++;}d=n-days;other=true;}
+      const sel=selected&&selected[0]===y&&selected[1]===m&&selected[2]===d;
+      const tod=today[0]===y&&today[1]===m&&today[2]===d;
+      html+=`<button type="button" class="hcc-day${other?' other':''}${tod?' today':''}${sel?' selected':''}" data-y="${y}" data-m="${m}" data-d="${d}">${d}</button>`;
+    }
+    grid.innerHTML=html;
+  }
+  function position(){const cal=build(); if(cal.style.display==='none'||!activeInput)return; const btn=document.getElementById(CFG[activeInput.id].button); if(!btn)return; const r=btn.getBoundingClientRect(); const w=cal.offsetWidth||320; let left=r.left+(r.width-w)/2; left=Math.max(10,Math.min(left,window.innerWidth-w-10)); let top=r.bottom+8; const h=cal.offsetHeight||360; if(top+h>window.innerHeight-10) top=Math.max(10,r.top-h-8); cal.style.left=left+'px'; cal.style.top=top+'px';}
+  function open(id){const input=document.getElementById(id); if(!input)return; activeInput=input; const p=ensureValue(input); viewYear=p[0];viewMonth=p[1]; render(); const cal=build(); cal.style.display='block'; position();}
+  function close(){const cal=document.getElementById('historyCustomCalendar'); if(cal)cal.style.display='none'; activeInput=null;}
+  function changeMonth(delta){viewMonth+=delta;if(viewMonth<0){viewMonth=11;viewYear--;}if(viewMonth>11){viewMonth=0;viewYear++;}render();position();}
+  function choose(y,m,d){if(!activeInput)return; activeInput.value=isoDate(y,m,d); const c=CFG[activeInput.id]; const lab=document.getElementById(c.label); if(lab)lab.textContent=label(y,m,d); close(); c.render(); activeInput.dispatchEvent(new Event('change',{bubbles:true}));}
+  function bind(id){const c=CFG[id], btn=document.getElementById(c.button), input=document.getElementById(id); if(!btn||!input)return; btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open(id);},true); input.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(id);}},true);}
+  function init(){build(); bind('historyDate'); bind('deliveryHistoryDate');}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body>
 
 <style id="history-date-picker-final-override">
