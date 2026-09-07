@@ -487,12 +487,12 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  </div>
  <div id="dailyDetailView">
  <div class="card">
-  <div class="daily-report-date-nav">
+  <div class="daily-report-date-nav history-date-nav">
    <button id="dailyPrevBtn" class="gray" type="button" onclick="window.goDailyDate(-1)">‹</button>
-   <button id="dailyReportDateText" class="daily-report-date date-display-button" type="button" aria-label="日付を選択"></button>
+   <button id="dailyReportDateText" class="daily-report-date date-display-button" type="button" aria-label="日付を選択"><span id="dailyReportDateLabel"></span></button>
    <button id="dailyNextBtn" class="gray" type="button" onclick="window.goDailyDate(1)">›</button>
+   <input id="dailyReportDate" type="date" aria-label="日付選択">
   </div>
-  <input id="dailyReportDate" type="date" style="display:none">
  </div>
  <div class="card" id="dailyRunSection">
   <div class="daily-run-header">
@@ -1743,7 +1743,7 @@ function showDailyListView(){const d=$("dailyDetailView"),l=$("dailyListView");i
 function renderDailyReport(){
  const dateInput=$("dailyReportDate"); if(!dateInput)return;
  const iso=dateInput.value||isoToday(); dateInput.value=iso;
- const dp=iso.split("-").map(Number); const dObj=new Date(dp[0],dp[1]-1,dp[2]); const wd=["日","月","火","水","木","金","土"][dObj.getDay()]; $("dailyReportDateText").textContent=dp[0]+"年"+dp[1]+"月"+dp[2]+"日（"+wd+"）";
+ const dp=iso.split("-").map(Number); const dObj=new Date(dp[0],dp[1]-1,dp[2]); const wd=["日","月","火","水","木","金","土"][dObj.getDay()]; const dailyLabel=$("dailyReportDateLabel"); if(dailyLabel) dailyLabel.textContent=dp[0]+"年"+dp[1]+"月"+dp[2]+"日（"+wd+"）";
  const saved=dailyReports[iso];
  const lastVehicle=localStorage.getItem("yakuhin_last_vehicle_type");
  const defaultDailyVehicle=(lastVehicle==="10t"||lastVehicle==="4t")?lastVehicle:"4t";
@@ -2417,7 +2417,7 @@ restoreLastVehicleType();
   const CFG={
     historyDate:{button:'historyDateText',label:'historyDateLabel',render:()=>{try{window.renderHistory&&window.renderHistory();}catch(e){}}},
     deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){}}},
-    dailyReportDate:{button:'dailyReportDateText',label:'dailyReportDateText',render:()=>{try{window.renderDailyReport&&window.renderDailyReport();}catch(e){}}}
+    dailyReportDate:{button:'dailyReportDateText',label:'dailyReportDateLabel',render:()=>{try{window.renderDailyReport&&window.renderDailyReport();}catch(e){}}}
   };
   let activeInput=null, viewYear=0, viewMonth=0;
   function isoParts(v){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
@@ -2435,7 +2435,7 @@ restoreLastVehicleType();
       const act=e.target.closest('[data-act]'); if(act){if(act.dataset.act==='prev') changeMonth(-1); else changeMonth(1); return;}
       const day=e.target.closest('.hcc-day'); if(day&&!day.disabled) choose(+day.dataset.y,+day.dataset.m,+day.dataset.d);
     });
-    document.addEventListener('click',e=>{if(cal.style.display==='none')return; if(e.target.closest('#historyCustomCalendar')||e.target.closest('#historyDateText')||e.target.closest('#deliveryHistoryDateText'))return; close();},true);
+    document.addEventListener('click',e=>{if(cal.style.display==='none')return; if(e.target.closest('#historyCustomCalendar')||e.target.closest('#historyDateText')||e.target.closest('#deliveryHistoryDateText')||e.target.closest('#dailyReportDateText'))return; close();},true);
     window.addEventListener('resize',position);
     window.addEventListener('scroll',position,true);
     return cal;
@@ -2468,14 +2468,54 @@ restoreLastVehicleType();
 </script>
 </body>
 
+<style id="daily-date-display-final-fix">
+/* 運転日報：注文履歴と同じ中央日付表示 */
+#dailyReportDateText{
+  display:block !important;
+  position:relative !important;
+  z-index:3 !important;
+  text-align:center !important;
+  color:#1c1c1e !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+}
+#dailyReportDateLabel{
+  display:inline !important;
+  color:#1c1c1e !important;
+  font-size:19px !important;
+  font-weight:700 !important;
+}
+</style>
+<script id="daily-date-display-init-fix">
+(function(){
+  function pad(n){return String(n).padStart(2,'0');}
+  function todayIso(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function sync(){
+    const input=document.getElementById('dailyReportDate');
+    const label=document.getElementById('dailyReportDateLabel');
+    if(!input||!label)return;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(input.value)) input.value=todayIso();
+    const p=input.value.split('-').map(Number);
+    if(p.length!==3)return;
+    const d=new Date(p[0],p[1]-1,p[2]);
+    const wd=['日','月','火','水','木','金','土'];
+    label.textContent=p[0]+'年'+p[1]+'月'+p[2]+'日（'+wd[d.getDay()]+'）';
+  }
+  function init(){
+    sync();
+    const input=document.getElementById('dailyReportDate');
+    if(input)input.addEventListener('change',sync);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  window.syncDailyReportDateLabel=sync;
+})();
+</script>
+
 <style id="history-date-picker-final-override">
 /* 履歴の日付中央をタップしてiPhone/ブラウザの標準カレンダーを開くため、日付inputを透明なまま操作可能にする */
 .history-date-nav{position:relative !important;}
-#historyDate,#deliveryHistoryDate{
-  visibility:hidden !important;
-  opacity:0 !important;
-  pointer-events:none !important;
-  z-index:1 !important;
+#historyDate,#deliveryHistoryDate,#dailyReportDate{
+  display:none !important;
 }
 </style>
 </html>
