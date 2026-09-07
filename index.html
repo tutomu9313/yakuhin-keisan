@@ -945,6 +945,44 @@ function save(k,v){
  if(k!==KEY_B&&k!==KEY_D) autoBackup();
  if(k!==KEY_B&&k!==KEY_D)scheduleCloudSync();
 }
+
+/* ===== 最新データ再読込 =====
+ * 画面を移動したときに、localStorage の最新内容をメモリ上の
+ * 配列にも反映してから各画面を再描画する。
+ */
+function refreshDataFromStorage(){
+ try{
+   const c=JSON.parse(localStorage.getItem(KEY_C)||"null");
+   if(Array.isArray(c)){
+     chemicals=c;
+     localStorage.setItem("yakuhin_volume_chemicals",JSON.stringify(chemicals));
+   }
+ }catch(e){}
+ try{
+   const k=JSON.parse(localStorage.getItem(KEY_K)||"null");
+   if(Array.isArray(k)) customers=k;
+ }catch(e){}
+ try{
+   const h=JSON.parse(localStorage.getItem(KEY_H)||"null");
+   if(Array.isArray(h)) history=h;
+ }catch(e){}
+ try{
+   const p=JSON.parse(localStorage.getItem(KEY_P)||"null");
+   if(p&&typeof p==="object"&&!Array.isArray(p)) departments=p;
+ }catch(e){}
+ try{
+   const dh=JSON.parse(localStorage.getItem("yakuhin_delivery_history")||"null");
+   if(Array.isArray(dh)) deliveryHistory=dh;
+ }catch(e){}
+ try{
+   const dr=JSON.parse(localStorage.getItem(KEY_DR)||"null");
+   if(dr&&typeof dr==="object"&&!Array.isArray(dr)) dailyReports=dr;
+ }catch(e){}
+ try{
+   const cr=JSON.parse(localStorage.getItem(KEY_CR)||"null");
+   if(cr&&typeof cr==="object"&&!Array.isArray(cr)) commissionRates=normalizeCommissionRates(cr);
+ }catch(e){}
+}
 function autoBackup(){
  try{
   const backup={
@@ -1194,7 +1232,23 @@ function closeCalcResultDialog(){
  $("calcResultModal").setAttribute("aria-hidden","true");
 }
 /* ===== 計算登録・修正 ===== */
-function saveDelivery(){
+
+/* ===== データ変更直後の最新データ再読み込み ===== */
+async function reloadLatestAfterMutation(){
+  refreshDataFromStorage();
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer=null;
+  if(!currentSession || !cloudLoaded)return true;
+  while(cloudBusy) await new Promise(r=>setTimeout(r,50));
+  const saved=await cloudSaveNow();
+  if(!saved)return false;
+  const loaded=await cloudLoadNow(false);
+  if(loaded) refreshDataFromStorage();
+  return loaded;
+}
+window.reloadLatestAfterMutation=reloadLatestAfterMutation;
+
+async function saveDelivery(){
  const customer=$("customer").value.trim(), department=$("department").value.trim(), c=chemicals[Number($("chemical").value)], r=calc();
  if(!customer){alert("先に取引先を入力してください。");$("customer").focus();return}
  if(!c||r.kg<=0){alert("薬品・数量・単位・比重を確認してください。");return}
@@ -1221,6 +1275,7 @@ function saveDelivery(){
      if(!Array.isArray(departments[customer])) departments[customer]=[];
      if(!departments[customer].includes(department)){departments[customer].push(department);saveDepartments();}
    }
+   await reloadLatestAfterMutation();
    showCalcResultDialog(rec);
    clearDraft();resetDeliveryForm();renderHistory();
    return;
@@ -1236,6 +1291,7 @@ function saveDelivery(){
      saveDepartments();
    }
  }
+ await reloadLatestAfterMutation();
  showCalcResultDialog(rec);clearDraft();resetDeliveryForm();
  if($("historyDate"))$("historyDate").value=rec.date;
  renderHistory();
@@ -1438,13 +1494,14 @@ function deleteLinkedDeliveryHistory(order){
    renderDeliveryHistory();
  }
 }
-function deleteHistoryRecord(x){
+async function deleteHistoryRecord(x){
  const idx=history.indexOf(x);
  if(idx<0)return;
  if(confirm((x.time?x.time+" ":"")+x.customer+" / "+x.chemical+" の履歴を削除しますか？")){
    deleteLinkedDeliveryHistory(x);
    history.splice(idx,1);
    save(KEY_H,history);
+   await reloadLatestAfterMutation();
    closeHistoryModal();
    renderHistory();
  }
@@ -1918,7 +1975,7 @@ function loadDailyReport(){
  alert("保存した日報を呼び出しました。");
  return true;
 }
-function deleteDailyReport(){
+async function deleteDailyReport(){
  const iso=$("dailyReportDate").value||isoToday();
  if(!dailyReports[iso]){alert("この日付の日報は保存されていません。");return;}
  if(!confirm("この日付の日報を削除しますか？\n\n配達履歴は削除されません。"))return;
@@ -1931,7 +1988,7 @@ function deleteDailyReport(){
 window.deleteDailyReport=deleteDailyReport;
 ["dailyStartTime","dailyEndTime"].forEach(id=>{const el=$(id);if(el){el.addEventListener("input",updateDailyWorkDuration);el.addEventListener("change",updateDailyWorkDuration);}});
 if($("dailyOvertime")){$("dailyOvertime").addEventListener("change",()=>{const el=$("dailyOvertime");if(el.value!==""){let v=Number(el.value);if(!Number.isFinite(v))v=0;v=Math.round(v*2)/2;v=Math.max(0,Math.min(24,v));el.value=String(v);}});}
-function saveDailyReport(){
+async function saveDailyReport(){
  const iso=$("dailyReportDate").value||isoToday(),vehicle=$("dailyVehicleType").value;
  const outRaw=String($("outOdometer").value||"").trim();
  const inRaw=String($("inOdometer").value||"").trim();
@@ -1954,6 +2011,7 @@ function saveDailyReport(){
  $("dailyVehicleType").value=vehicle;
  updateDailyDistanceImmediate();
  updateDailyReturnDependentSections();
+ await reloadLatestAfterMutation();
  alert(hasReturn?"日報を保存しました。":"出庫kmを保存しました。終了後帰庫kmを入力してください。");
 }
 
@@ -2052,7 +2110,36 @@ function showDeliveryHistoryWeeklyListView(){
 
 window.renderDeliveryHistoryWeeklyList=renderDeliveryHistoryWeeklyList;
 /* ===== 画面切り替え ===== */
+async function refreshLatestForPage(page){
+  refreshDataFromStorage();
+  if(!currentSession || !cloudLoaded) return;
+  // 保存直後の画面移動では、保留中のクラウド保存を先に完了させる
+  // これにより自分の修正を古いクラウドデータで上書きしない。
+  if(cloudSyncTimer){
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer=null;
+    await cloudSaveNow();
+  }else{
+    while(cloudBusy) await new Promise(r=>setTimeout(r,50));
+  }
+  const ok=await cloudLoadNow(false);
+  if(ok && sessionStorage.getItem("yakuhin_current_page")===page){
+    refreshDataFromStorage();
+    if(page==="history" && typeof renderHistory==="function"){
+      if($("historyWeeklyListView")?.classList.contains("hidden")) renderHistory(); else renderHistoryWeeklyList();
+    }
+    if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function"){
+      if($("deliveryHistoryWeeklyListView")?.classList.contains("hidden")) renderDeliveryHistory(); else renderDeliveryHistoryWeeklyList();
+    }
+    if(page==="daily" && typeof renderDailyReport==="function"){ renderDailyReport(); setTimeout(updateDailyCalc,0); }
+    if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
+    if(page==="chem" && typeof renderChemList==="function") renderChemList();
+    if(page==="customer" && typeof renderCustomers==="function") renderCustomers();
+  }
+}
+
 function show(page){
+  refreshDataFromStorage();
   sessionStorage.setItem("yakuhin_current_page",page);
   const pages=["calc","history","delivery","deliveryHistory","daily","weekly","chem","customer"];
   pages.forEach(p=>{
@@ -2209,7 +2296,7 @@ $("calcResultClose").onclick=()=>{
  if(goHistory){show(returnPage);if(returnPage==="weekly") renderWeeklyReport(); else renderHistory();}
 };
 $("calcResultLoad").onclick=()=>{if(pendingHistoryRecord){const x=pendingHistoryRecord;pendingHistoryRecord=null;closeCalcResultDialog();loadHistoryRecord(x)}else{closeCalcResultDialog()}};
-$("calcResultDelete").onclick=()=>{
+$("calcResultDelete").onclick=async()=>{
   if(!pendingHistoryRecord)return;
   const x=pendingHistoryRecord;
   if(confirm((x.time?x.time+" ":"")+x.customer+" / "+x.chemical+" の履歴を削除しますか？")){
@@ -2218,6 +2305,7 @@ $("calcResultDelete").onclick=()=>{
       deleteLinkedDeliveryHistory(x);
       history.splice(idx,1);
       save(KEY_H,history);
+      await reloadLatestAfterMutation();
       pendingHistoryRecord=null;
       const returnPage=calcResultReturnPage||"history";
       closeCalcResultDialog();
@@ -2263,7 +2351,7 @@ $("deliveryEditKg").addEventListener("input",function(){
   $("deliveryEditL").value=(Number.isFinite(kg)&&kg>0&&d>0)?String(Math.trunc((kg/d)*100)/100):"";
   updateDeliveryEditDifferences();
 });
-$("deliveryEditSaveBtn").onclick=function(){
+$("deliveryEditSaveBtn").onclick=async function(){
   if(deliveryEditIndex<0)return;
   const x=deliveryHistory[deliveryEditIndex];
   const kg=Number($("deliveryEditKg").value);
@@ -2277,16 +2365,18 @@ $("deliveryEditSaveBtn").onclick=function(){
   deliveryHistory[deliveryEditIndex]=x;
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
+  await reloadLatestAfterMutation();
   closeDeliveryEdit();
   renderDeliveryHistory();
 };
-$("deliveryEditDeleteBtn").onclick=function(){
+$("deliveryEditDeleteBtn").onclick=async function(){
   if(deliveryEditIndex<0)return;
   const x=deliveryHistory[deliveryEditIndex];
   if(!confirm("この納品データを削除しますか？"))return;
   deliveryHistory.splice(deliveryEditIndex,1);
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
+  await reloadLatestAfterMutation();
   closeDeliveryEdit();
   renderDeliveryHistory();
 };
@@ -2295,7 +2385,7 @@ $("deliveryEditModal").addEventListener("click",function(e){
   if(e.target===$("deliveryEditModal"))closeDeliveryEdit();
 });
 
-$("deliverySaveBtn").onclick=function(){
+$("deliverySaveBtn").onclick=async function(){
   if(!deliverySourceOrder)return;
   const kg=Number($("deliveryKg").value);
   const d=Number(deliverySourceOrder.density);
@@ -2337,6 +2427,7 @@ $("deliverySaveBtn").onclick=function(){
   deliveryHistory.unshift(rec);
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
+  await reloadLatestAfterMutation();
   deliverySourceOrder=null;
   if($("deliveryHistoryDate")) $("deliveryHistoryDate").value=deliveryDate;
   show("deliveryHistory");
