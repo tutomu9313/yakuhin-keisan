@@ -393,6 +393,18 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   cursor:pointer !important;
 }
 </style>
+<style id="delivery-edit-date-width-fix">
+/* 納品データの編集：納品日の入力欄だけ幅を他の入力欄と揃える */
+#deliveryEditModal #deliveryEditDate{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -739,7 +751,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <h3>納品データの編集</h3>
   <div id="deliveryEditInfo" style="line-height:1.8;margin-bottom:10px"></div>
   <label style="color:#000">納品日</label>
-  <input id="deliveryEditDate" type="date" style="width:100%;box-sizing:border-box;margin-bottom:10px;font-weight:700">
+  <input id="deliveryEditDate" type="date" style="margin-bottom:10px;font-weight:700">
   <label style="color:#000">実納品重量（kg）</label>
   <input id="deliveryEditKg" type="number" inputmode="decimal" step="0.01">
   <label style="margin-top:12px;color:#000">実納品容量（L）</label>
