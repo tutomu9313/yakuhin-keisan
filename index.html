@@ -36,7 +36,16 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 /* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(6,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
-.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
+.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.date-display-button{border:0;background:transparent;margin:0;width:100%;height:46px;font-size:19px;font-weight:700;padding:0;cursor:pointer}.history-date-nav{margin:0}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}
+.history-weekly-table{width:100%;border-collapse:collapse;font-size:13px}
+.history-weekly-table th,.history-weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:middle}
+.history-weekly-table th{font-weight:700;background:#f2f2f7}
+.history-weekly-table tr[data-order-index]{cursor:pointer}
+.history-weekly-table tr[data-order-index]:active{opacity:.65}
+.history-weekly-status{display:block;font-size:12px;font-weight:700;margin-top:4px}
+.history-weekly-status.delivered{color:#34c759}
+.history-weekly-status.undelivered{color:#ff3b30}
+.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
@@ -56,7 +65,8 @@ header{font-size:24px;font-weight:800;letter-spacing:-.4px;padding:18px 18px 16p
 label{color:#6e6e73;font-size:13px;font-weight:600;margin-bottom:7px}
 input,select{height:48px;border:1px solid #d1d1d6;border-radius:12px;padding:0 13px;font-size:17px;background:#fff}
 .planned-time-row{margin-top:12px;display:flex;align-items:center;gap:10px}.planned-time-row label{margin:0;white-space:nowrap}.planned-time-row input{width:140px;box-sizing:border-box}.planned-time-row select{width:112px;box-sizing:border-box}
-#dateDisplay,#historyDate,#deliveryHistoryDate,#deliveryDate{width:calc(100% - 25px)!important;max-width:100%;min-width:0;box-sizing:border-box}
+#dateDisplay,#historyDate,#deliveryHistoryDate,#deliveryDate{width:calc(100% - 25px)!important;max-width:100%;min-width:0;box-sizing:border-box}\n#historyDate,#deliveryHistoryDate{position:absolute!important;opacity:0!important;pointer-events:auto!important;width:calc(100% - 112px)!important;height:46px!important;padding:0!important;margin:0!important;border:0!important;left:56px;top:0;z-index:5;}
+.history-date-nav{position:relative;}
 input:focus,select:focus{outline:2px solid #007aff30;border-color:#007aff}
 .amountrow{grid-template-columns:1fr 105px;gap:10px}
 button{height:48px;border-radius:13px;font-size:16px;font-weight:700;margin-top:10px}
@@ -351,6 +361,38 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   #dailyWorkTimeSection input[type="time"]{padding-left:8px !important;padding-right:8px !important;}
 }
 </style>
+<style id="history-date-label-visible-fix">
+#historyDateText, #deliveryHistoryDateText{
+  color:#1c1c1e !important;
+  text-align:center !important;
+  background:transparent !important;
+}
+#historyDateText span, #deliveryHistoryDateText span{
+  color:#1c1c1e !important;
+}
+</style>
+
+<style id="history-date-final-ui-fix">
+.history-date-nav{position:relative;grid-template-columns:48px 1fr 48px;}
+.history-date-nav > .date-display-button{position:relative;z-index:3;}
+#historyDate,#deliveryHistoryDate{
+  position:absolute !important;
+  left:56px !important;
+  top:0 !important;
+  width:calc(100% - 112px) !important;
+  height:46px !important;
+  opacity:0 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  appearance:auto !important;
+  -webkit-appearance:auto !important;
+  z-index:4 !important;
+  cursor:pointer !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -416,22 +458,60 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 </section>
 
 <section id="historyPage" class="hidden">
-<div class="card"><label for="historyDate">表示する日付</label><input id="historyDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div>
-<div class="card"><div class="summary">
-<div class="box"><small>注文件数</small><strong id="count">0</strong><small>件</small></div>
-<div class="box"><small>合計注文重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
-</div></div>
-<div class="card" id="historyList"></div>
+ <div class="card daily-view-tabs"><button id="historyViewToggleBtn" type="button">一覧を見る</button></div>
+ <div id="historyDetailView">
+  <div class="card">
+   <div class="daily-report-date-nav history-date-nav">
+    <button id="historyPrevBtn" class="gray" type="button" onclick="window.shiftHistoryDate(-1)">‹</button>
+    <button id="historyDateText" class="date-display-button" type="button"><span id="historyDateLabel"></span></button>
+    <button id="historyNextBtn" class="gray" type="button" onclick="window.shiftHistoryDate(1)">›</button>
+    <input id="historyDate" type="date" aria-label="日付選択">
+   </div>
+  </div>
+  <div class="card"><div class="summary">
+  <div class="box"><small>注文件数</small><strong id="count">0</strong><small>件</small></div>
+  <div class="box"><small>合計注文重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
+  </div></div>
+  <div class="card" id="historyList"></div>
+ </div>
+ <div id="historyWeeklyListView" class="hidden">
+  <div class="card">
+   <div id="historyWeeklyListPeriod" class="daily-list-period"></div>
+   <table class="history-weekly-table">
+    <thead><tr><th>日付</th><th>取引先</th><th>部署名</th><th>薬品名</th></tr></thead>
+    <tbody id="historyWeeklyListBody"></tbody>
+   </table>
+  </div>
+ </div>
 </section>
 
 <section id="weeklyPage" class="hidden"><div class="card"><label for="weeklyDate">週を選択</label><input id="weeklyDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div id="weeklyPeriod" style="font-weight:700;text-align:center;margin-bottom:10px"></div><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section>
 <section id="deliveryHistoryPage" class="hidden">
- <div class="card"><label for="deliveryHistoryDate">表示する日付</label><input id="deliveryHistoryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div>
+ <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
+ <div id="deliveryHistoryDetailView">
+ <div class="card">
+  <div class="daily-report-date-nav history-date-nav">
+   <button id="deliveryHistoryPrevBtn" class="gray" type="button" onclick="window.shiftDeliveryHistoryDate(-1)">‹</button>
+   <button id="deliveryHistoryDateText" class="date-display-button" type="button"><span id="deliveryHistoryDateLabel"></span></button>
+   <button id="deliveryHistoryNextBtn" class="gray" type="button" onclick="window.shiftDeliveryHistoryDate(1)">›</button>
+   <input id="deliveryHistoryDate" type="date" aria-label="日付選択">
+  </div>
+ </div>
  <div class="card"><div class="summary">
    <div class="box"><small>納品件数</small><strong id="deliveryCount">0</strong><small>件</small></div>
    <div class="box"><small>合計納品重量</small><strong id="deliveryTotalKg">0.00</strong><small>kg</small></div>
  </div></div>
  <div class="card" id="deliveryHistoryList"></div>
+ </div>
+ <div id="deliveryHistoryWeeklyListView" class="hidden">
+  <div class="card">
+   <div id="deliveryHistoryWeeklyListPeriod" class="daily-list-period"></div>
+   <table class="history-weekly-table">
+    <thead><tr><th>納品日</th><th>取引先</th><th>部署</th><th>納品量</th></tr></thead>
+    <tbody id="deliveryHistoryWeeklyListBody"></tbody>
+   </table>
+  </div>
+ </div>
 </section>
 
 <section id="dailyPage" class="hidden">
@@ -440,12 +520,12 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  </div>
  <div id="dailyDetailView">
  <div class="card">
-  <div class="daily-report-date-nav">
+  <div class="daily-report-date-nav history-date-nav">
    <button id="dailyPrevBtn" class="gray" type="button" onclick="window.goDailyDate(-1)">‹</button>
-   <div id="dailyReportDateText" class="daily-report-date"></div>
+   <button id="dailyReportDateText" class="daily-report-date date-display-button" type="button" aria-label="日付を選択"><span id="dailyReportDateLabel"></span></button>
    <button id="dailyNextBtn" class="gray" type="button" onclick="window.goDailyDate(1)">›</button>
+   <input id="dailyReportDate" type="date" aria-label="日付選択">
   </div>
-  <input id="dailyReportDate" type="date" style="display:none">
  </div>
  <div class="card" id="dailyRunSection">
   <div class="daily-run-header">
@@ -595,11 +675,11 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div id="cloudEmail" class="cloud-email"></div>
   <div class="modal-actions">
    <button id="settingsChemBtn">薬品設定</button>
-   <button id="settingsCustomerBtn">取引先設定</button>
+   <button id="settingsCustomerBtn">客先設定</button>
    <button id="settingsCommissionBtn">歩合給設定</button>
-   <button id="settingsCutoffBtn">運転日報設定</button>
-   <button id="cloudRefreshBtn">クラウド再読込</button>
-   <button id="cloudSaveBtn">クラウド保存</button>
+   <button id="settingsCutoffBtn">運転日報締め日設定</button>
+   <button id="cloudRefreshBtn">クラウドから再読込</button>
+   <button id="cloudSaveBtn">クラウドへ保存</button>
    <button id="cloudLogoutBtn" class="gray">ログアウト</button>
    <button id="settingsCancelBtn" class="gray full">閉じる</button>
   </div>
@@ -650,7 +730,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="modal-card">
   <h3>入力計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" class="modal-actions"><button id="calcResultClose" class="gray">閉じる</button><button id="calcResultLoad">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green full" style="background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red full">この注文データを削除</button></div>
+  <div id="calcResultActions" class="modal-actions"><button id="calcResultDelete" class="red">削除</button><button id="calcResultLoad">読込む</button><button id="deliveryRegisterBtn" type="button" class="green full" style="background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultClose" class="gray full">閉じる</button></div>
  </div>
 </div>
 
@@ -658,6 +738,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="modal-card">
   <h3>納品データの編集</h3>
   <div id="deliveryEditInfo" style="line-height:1.8;margin-bottom:10px"></div>
+  <label style="color:#000">納品日</label>
+  <input id="deliveryEditDate" type="date" style="margin-bottom:10px;font-weight:700">
   <label style="color:#000">実納品重量（kg）</label>
   <input id="deliveryEditKg" type="number" inputmode="decimal" step="0.01">
   <label style="margin-top:12px;color:#000">実納品容量（L）</label>
@@ -665,9 +747,9 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div id="deliveryEditCapacityDiff" style="font-size:13px;margin-top:6px;color:#000">容量差：— L</div>
   <div id="deliveryEditWeightDiff" style="font-size:13px;margin-top:3px;color:#000">重量差：— kg</div>
   <div class="modal-actions">
-   <button id="deliveryEditSaveBtn">保存</button>
    <button id="deliveryEditDeleteBtn" class="red">削除</button>
-   <button id="deliveryEditCancelBtn" class="gray full">キャンセル</button>
+   <button id="deliveryEditSaveBtn">保存</button>
+   <button id="deliveryEditCancelBtn" class="gray full">閉じる</button>
   </div>
  </div>
 </div>
@@ -1105,7 +1187,7 @@ function showCalcResultDialog(rec,fromHistory=false,returnPage="history"){
  $("deliveryRegisterBtn").style.background=alreadyDelivered?"#8e8e93":"#34c759";
  $("deliveryRegisterBtn").textContent=alreadyDelivered?"納品履歴":"納品登録";
  $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
- $("calcResultClose").style.gridColumn=fromHistory?"1":"1 / -1";
+ $("calcResultClose").style.gridColumn="1 / -1";
  $("calcResultModal").classList.remove("hidden");
  $("calcResultModal").setAttribute("aria-hidden","false");
 }
@@ -1184,6 +1266,7 @@ function renderDeliveryHistory(){
   const dateInput=$("deliveryHistoryDate");
   const selected=dateInput ? (dateInput.value||isoToday()) : isoToday();
   if(dateInput)dateInput.value=selected;
+  updateDeliveryHistoryDateLabel();
   const rows=deliveryHistory.filter(x=>(x.date||"")===selected);
   $("deliveryCount").textContent=rows.length;
   $("deliveryTotalKg").textContent=formatQuantity(rows.reduce((s,x)=>s+Number(x.deliveryKg||0),0));
@@ -1287,6 +1370,7 @@ function openDeliveryEdit(i){
     "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px'>薬品名："+esc(x.chemical||"")+"</span>"+
     "<br>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+
     "<br>注文重量："+formatQuantity(x.orderKg)+" kg";
+  $("deliveryEditDate").value=x.date||isoToday();
   $("deliveryEditKg").value=x.deliveryKg??"";
   const editChem=(chemicals||[]).find(c=>c && c.name===x.chemical);
   const editDensity=Number(x.density)>0?Number(x.density):(editChem&&Number(editChem.density)>0?Number(editChem.density):0);
@@ -1394,6 +1478,37 @@ function loadHistoryRecord(x){
 
 
 /* ===== 履歴表示 ===== */
+function updateHistoryDateLabel(){
+ const iso=$("historyDate")?.value||isoToday();
+ const d=localDateFromISO(iso);
+ const wd=["日","月","火","水","木","金","土"];
+ if($("historyDateLabel")) $("historyDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+}
+function shiftHistoryDate(delta){
+ const input=$("historyDate");
+ const d=localDateFromISO(input?.value||isoToday());
+ d.setDate(d.getDate()+Number(delta||0));
+ if(input) input.value=isoFromLocalDate(d);
+ updateHistoryDateLabel();
+ renderHistory();
+ if(!$("historyWeeklyListView")?.classList.contains("hidden")) renderHistoryWeeklyList();
+ window.scrollTo(0,0);
+}
+function updateDeliveryHistoryDateLabel(){
+ const iso=$("deliveryHistoryDate")?.value||isoToday();
+ const d=localDateFromISO(iso);
+ const wd=["日","月","火","水","木","金","土"];
+ if($("deliveryHistoryDateLabel")) $("deliveryHistoryDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+}
+function shiftDeliveryHistoryDate(delta){
+ const input=$("deliveryHistoryDate");
+ const d=localDateFromISO(input?.value||isoToday());
+ d.setDate(d.getDate()+Number(delta||0));
+ if(input) input.value=isoFromLocalDate(d);
+ updateDeliveryHistoryDateLabel();
+ renderDeliveryHistory();
+ window.scrollTo(0,0);
+}
 function renderHistory(){
  const selected=($("historyDate").value)||isoToday();
  $("historyDate").value=selected;
@@ -1665,7 +1780,7 @@ function showDailyListView(){const d=$("dailyDetailView"),l=$("dailyListView");i
 function renderDailyReport(){
  const dateInput=$("dailyReportDate"); if(!dateInput)return;
  const iso=dateInput.value||isoToday(); dateInput.value=iso;
- const dp=iso.split("-").map(Number);$("dailyReportDateText").textContent=dp[0]+"年"+dp[1]+"月"+dp[2]+"日";
+ const dp=iso.split("-").map(Number); const dObj=new Date(dp[0],dp[1]-1,dp[2]); const wd=["日","月","火","水","木","金","土"][dObj.getDay()]; const dailyLabel=$("dailyReportDateLabel"); if(dailyLabel) dailyLabel.textContent=dp[0]+"年"+dp[1]+"月"+dp[2]+"日（"+wd+"）";
  const saved=dailyReports[iso];
  const lastVehicle=localStorage.getItem("yakuhin_last_vehicle_type");
  const defaultDailyVehicle=(lastVehicle==="10t"||lastVehicle==="4t")?lastVehicle:"4t";
@@ -1846,6 +1961,98 @@ function saveDailyReport(){
 }
 
 function renderWeeklyReport(){const input=$("weeklyDate");if(!input)return;const selected=input.value||isoToday();input.value=selected;const mon=mondayOf(selected),sun=new Date(mon);sun.setDate(mon.getDate()+6);const from=isoFromLocalDate(mon),to=isoFromLocalDate(sun),wd=["日","月","火","水","木","金","土"];$("weeklyPeriod").textContent=displayDate(from)+"（"+wd[mon.getDay()]+"）～"+displayDate(to)+"（"+wd[sun.getDay()]+"）";const rows=deliveryHistory.filter(x=>x&&x.date>=from&&x.date<=to).map(x=>{const src=x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null;return {...x,plannedTime:x.plannedTime||src&&src.plannedTime||"",vehicleType:x.vehicleType||""};}).sort((a,b)=>String(a.date).localeCompare(String(b.date))||((a.plannedTime||"99:99").localeCompare(b.plannedTime||"99:99"))||String(a.time||"").localeCompare(String(b.time||"")));const tbody=$("weeklyList");tbody.innerHTML="";let lastDate="",total=0;if(!rows.length){tbody.innerHTML='<tr><td colspan="4" class="weekly-empty">この週の納品記録はありません。</td></tr>';$('weeklyTotal').textContent="週間合計：0 kg";return;}let dayTotal=0;rows.forEach((x,i)=>{const next=rows[i+1],tr=document.createElement("tr"),d=localDateFromISO(x.date),dateText=x.date===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）",kg=Number(x.deliveryKg||0);lastDate=x.date;dayTotal+=kg;total+=kg;tr.style.cursor="pointer";tr.title="タップして入力計算結果を表示";tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><div>"+esc(x.chemical||"")+"</div><div style='margin-top:3px'>"+formatQuantity(trunc2(kg))+" kg</div></td>";tr.addEventListener("click",()=>{const src=x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null;const order=src||{date:x.date||isoToday(),time:x.time||"",customer:x.customer||"",department:x.department||"",plannedTime:x.plannedTime||"",vehicleType:x.vehicleType||"",chemical:x.chemical||"",warning:!!x.warning,amount:x.orderAmount,unit:(x.orderUnit==="m³"?"m3":x.orderUnit||"kg"),kg:Number(x.orderKg)||0,L:Number(x.orderL)||0,m3:0,density:Number(x.density)||0,loadingCm:x.loadingCm};if(!src&&order.unit==="m3")order.m3=Number(x.orderAmount)||0;showCalcResultDialog(order,true,"weekly");});tbody.appendChild(tr);if(!next||next.date!==x.date){const sub=document.createElement("tr");sub.innerHTML="<td></td><td></td><td style='font-weight:700;text-align:right'>日計</td><td style='font-weight:700'>"+formatQuantity(trunc2(dayTotal))+" kg</td>";tbody.appendChild(sub);dayTotal=0;}});$("weeklyTotal").textContent="週間合計："+formatQuantity(trunc2(total))+" kg";}
+/* ===== 注文履歴：1週間一覧 ===== */
+function historyWeeklyRangeFor(ref){
+ const mon=mondayOf(ref||isoToday());
+ const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+ return {from:isoFromLocalDate(mon),to:isoFromLocalDate(sun)};
+}
+function renderHistoryWeeklyList(){
+ const body=$("historyWeeklyListBody"),period=$("historyWeeklyListPeriod");
+ if(!body||!period)return;
+ const ref=$("historyDate")?.value||isoToday();
+ const range=historyWeeklyRangeFor(ref);
+ const fd=localDateFromISO(range.from),td=localDateFromISO(range.to);
+ const wd=["日","月","火","水","木","金","土"];
+ period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日（"+wd[fd.getDay()]+"）～"+(td.getMonth()+1)+"月"+td.getDate()+"日（"+wd[td.getDay()]+"）";
+ const rows=history.filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.time||"99:99").localeCompare(String(b.time||"99:99"))||((a.created||0)-(b.created||0)));
+ body.innerHTML="";
+ if(!rows.length){body.innerHTML='<tr><td colspan="4" class="daily-list-empty">この週の注文はありません。</td></tr>';return;}
+ rows.forEach((x,i)=>{
+   const tr=document.createElement("tr"); tr.dataset.orderIndex=String(history.indexOf(x)); tr.title="タップして入力計算結果を表示";
+   const d=localDateFromISO(x.date);
+   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   const delivered=deliveryHistory.some(d=>d&&d.orderKey===deliveryOrderKey(x));
+   const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
+   tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td>"+esc(x.chemical||"")+status+"</td>";
+   tr.addEventListener("click",()=>showCalcResultDialog(x,true,"history"));
+   body.appendChild(tr);
+ });
+}
+function updateHistoryViewToggle(){
+ const b=$("historyViewToggleBtn"); if(!b)return;
+ const listHidden=$("historyWeeklyListView")?.classList.contains("hidden");
+ b.textContent=listHidden?"一覧を見る":"注文履歴に戻る";
+}
+function showHistoryDetailView(){
+ const d=$("historyDetailView"),l=$("historyWeeklyListView"); if(d)d.classList.remove("hidden"); if(l)l.classList.add("hidden"); updateHistoryViewToggle(); renderHistory();
+}
+function showHistoryWeeklyListView(){
+ const d=$("historyDetailView"),l=$("historyWeeklyListView"); if(d)d.classList.add("hidden"); if(l)l.classList.remove("hidden"); updateHistoryViewToggle(); renderHistoryWeeklyList();
+}
+
+/* ===== 納品履歴：1週間一覧 ===== */
+function deliveryHistoryWeeklyRangeFor(ref){
+ const mon=mondayOf(ref||isoToday());
+ const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+ return {from:isoFromLocalDate(mon),to:isoFromLocalDate(sun)};
+}
+function renderDeliveryHistoryWeeklyList(){
+ const body=$("deliveryHistoryWeeklyListBody"),period=$("deliveryHistoryWeeklyListPeriod");
+ if(!body||!period)return;
+ const ref=$("deliveryHistoryDate")?.value||isoToday();
+ const range=deliveryHistoryWeeklyRangeFor(ref);
+ const fd=localDateFromISO(range.from),td=localDateFromISO(range.to);
+ const wd=["日","月","火","水","木","金","土"];
+ period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日（"+wd[fd.getDay()]+"）～"+(td.getMonth()+1)+"月"+td.getDate()+"日（"+wd[td.getDay()]+"）";
+ const rows=deliveryHistory.filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.plannedTime||"99:99").localeCompare(String(b.plannedTime||"99:99"))||String(a.time||"99:99").localeCompare(String(b.time||"99:99")));
+ body.innerHTML="";
+ if(!rows.length){body.innerHTML='<tr><td colspan="4" class="daily-list-empty">この週の納品記録はありません。</td></tr>';return;}
+ rows.forEach(x=>{
+   const tr=document.createElement("tr");
+   tr.title="タップして入力計算結果を表示";
+   const d=localDateFromISO(x.date);
+   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   const deliveryKg = Number(x.deliveryKg);
+   let deliveryL = Number(x.deliveryL);
+   if(!Number.isFinite(deliveryL)) {
+     const density = Number(x.density);
+     if(Number.isFinite(deliveryKg) && density>0) deliveryL = deliveryKg/density;
+   }
+   const kgText = Number.isFinite(deliveryKg) ? formatQuantity(deliveryKg)+" kg" : "— kg";
+   const lText = Number.isFinite(deliveryL) ? formatQuantity(deliveryL)+" L" : "— L";
+   tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><div>"+kgText+"</div><div style='margin-top:2px'>"+lText+"</div></td>";
+   tr.title="タップして納品データを編集";
+   tr.addEventListener("click",()=>{
+     const deliveryIndex=deliveryHistory.indexOf(x);
+     if(deliveryIndex>=0) openDeliveryEdit(deliveryIndex);
+   });
+   body.appendChild(tr);
+ });
+}
+function updateDeliveryHistoryViewToggle(){
+ const b=$("deliveryHistoryViewToggleBtn"); if(!b)return;
+ const listHidden=$("deliveryHistoryWeeklyListView")?.classList.contains("hidden");
+ b.textContent=listHidden?"一覧を見る":"納品履歴に戻る";
+}
+function showDeliveryHistoryDetailView(){
+ const d=$("deliveryHistoryDetailView"),l=$("deliveryHistoryWeeklyListView"); if(d)d.classList.remove("hidden"); if(l)l.classList.add("hidden"); updateDeliveryHistoryViewToggle(); renderDeliveryHistory();
+}
+function showDeliveryHistoryWeeklyListView(){
+ const d=$("deliveryHistoryDetailView"),l=$("deliveryHistoryWeeklyListView"); if(d)d.classList.add("hidden"); if(l)l.classList.remove("hidden"); updateDeliveryHistoryViewToggle(); renderDeliveryHistoryWeeklyList();
+}
+
+window.renderDeliveryHistoryWeeklyList=renderDeliveryHistoryWeeklyList;
 /* ===== 画面切り替え ===== */
 function show(page){
   sessionStorage.setItem("yakuhin_current_page",page);
@@ -1866,7 +2073,9 @@ function show(page){
   };
   if($("title")) $("title").textContent=titles[page]||"薬品配達・容量計算";
 
-  if(page==="history" && typeof renderHistory==="function") renderHistory();
+  if(page==="history" && typeof renderHistory==="function") {
+    if($("historyWeeklyListView")?.classList.contains("hidden")) renderHistory(); else renderHistoryWeeklyListView();
+  }
   if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") renderDeliveryHistory();
   if(page==="daily" && typeof renderDailyReport==="function") { renderDailyReport(); setTimeout(updateDailyCalc,0); }
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
@@ -1975,18 +2184,39 @@ updateCloudAccountUI();
 initCloud();
 
 $("dailyViewToggleBtn").onclick=()=>{if($("dailyListView")?.classList.contains("hidden"))showDailyListView();else showDailyDetailView();}; updateDailyViewToggle();
+$("historyViewToggleBtn").onclick=()=>{if($("historyWeeklyListView")?.classList.contains("hidden"))showHistoryWeeklyListView();else showHistoryDetailView();}; updateHistoryViewToggle();
+$("deliveryHistoryViewToggleBtn").onclick=()=>{if($("deliveryHistoryWeeklyListView")?.classList.contains("hidden"))showDeliveryHistoryWeeklyListView();else showDeliveryHistoryDetailView();}; updateDeliveryHistoryViewToggle();
 renderChemicals();renderCustomers();if($("weeklyDate")){$("weeklyDate").value=isoToday();$("weeklyDate").addEventListener("change",renderWeeklyReport);}setCalcEnabled(false);$("resultCard").style.display="none";calc();$("customer").addEventListener("input",saveDraft);
 $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
-restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{
+restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}autoBackup();
+$("historyDate").value=$("historyDate").value||isoToday();
+$("deliveryHistoryDate").value=$("deliveryHistoryDate").value||isoToday();
+$("historyDate").addEventListener("change",()=>{updateHistoryDateLabel();renderHistory();if(!$("historyWeeklyListView")?.classList.contains("hidden"))renderHistoryWeeklyList();});
+$("deliveryHistoryDate").addEventListener("change",()=>{updateDeliveryHistoryDateLabel();renderDeliveryHistory();if(!$("deliveryHistoryWeeklyListView")?.classList.contains("hidden"))renderDeliveryHistoryWeeklyList();});
+updateHistoryDateLabel();
+updateDeliveryHistoryDateLabel();
+$("historyDateText").onclick=()=>{const el=$("historyDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
+$("deliveryHistoryDateText").onclick=()=>{const el=$("deliveryHistoryDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
+renderHistory();renderDeliveryHistory();
+function refreshAfterCalcResultClose(){
+  /* 入力計算結果ダイアログを閉じた直後だけ、履歴表示を最新状態に再描画する。
+     データの保存・クラウド同期・画面移動の仕組みは変更しない。 */
+  try{ if(typeof renderHistory==="function") renderHistory(); }catch(e){}
+  try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
+  try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
+  try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
+}
+$("calcResultClose").onclick=()=>{
  const goHistory=registeredResultDialog;
  const returnPage=calcResultReturnPage||"history";
  closeCalcResultDialog();
  pendingHistoryRecord=null;
  registeredResultDialog=false;
  calcResultReturnPage="history";
+ refreshAfterCalcResultClose();
  if(goHistory){show(returnPage);if(returnPage==="weekly") renderWeeklyReport(); else renderHistory();}
 };
 $("calcResultLoad").onclick=()=>{if(pendingHistoryRecord){const x=pendingHistoryRecord;pendingHistoryRecord=null;closeCalcResultDialog();loadHistoryRecord(x)}else{closeCalcResultDialog()}};
@@ -2052,6 +2282,9 @@ $("deliveryEditSaveBtn").onclick=function(){
   const d=Number(x.density)>0?Number(x.density):(chem&&Number(chem.density)>0?Number(chem.density):0);
   if(!Number.isFinite(kg)||kg<=0){alert("実納品重量を入力してください。");return;}
   if(!(d>0)){alert("比重を確認してください。");return;}
+  const editDate=$("deliveryEditDate").value;
+  if(!validISO(editDate)){alert("納品日を入力してください。");return;}
+  x.date=editDate;
   x.density=d;
   x.deliveryKg=trunc2(kg);
   x.deliveryL=trunc2(kg/d);
@@ -2060,6 +2293,8 @@ $("deliveryEditSaveBtn").onclick=function(){
   scheduleCloudSync();
   closeDeliveryEdit();
   renderDeliveryHistory();
+  if(!$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
+  updateDeliveryHistoryDateLabel();
 };
 $("deliveryEditDeleteBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
@@ -2070,6 +2305,8 @@ $("deliveryEditDeleteBtn").onclick=function(){
   scheduleCloudSync();
   closeDeliveryEdit();
   renderDeliveryHistory();
+  if(!$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
+  updateDeliveryHistoryDateLabel();
 };
 $("deliveryEditCancelBtn").onclick=closeDeliveryEdit;
 $("deliveryEditModal").addEventListener("click",function(e){
@@ -2132,6 +2369,8 @@ $("deliveryKg").oninput=calcDeliveryAmount;
 // 日報機能：ページ外のイベントからも呼び出せるよう公開
 window.dailyDateShift = dailyDateShift;
 window.goDailyDate = goDailyDate;
+window.shiftHistoryDate = shiftHistoryDate;
+window.shiftDeliveryHistoryDate = shiftDeliveryHistoryDate;
 window.updateDailyDistanceImmediate = updateDailyDistanceImmediate;
 window.updateDailyCalc = updateDailyCalc;
 window.updateDailyReturnDependentSections = updateDailyReturnDependentSections;
@@ -2217,7 +2456,231 @@ restoreLastVehicleType();
   background:#f5f5f7 !important;
 }
 </style>
+
+<script id="history-date-display-final-fix">
+(function(){
+  function formatHistoryDateValue(value){
+    if(!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return "";
+    const p=value.split("-").map(Number);
+    const d=new Date(p[0],p[1]-1,p[2]);
+    const wd=["日","月","火","水","木","金","土"];
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+  }
+  function syncHistoryDateLabels(){
+    const h=document.getElementById("historyDate");
+    const hl=document.getElementById("historyDateLabel");
+    const d=document.getElementById("deliveryHistoryDate");
+    const dl=document.getElementById("deliveryHistoryDateLabel");
+    const today=(new Date());
+    const isoToday=today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+    if(h){ if(!/^\d{4}-\d{2}-\d{2}$/.test(h.value)) h.value=isoToday; if(hl) hl.textContent=formatHistoryDateValue(h.value); }
+    if(d){ if(!/^\d{4}-\d{2}-\d{2}$/.test(d.value)) d.value=isoToday; if(dl) dl.textContent=formatHistoryDateValue(d.value); }
+  }
+  function wireHistoryCalendar(inputId, buttonId){
+    const input=document.getElementById(inputId);
+    const button=document.getElementById(buttonId);
+    if(!input || !button) return;
+    button.onclick=function(){
+      syncHistoryDateLabels();
+      try{ if(typeof input.showPicker==="function"){ input.showPicker(); return; } }catch(e){}
+      input.focus(); input.click();
+    };
+    input.addEventListener("change", syncHistoryDateLabels);
+  }
+  function init(){
+    syncHistoryDateLabels();
+    wireHistoryCalendar("historyDate","historyDateText");
+    wireHistoryCalendar("deliveryHistoryDate","deliveryHistoryDateText");
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
+})();
+</script>
+
+
+<script id="history-date-final-handlers">
+(function(){
+  function isoToLabel(value){
+    if(!value) return "";
+    const p=value.split("-").map(Number);
+    if(p.length!==3 || !p[0] || !p[1] || !p[2]) return "";
+    const d=new Date(p[0],p[1]-1,p[2]);
+    const wd=["日","月","火","水","木","金","土"];
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+  }
+  function ensure(id,labelId){
+    const input=document.getElementById(id), label=document.getElementById(labelId);
+    if(!input || !label) return null;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(input.value)){
+      const now=new Date();
+      input.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+    }
+    label.textContent=isoToLabel(input.value);
+    return input;
+  }
+  function bind(inputId, labelId, buttonId, renderFn){
+    const input=ensure(inputId,labelId), btn=document.getElementById(buttonId);
+    if(!input || !btn) return;
+    if(btn.dataset.historyBound === "1") return;
+    btn.dataset.historyBound = "1";
+    btn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      ensure(inputId,labelId);
+      try{ if(typeof input.showPicker === "function"){ input.showPicker(); return; } }catch(e){}
+      try{ input.click(); }catch(e){}
+    });
+    input.addEventListener("change", function(){
+      ensure(inputId,labelId);
+      try{ if(renderFn) renderFn(); }catch(e){}
+    });
+  }
+  function init(){
+    bind("historyDate","historyDateLabel","historyDateText",window.renderHistory);
+    bind("deliveryHistoryDate","deliveryHistoryDateLabel","deliveryHistoryDateText",window.renderDeliveryHistory);
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
+
+<style id="history-calendar-custom-picker">
+#historyCustomCalendar{
+  position:fixed; z-index:99999; width:320px; max-width:calc(100vw - 24px);
+  background:#fff; border:1px solid #d1d1d6; border-radius:14px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18); padding:12px; display:none;
+  box-sizing:border-box;
+}
+#historyCustomCalendar .hcc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+#historyCustomCalendar .hcc-head button{border:0;background:#f2f2f7;border-radius:9px;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer}
+#historyCustomCalendar .hcc-title{font-weight:700;font-size:17px}
+#historyCustomCalendar .hcc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
+#historyCustomCalendar .hcc-week div{text-align:center;font-size:12px;color:#666;padding:4px 0}
+#historyCustomCalendar .hcc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+#historyCustomCalendar .hcc-day{width:100%;height:38px;min-height:38px;margin:0 !important;padding:0 !important;border:0;background:#fff;color:#1c1c1e !important;border-radius:9px;font-size:15px;line-height:38px;font-weight:400;cursor:pointer;box-sizing:border-box;display:block}
+#historyCustomCalendar .hcc-day:hover{background:#f2f2f7;color:#1c1c1e !important}
+#historyCustomCalendar .hcc-day.other{color:#aaa}
+#historyCustomCalendar .hcc-day.today{font-weight:700;box-shadow:inset 0 0 0 1.5px #007aff}
+#historyCustomCalendar .hcc-day.selected{background:#007aff;color:#fff;font-weight:700}
+@media(max-width:420px){#historyCustomCalendar{width:calc(100vw - 20px)}}
+</style>
+<script id="history-calendar-custom-picker-script">
+(function(){
+  const CFG={
+    historyDate:{button:'historyDateText',label:'historyDateLabel',render:()=>{try{window.renderHistory&&window.renderHistory();}catch(e){}}},
+    deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){} try{if(!document.getElementById('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) window.renderDeliveryHistoryWeeklyList&&window.renderDeliveryHistoryWeeklyList();}catch(e){}}},
+    dailyReportDate:{button:'dailyReportDateText',label:'dailyReportDateLabel',render:()=>{try{window.renderDailyReport&&window.renderDailyReport();}catch(e){}}}
+  };
+  let activeInput=null, viewYear=0, viewMonth=0;
+  function isoParts(v){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
+  function isoDate(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+  function label(y,m,d){const dt=new Date(y,m,d); const wd=['日','月','火','水','木','金','土']; return `${y}年${m+1}月${d}日（${wd[dt.getDay()]}）`;}
+  function getToday(){const d=new Date(); return [d.getFullYear(),d.getMonth(),d.getDate()];}
+  function ensureValue(input){let p=isoParts(input.value); if(!p){p=getToday(); input.value=isoDate(...p);} return p;}
+  function build(){
+    let cal=document.getElementById('historyCustomCalendar');
+    if(cal) return cal;
+    cal=document.createElement('div'); cal.id='historyCustomCalendar'; cal.setAttribute('role','dialog'); cal.setAttribute('aria-modal','true');
+    cal.innerHTML='<div class="hcc-head"><button type="button" data-act="prev" aria-label="前月">‹</button><div class="hcc-title"></div><button type="button" data-act="next" aria-label="次月">›</button></div><div class="hcc-week">'+['日','月','火','水','木','金','土'].map(x=>`<div>${x}</div>`).join('')+'</div><div class="hcc-grid"></div>';
+    document.body.appendChild(cal);
+    cal.addEventListener('click',e=>{
+      const act=e.target.closest('[data-act]'); if(act){if(act.dataset.act==='prev') changeMonth(-1); else changeMonth(1); return;}
+      const day=e.target.closest('.hcc-day'); if(day&&!day.disabled) choose(+day.dataset.y,+day.dataset.m,+day.dataset.d);
+    });
+    document.addEventListener('click',e=>{if(cal.style.display==='none')return; if(e.target.closest('#historyCustomCalendar')||e.target.closest('#historyDateText')||e.target.closest('#deliveryHistoryDateText')||e.target.closest('#dailyReportDateText'))return; close();},true);
+    window.addEventListener('resize',position);
+    window.addEventListener('scroll',position,true);
+    return cal;
+  }
+  function render(){
+    const cal=build(), title=cal.querySelector('.hcc-title'), grid=cal.querySelector('.hcc-grid');
+    title.textContent=`${viewYear}年${viewMonth+1}月`;
+    const selected=activeInput?isoParts(activeInput.value):null, today=getToday();
+    const first=new Date(viewYear,viewMonth,1).getDay(); const days=new Date(viewYear,viewMonth+1,0).getDate(); const prevDays=new Date(viewYear,viewMonth,0).getDate();
+    let html='';
+    for(let i=0;i<42;i++){
+      const n=i-first+1; let y=viewYear,m=viewMonth,d=n,other=false;
+      if(n<1){m--;if(m<0){m=11;y--;}d=prevDays+n;other=true;}
+      else if(n>days){m++;if(m>11){m=0;y++;}d=n-days;other=true;}
+      const sel=selected&&selected[0]===y&&selected[1]===m&&selected[2]===d;
+      const tod=today[0]===y&&today[1]===m&&today[2]===d;
+      html+=`<button type="button" class="hcc-day${other?' other':''}${tod?' today':''}${sel?' selected':''}" data-y="${y}" data-m="${m}" data-d="${d}">${d}</button>`;
+    }
+    grid.innerHTML=html;
+  }
+  function position(){const cal=build(); if(cal.style.display==='none'||!activeInput)return; const btn=document.getElementById(CFG[activeInput.id].button); if(!btn)return; const r=btn.getBoundingClientRect(); const w=cal.offsetWidth||320; let left=r.left+(r.width-w)/2; left=Math.max(10,Math.min(left,window.innerWidth-w-10)); let top=r.bottom+8; const h=cal.offsetHeight||360; if(top+h>window.innerHeight-10) top=Math.max(10,r.top-h-8); cal.style.left=left+'px'; cal.style.top=top+'px';}
+  function open(id){const input=document.getElementById(id); if(!input)return; activeInput=input; const p=ensureValue(input); viewYear=p[0];viewMonth=p[1]; render(); const cal=build(); cal.style.display='block'; position();}
+  function close(){const cal=document.getElementById('historyCustomCalendar'); if(cal)cal.style.display='none'; activeInput=null;}
+  function changeMonth(delta){viewMonth+=delta;if(viewMonth<0){viewMonth=11;viewYear--;}if(viewMonth>11){viewMonth=0;viewYear++;}render();position();}
+  function choose(y,m,d){
+    if(!activeInput)return;
+    const input=activeInput;
+    const c=CFG[input.id];
+    const nextIso=isoDate(y,m,d);
+    input.value=nextIso;
+    const lab=document.getElementById(c.label);
+    if(lab)lab.textContent=label(y,m,d);
+    close();
+    /* 日付変更後は、選択日を確実に反映してから画面を再描画する */
+    try{ input.dispatchEvent(new Event('change',{bubbles:true})); }catch(e){}
+    try{ c.render&&c.render(); }catch(e){}
+    /* Firefoxでイベント順序が異なる場合にも備えて再描画を1回だけ予約 */
+    setTimeout(()=>{try{c.render&&c.render();}catch(e){}},0);
+  }
+  function bind(id){const c=CFG[id], btn=document.getElementById(c.button), input=document.getElementById(id); if(!btn||!input)return; btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open(id);},true); input.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(id);}},true);}
+  function init(){build(); bind('historyDate'); bind('deliveryHistoryDate'); bind('dailyReportDate');}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
 </body>
+
+<style id="daily-date-display-final-fix">
+/* 運転日報：注文履歴と同じ中央日付表示 */
+#dailyReportDateText{
+  display:block !important;
+  position:relative !important;
+  z-index:3 !important;
+  text-align:center !important;
+  color:#1c1c1e !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+}
+#dailyReportDateLabel{
+  display:inline !important;
+  color:#1c1c1e !important;
+  font-size:19px !important;
+  font-weight:700 !important;
+}
+</style>
+<script id="daily-date-display-init-fix">
+(function(){
+  function pad(n){return String(n).padStart(2,'0');}
+  function todayIso(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function sync(){
+    const input=document.getElementById('dailyReportDate');
+    const label=document.getElementById('dailyReportDateLabel');
+    if(!input||!label)return;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(input.value)) input.value=todayIso();
+    const p=input.value.split('-').map(Number);
+    if(p.length!==3)return;
+    const d=new Date(p[0],p[1]-1,p[2]);
+    const wd=['日','月','火','水','木','金','土'];
+    label.textContent=p[0]+'年'+p[1]+'月'+p[2]+'日（'+wd[d.getDay()]+'）';
+  }
+  function init(){
+    sync();
+    const input=document.getElementById('dailyReportDate');
+    if(input)input.addEventListener('change',sync);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  window.syncDailyReportDateLabel=sync;
+})();
+</script>
+
+<style id="history-date-picker-final-override">
+/* 履歴の日付中央をタップしてiPhone/ブラウザの標準カレンダーを開くため、日付inputを透明なまま操作可能にする */
+.history-date-nav{position:relative !important;}
+#historyDate,#deliveryHistoryDate,#dailyReportDate{
+  display:none !important;
+}
+</style>
 </html>
 
 <style id="daily-worktime-spacing-background">
@@ -2245,5 +2708,27 @@ restoreLastVehicleType();
 #dailyWorkTimeSection .box{
   padding:7px 10px !important;
   min-height:58px !important;
+}
+</style>
+
+<style id="daily-worktime-safe-fix-20260907">
+/* 運転日報：始業・終業の時間欄を2列で確実に分離（他機能は変更しない） */
+#dailyWorkTimeSection .detail > .grid2:first-child{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:8px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#dailyWorkTimeSection #dailyStartTime,
+#dailyWorkTimeSection #dailyEndTime{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+@media (max-width:420px){
+  #dailyWorkTimeSection .detail > .grid2:first-child{gap:6px !important;}
 }
 </style>
