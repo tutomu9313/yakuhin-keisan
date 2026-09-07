@@ -2327,6 +2327,7 @@ $("deliveryEditSaveBtn").onclick=function(){
   if($('deliveryHistoryDate')) $('deliveryHistoryDate').value=editDate;
   updateDeliveryHistoryDateLabel();
   renderDeliveryHistory();
+  if(!$("deliveryHistoryWeeklyListView")?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
 };
 $("deliveryEditDeleteBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
@@ -2337,6 +2338,7 @@ $("deliveryEditDeleteBtn").onclick=function(){
   scheduleCloudSync();
   closeDeliveryEdit();
   renderDeliveryHistory();
+  if(!$("deliveryHistoryWeeklyListView")?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
 };
 $("deliveryEditCancelBtn").onclick=closeDeliveryEdit;
 $("deliveryEditModal").addEventListener("click",function(e){
