@@ -36,7 +36,7 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 /* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(6,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
-.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
+.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.date-display-button{border:0;background:transparent;margin:0;width:100%;height:46px;font-size:19px;font-weight:700;padding:0;cursor:pointer}.history-date-nav{margin:0}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
@@ -56,7 +56,8 @@ header{font-size:24px;font-weight:800;letter-spacing:-.4px;padding:18px 18px 16p
 label{color:#6e6e73;font-size:13px;font-weight:600;margin-bottom:7px}
 input,select{height:48px;border:1px solid #d1d1d6;border-radius:12px;padding:0 13px;font-size:17px;background:#fff}
 .planned-time-row{margin-top:12px;display:flex;align-items:center;gap:10px}.planned-time-row label{margin:0;white-space:nowrap}.planned-time-row input{width:140px;box-sizing:border-box}.planned-time-row select{width:112px;box-sizing:border-box}
-#dateDisplay,#historyDate,#deliveryHistoryDate,#deliveryDate{width:calc(100% - 25px)!important;max-width:100%;min-width:0;box-sizing:border-box}
+#dateDisplay,#historyDate,#deliveryHistoryDate,#deliveryDate{width:calc(100% - 25px)!important;max-width:100%;min-width:0;box-sizing:border-box}\n#historyDate,#deliveryHistoryDate{position:absolute!important;opacity:0!important;pointer-events:auto!important;width:calc(100% - 112px)!important;height:46px!important;padding:0!important;margin:0!important;border:0!important;left:56px;top:0;z-index:5;}
+.history-date-nav{position:relative;}
 input:focus,select:focus{outline:2px solid #007aff30;border-color:#007aff}
 .amountrow{grid-template-columns:1fr 105px;gap:10px}
 button{height:48px;border-radius:13px;font-size:16px;font-weight:700;margin-top:10px}
@@ -351,6 +352,37 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   #dailyWorkTimeSection input[type="time"]{padding-left:8px !important;padding-right:8px !important;}
 }
 </style>
+<style id="history-date-label-visible-fix">
+#historyDateText, #deliveryHistoryDateText{
+  color:#1c1c1e !important;
+  text-align:center !important;
+  background:transparent !important;
+}
+#historyDateText span, #deliveryHistoryDateText span{
+  color:#1c1c1e !important;
+}
+</style>
+
+<style id="history-date-final-ui-fix">
+.history-date-nav{position:relative;grid-template-columns:48px 1fr 48px;}
+.history-date-nav > .date-display-button{position:relative;z-index:3;}
+#historyDate,#deliveryHistoryDate{
+  position:absolute !important;
+  left:56px !important;
+  top:0 !important;
+  width:calc(100% - 112px) !important;
+  height:46px !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  z-index:1 !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -416,7 +448,14 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 </section>
 
 <section id="historyPage" class="hidden">
-<div class="card"><label for="historyDate">表示する日付</label><input id="historyDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div>
+<div class="card">
+ <div class="daily-report-date-nav history-date-nav">
+  <button id="historyPrevBtn" class="gray" type="button" onclick="window.shiftHistoryDate(-1)">‹</button>
+  <button id="historyDateText" class="date-display-button" type="button"><span id="historyDateLabel"></span></button>
+  <button id="historyNextBtn" class="gray" type="button" onclick="window.shiftHistoryDate(1)">›</button>
+  <input id="historyDate" type="date" aria-label="日付選択">
+ </div>
+</div>
 <div class="card"><div class="summary">
 <div class="box"><small>注文件数</small><strong id="count">0</strong><small>件</small></div>
 <div class="box"><small>合計注文重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
@@ -426,7 +465,14 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 
 <section id="weeklyPage" class="hidden"><div class="card"><label for="weeklyDate">週を選択</label><input id="weeklyDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div id="weeklyPeriod" style="font-weight:700;text-align:center;margin-bottom:10px"></div><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section>
 <section id="deliveryHistoryPage" class="hidden">
- <div class="card"><label for="deliveryHistoryDate">表示する日付</label><input id="deliveryHistoryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold"></div>
+ <div class="card">
+  <div class="daily-report-date-nav history-date-nav">
+   <button id="deliveryHistoryPrevBtn" class="gray" type="button" onclick="window.shiftDeliveryHistoryDate(-1)">‹</button>
+   <button id="deliveryHistoryDateText" class="date-display-button" type="button"><span id="deliveryHistoryDateLabel"></span></button>
+   <button id="deliveryHistoryNextBtn" class="gray" type="button" onclick="window.shiftDeliveryHistoryDate(1)">›</button>
+   <input id="deliveryHistoryDate" type="date" aria-label="日付選択">
+  </div>
+ </div>
  <div class="card"><div class="summary">
    <div class="box"><small>納品件数</small><strong id="deliveryCount">0</strong><small>件</small></div>
    <div class="box"><small>合計納品重量</small><strong id="deliveryTotalKg">0.00</strong><small>kg</small></div>
@@ -595,11 +641,11 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div id="cloudEmail" class="cloud-email"></div>
   <div class="modal-actions">
    <button id="settingsChemBtn">薬品設定</button>
-   <button id="settingsCustomerBtn">取引先設定</button>
+   <button id="settingsCustomerBtn">客先設定</button>
    <button id="settingsCommissionBtn">歩合給設定</button>
-   <button id="settingsCutoffBtn">運転日報設定</button>
-   <button id="cloudRefreshBtn">クラウド再読込</button>
-   <button id="cloudSaveBtn">クラウド保存</button>
+   <button id="settingsCutoffBtn">運転日報締め日設定</button>
+   <button id="cloudRefreshBtn">クラウドから再読込</button>
+   <button id="cloudSaveBtn">クラウドへ保存</button>
    <button id="cloudLogoutBtn" class="gray">ログアウト</button>
    <button id="settingsCancelBtn" class="gray full">閉じる</button>
   </div>
@@ -1184,6 +1230,7 @@ function renderDeliveryHistory(){
   const dateInput=$("deliveryHistoryDate");
   const selected=dateInput ? (dateInput.value||isoToday()) : isoToday();
   if(dateInput)dateInput.value=selected;
+  updateDeliveryHistoryDateLabel();
   const rows=deliveryHistory.filter(x=>(x.date||"")===selected);
   $("deliveryCount").textContent=rows.length;
   $("deliveryTotalKg").textContent=formatQuantity(rows.reduce((s,x)=>s+Number(x.deliveryKg||0),0));
@@ -1394,6 +1441,36 @@ function loadHistoryRecord(x){
 
 
 /* ===== 履歴表示 ===== */
+function updateHistoryDateLabel(){
+ const iso=$("historyDate")?.value||isoToday();
+ const d=localDateFromISO(iso);
+ const wd=["日","月","火","水","木","金","土"];
+ if($("historyDateLabel")) $("historyDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+}
+function shiftHistoryDate(delta){
+ const input=$("historyDate");
+ const d=localDateFromISO(input?.value||isoToday());
+ d.setDate(d.getDate()+Number(delta||0));
+ if(input) input.value=isoFromLocalDate(d);
+ updateHistoryDateLabel();
+ renderHistory();
+ window.scrollTo(0,0);
+}
+function updateDeliveryHistoryDateLabel(){
+ const iso=$("deliveryHistoryDate")?.value||isoToday();
+ const d=localDateFromISO(iso);
+ const wd=["日","月","火","水","木","金","土"];
+ if($("deliveryHistoryDateLabel")) $("deliveryHistoryDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+}
+function shiftDeliveryHistoryDate(delta){
+ const input=$("deliveryHistoryDate");
+ const d=localDateFromISO(input?.value||isoToday());
+ d.setDate(d.getDate()+Number(delta||0));
+ if(input) input.value=isoFromLocalDate(d);
+ updateDeliveryHistoryDateLabel();
+ renderDeliveryHistory();
+ window.scrollTo(0,0);
+}
 function renderHistory(){
  const selected=($("historyDate").value)||isoToday();
  $("historyDate").value=selected;
@@ -1980,7 +2057,17 @@ $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
-restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}autoBackup();$("historyDate").addEventListener("change",renderHistory);renderHistory();$("calcResultClose").onclick=()=>{
+restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}autoBackup();
+$("historyDate").value=$("historyDate").value||isoToday();
+$("deliveryHistoryDate").value=$("deliveryHistoryDate").value||isoToday();
+$("historyDate").addEventListener("change",()=>{updateHistoryDateLabel();renderHistory();});
+$("deliveryHistoryDate").addEventListener("change",()=>{updateDeliveryHistoryDateLabel();renderDeliveryHistory();});
+updateHistoryDateLabel();
+updateDeliveryHistoryDateLabel();
+$("historyDateText").onclick=()=>{const el=$("historyDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
+$("deliveryHistoryDateText").onclick=()=>{const el=$("deliveryHistoryDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
+renderHistory();renderDeliveryHistory();
+$("calcResultClose").onclick=()=>{
  const goHistory=registeredResultDialog;
  const returnPage=calcResultReturnPage||"history";
  closeCalcResultDialog();
@@ -2132,6 +2219,8 @@ $("deliveryKg").oninput=calcDeliveryAmount;
 // 日報機能：ページ外のイベントからも呼び出せるよう公開
 window.dailyDateShift = dailyDateShift;
 window.goDailyDate = goDailyDate;
+window.shiftHistoryDate = shiftHistoryDate;
+window.shiftDeliveryHistoryDate = shiftDeliveryHistoryDate;
 window.updateDailyDistanceImmediate = updateDailyDistanceImmediate;
 window.updateDailyCalc = updateDailyCalc;
 window.updateDailyReturnDependentSections = updateDailyReturnDependentSections;
@@ -2217,6 +2306,90 @@ restoreLastVehicleType();
   background:#f5f5f7 !important;
 }
 </style>
+
+<script id="history-date-display-final-fix">
+(function(){
+  function formatHistoryDateValue(value){
+    if(!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return "";
+    const p=value.split("-").map(Number);
+    const d=new Date(p[0],p[1]-1,p[2]);
+    const wd=["日","月","火","水","木","金","土"];
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+  }
+  function syncHistoryDateLabels(){
+    const h=document.getElementById("historyDate");
+    const hl=document.getElementById("historyDateLabel");
+    const d=document.getElementById("deliveryHistoryDate");
+    const dl=document.getElementById("deliveryHistoryDateLabel");
+    const today=(new Date());
+    const isoToday=today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");
+    if(h){ if(!/^\d{4}-\d{2}-\d{2}$/.test(h.value)) h.value=isoToday; if(hl) hl.textContent=formatHistoryDateValue(h.value); }
+    if(d){ if(!/^\d{4}-\d{2}-\d{2}$/.test(d.value)) d.value=isoToday; if(dl) dl.textContent=formatHistoryDateValue(d.value); }
+  }
+  function wireHistoryCalendar(inputId, buttonId){
+    const input=document.getElementById(inputId);
+    const button=document.getElementById(buttonId);
+    if(!input || !button) return;
+    button.onclick=function(){
+      syncHistoryDateLabels();
+      try{ if(typeof input.showPicker==="function"){ input.showPicker(); return; } }catch(e){}
+      input.focus(); input.click();
+    };
+    input.addEventListener("change", syncHistoryDateLabels);
+  }
+  function init(){
+    syncHistoryDateLabels();
+    wireHistoryCalendar("historyDate","historyDateText");
+    wireHistoryCalendar("deliveryHistoryDate","deliveryHistoryDateText");
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
+})();
+</script>
+
+
+<script id="history-date-final-handlers">
+(function(){
+  function isoToLabel(value){
+    if(!value) return "";
+    const p=value.split("-").map(Number);
+    if(p.length!==3 || !p[0] || !p[1] || !p[2]) return "";
+    const d=new Date(p[0],p[1]-1,p[2]);
+    const wd=["日","月","火","水","木","金","土"];
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+  }
+  function ensure(id,labelId){
+    const input=document.getElementById(id), label=document.getElementById(labelId);
+    if(!input || !label) return null;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(input.value)){
+      const now=new Date();
+      input.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+    }
+    label.textContent=isoToLabel(input.value);
+    return input;
+  }
+  function bind(inputId, labelId, buttonId, renderFn){
+    const input=ensure(inputId,labelId), btn=document.getElementById(buttonId);
+    if(!input || !btn) return;
+    if(btn.dataset.historyBound === "1") return;
+    btn.dataset.historyBound = "1";
+    btn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      ensure(inputId,labelId);
+      try{ if(typeof input.showPicker === "function"){ input.showPicker(); return; } }catch(e){}
+      try{ input.click(); }catch(e){}
+    });
+    input.addEventListener("change", function(){
+      ensure(inputId,labelId);
+      try{ if(renderFn) renderFn(); }catch(e){}
+    });
+  }
+  function init(){
+    bind("historyDate","historyDateLabel","historyDateText",window.renderHistory);
+    bind("deliveryHistoryDate","deliveryHistoryDateLabel","deliveryHistoryDateText",window.renderDeliveryHistory);
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
 </body>
 </html>
 
