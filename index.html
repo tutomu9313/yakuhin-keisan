@@ -2419,7 +2419,7 @@ restoreLastVehicleType();
     deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){}}}
   };
   let activeInput=null, viewYear=0, viewMonth=0;
-  function isoParts(v){const m=/^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
+  function isoParts(v){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
   function isoDate(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
   function label(y,m,d){const dt=new Date(y,m,d); const wd=['日','月','火','水','木','金','土']; return `${y}年${m+1}月${d}日（${wd[dt.getDay()]}）`;}
   function getToday(){const d=new Date(); return [d.getFullYear(),d.getMonth(),d.getDate()];}
@@ -2471,10 +2471,10 @@ restoreLastVehicleType();
 /* 履歴の日付中央をタップしてiPhone/ブラウザの標準カレンダーを開くため、日付inputを透明なまま操作可能にする */
 .history-date-nav{position:relative !important;}
 #historyDate,#deliveryHistoryDate{
-  visibility:visible !important;
+  visibility:hidden !important;
   opacity:0 !important;
-  pointer-events:auto !important;
-  z-index:10 !important;
+  pointer-events:none !important;
+  z-index:1 !important;
 }
 </style>
 </html>
