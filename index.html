@@ -730,7 +730,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="modal-card">
   <h3>入力計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" class="modal-actions"><button id="calcResultClose" class="gray">閉じる</button><button id="calcResultLoad">読み込む</button><button id="deliveryRegisterBtn" type="button" class="green full" style="background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultDelete" class="red full">この注文データを削除</button></div>
+  <div id="calcResultActions" class="modal-actions"><button id="calcResultDelete" class="red">削除</button><button id="calcResultLoad">読込む</button><button id="deliveryRegisterBtn" type="button" class="green full" style="background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultClose" class="gray full">閉じる</button></div>
  </div>
 </div>
 
@@ -738,6 +738,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="modal-card">
   <h3>納品データの編集</h3>
   <div id="deliveryEditInfo" style="line-height:1.8;margin-bottom:10px"></div>
+  <label style="color:#000">納品日</label>
+  <input id="deliveryEditDate" type="date" style="margin-bottom:10px;font-weight:700">
   <label style="color:#000">実納品重量（kg）</label>
   <input id="deliveryEditKg" type="number" inputmode="decimal" step="0.01">
   <label style="margin-top:12px;color:#000">実納品容量（L）</label>
@@ -745,9 +747,9 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div id="deliveryEditCapacityDiff" style="font-size:13px;margin-top:6px;color:#000">容量差：— L</div>
   <div id="deliveryEditWeightDiff" style="font-size:13px;margin-top:3px;color:#000">重量差：— kg</div>
   <div class="modal-actions">
-   <button id="deliveryEditSaveBtn">保存</button>
    <button id="deliveryEditDeleteBtn" class="red">削除</button>
-   <button id="deliveryEditCancelBtn" class="gray full">キャンセル</button>
+   <button id="deliveryEditSaveBtn">保存</button>
+   <button id="deliveryEditCancelBtn" class="gray full">閉じる</button>
   </div>
  </div>
 </div>
@@ -1185,7 +1187,7 @@ function showCalcResultDialog(rec,fromHistory=false,returnPage="history"){
  $("deliveryRegisterBtn").style.background=alreadyDelivered?"#8e8e93":"#34c759";
  $("deliveryRegisterBtn").textContent=alreadyDelivered?"納品履歴":"納品登録";
  $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
- $("calcResultClose").style.gridColumn=fromHistory?"1":"1 / -1";
+ $("calcResultClose").style.gridColumn="1 / -1";
  $("calcResultModal").classList.remove("hidden");
  $("calcResultModal").setAttribute("aria-hidden","false");
 }
@@ -1222,7 +1224,10 @@ function saveDelivery(){
      if(!departments[customer].includes(department)){departments[customer].push(department);saveDepartments();}
    }
    showCalcResultDialog(rec);
-   clearDraft();resetDeliveryForm();renderHistory();
+   clearDraft();resetDeliveryForm();
+   if($('historyDate')) $('historyDate').value=rec.date;
+   updateHistoryDateLabel();
+   renderHistory();
    return;
  }
  const selectedDate=$("dateDisplay").value||$("dateDisplay").dataset.iso||isoToday();
@@ -1368,6 +1373,7 @@ function openDeliveryEdit(i){
     "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px'>薬品名："+esc(x.chemical||"")+"</span>"+
     "<br>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+
     "<br>注文重量："+formatQuantity(x.orderKg)+" kg";
+  $("deliveryEditDate").value=x.date||isoToday();
   $("deliveryEditKg").value=x.deliveryKg??"";
   const editChem=(chemicals||[]).find(c=>c && c.name===x.chemical);
   const editDensity=Number(x.density)>0?Number(x.density):(editChem&&Number(editChem.density)>0?Number(editChem.density):0);
@@ -2029,11 +2035,10 @@ function renderDeliveryHistoryWeeklyList(){
    const kgText = Number.isFinite(deliveryKg) ? formatQuantity(deliveryKg)+" kg" : "— kg";
    const lText = Number.isFinite(deliveryL) ? formatQuantity(deliveryL)+" L" : "— L";
    tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><div>"+kgText+"</div><div style='margin-top:2px'>"+lText+"</div></td>";
+   tr.title="タップして納品データを編集";
    tr.addEventListener("click",()=>{
-     const src=x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null;
-     const order=src||{date:x.date||isoToday(),time:x.time||"",customer:x.customer||"",department:x.department||"",plannedTime:x.plannedTime||"",vehicleType:x.vehicleType||"",chemical:x.chemical||"",warning:!!x.warning,amount:x.orderAmount,unit:(x.orderUnit==="m³"?"m3":x.orderUnit||"kg"),kg:Number(x.orderKg)||0,L:Number(x.orderL)||0,m3:0,density:Number(x.density)||0,loadingCm:x.loadingCm};
-     if(!src&&order.unit==="m3")order.m3=Number(x.orderAmount)||0;
-     showCalcResultDialog(order,true,"deliveryHistory");
+     const deliveryIndex=deliveryHistory.indexOf(x);
+     if(deliveryIndex>=0) openDeliveryEdit(deliveryIndex);
    });
    body.appendChild(tr);
  });
@@ -2051,8 +2056,40 @@ function showDeliveryHistoryWeeklyListView(){
 }
 
 window.renderDeliveryHistoryWeeklyList=renderDeliveryHistoryWeeklyList;
+/* ===== 保存済みデータを再読込して表示を最新化 ===== */
+function reloadPersistentDataForDisplay(){
+  try{
+    const c=localStorage.getItem(KEY_C);
+    if(c){const v=JSON.parse(c);if(Array.isArray(v))chemicals=v;}
+  }catch(e){}
+  try{
+    const c=localStorage.getItem(KEY_K);
+    if(c){const v=JSON.parse(c);if(Array.isArray(v))customers=v;}
+  }catch(e){}
+  try{
+    const c=localStorage.getItem(KEY_P);
+    if(c){const v=JSON.parse(c);if(v&&typeof v==='object'&&!Array.isArray(v))departments=v;}
+  }catch(e){}
+  try{
+    const c=localStorage.getItem(KEY_H);
+    if(c){const v=JSON.parse(c);if(Array.isArray(v))history=v;}
+  }catch(e){}
+  try{
+    const c=localStorage.getItem('yakuhin_delivery_history');
+    if(c){const v=JSON.parse(c);if(Array.isArray(v))deliveryHistory=v;}
+  }catch(e){}
+  try{
+    const c=localStorage.getItem(KEY_DR);
+    if(c){const v=JSON.parse(c);if(v&&typeof v==='object'&&!Array.isArray(v))dailyReports=v;}
+  }catch(e){}
+  try{
+    const c=localStorage.getItem(KEY_CR);
+    if(c){const v=JSON.parse(c);if(v&&typeof v==='object'&&!Array.isArray(v))commissionRates=normalizeCommissionRates(v);}
+  }catch(e){}
+}
 /* ===== 画面切り替え ===== */
 function show(page){
+  reloadPersistentDataForDisplay();
   sessionStorage.setItem("yakuhin_current_page",page);
   const pages=["calc","history","delivery","deliveryHistory","daily","weekly","chem","customer"];
   pages.forEach(p=>{
@@ -2074,8 +2111,14 @@ function show(page){
   if(page==="history" && typeof renderHistory==="function") {
     if($("historyWeeklyListView")?.classList.contains("hidden")) renderHistory(); else renderHistoryWeeklyListView();
   }
-  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") renderDeliveryHistory();
-  if(page==="daily" && typeof renderDailyReport==="function") { renderDailyReport(); setTimeout(updateDailyCalc,0); }
+  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") {
+    if($('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistory();
+    else renderDeliveryHistoryWeeklyListView();
+  }
+  if(page==="daily" && typeof renderDailyReport==="function") {
+    if($('dailyListView')?.classList.contains('hidden')) { renderDailyReport(); setTimeout(updateDailyCalc,0); }
+    else renderDailyList();
+  }
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
   if(page==="chem" && typeof renderChemList==="function") renderChemList();
   if(page==="customer" && typeof renderCustomers==="function") renderCustomers();
@@ -2271,6 +2314,9 @@ $("deliveryEditSaveBtn").onclick=function(){
   const d=Number(x.density)>0?Number(x.density):(chem&&Number(chem.density)>0?Number(chem.density):0);
   if(!Number.isFinite(kg)||kg<=0){alert("実納品重量を入力してください。");return;}
   if(!(d>0)){alert("比重を確認してください。");return;}
+  const editDate=$("deliveryEditDate").value;
+  if(!validISO(editDate)){alert("納品日を入力してください。");return;}
+  x.date=editDate;
   x.density=d;
   x.deliveryKg=trunc2(kg);
   x.deliveryL=trunc2(kg/d);
@@ -2278,6 +2324,8 @@ $("deliveryEditSaveBtn").onclick=function(){
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
   closeDeliveryEdit();
+  if($('deliveryHistoryDate')) $('deliveryHistoryDate').value=editDate;
+  updateDeliveryHistoryDateLabel();
   renderDeliveryHistory();
 };
 $("deliveryEditDeleteBtn").onclick=function(){
