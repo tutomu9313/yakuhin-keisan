@@ -393,14 +393,6 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   cursor:pointer !important;
 }
 </style>
-<style id="delivery-edit-date-width-fix">
-/* 納品データの編集：納品日の入力欄を重量・容量欄と同じ幅に統一 */
-#deliveryEditDate, #deliveryEditKg, #deliveryEditL{
-  width:100% !important;
-  box-sizing:border-box !important;
-  display:block !important;
-}
-</style>
 </head>
 <body>
 <div id="authGate">
@@ -2712,5 +2704,40 @@ restoreLastVehicleType();
 #dailyWorkTimeSection .box{
   padding:7px 10px !important;
   min-height:58px !important;
+}
+</style>
+
+
+<style id="final-safe-layout-fix-20260907">
+/* 最終確認用：納品編集の日付欄を重量・容量欄と同じ幅に固定 */
+#deliveryEditModal #deliveryEditDate,
+#deliveryEditModal #deliveryEditKg,
+#deliveryEditModal #deliveryEditL{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+
+/* 運転日報：始業・終業の入力欄を2列で完全に分離 */
+#dailyWorkTimeSection .detail > .grid2:first-child{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:8px !important;
+  width:100% !important;
+}
+#dailyWorkTimeSection .detail > .grid2:first-child > input[type="time"]{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  padding-left:8px !important;
+  padding-right:8px !important;
+  text-align:center !important;
 }
 </style>
