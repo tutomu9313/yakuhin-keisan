@@ -1224,10 +1224,7 @@ function saveDelivery(){
      if(!departments[customer].includes(department)){departments[customer].push(department);saveDepartments();}
    }
    showCalcResultDialog(rec);
-   clearDraft();resetDeliveryForm();
-   if($('historyDate')) $('historyDate').value=rec.date;
-   updateHistoryDateLabel();
-   renderHistory();
+   clearDraft();resetDeliveryForm();renderHistory();
    return;
  }
  const selectedDate=$("dateDisplay").value||$("dateDisplay").dataset.iso||isoToday();
@@ -2056,40 +2053,8 @@ function showDeliveryHistoryWeeklyListView(){
 }
 
 window.renderDeliveryHistoryWeeklyList=renderDeliveryHistoryWeeklyList;
-/* ===== 保存済みデータを再読込して表示を最新化 ===== */
-function reloadPersistentDataForDisplay(){
-  try{
-    const c=localStorage.getItem(KEY_C);
-    if(c){const v=JSON.parse(c);if(Array.isArray(v))chemicals=v;}
-  }catch(e){}
-  try{
-    const c=localStorage.getItem(KEY_K);
-    if(c){const v=JSON.parse(c);if(Array.isArray(v))customers=v;}
-  }catch(e){}
-  try{
-    const c=localStorage.getItem(KEY_P);
-    if(c){const v=JSON.parse(c);if(v&&typeof v==='object'&&!Array.isArray(v))departments=v;}
-  }catch(e){}
-  try{
-    const c=localStorage.getItem(KEY_H);
-    if(c){const v=JSON.parse(c);if(Array.isArray(v))history=v;}
-  }catch(e){}
-  try{
-    const c=localStorage.getItem('yakuhin_delivery_history');
-    if(c){const v=JSON.parse(c);if(Array.isArray(v))deliveryHistory=v;}
-  }catch(e){}
-  try{
-    const c=localStorage.getItem(KEY_DR);
-    if(c){const v=JSON.parse(c);if(v&&typeof v==='object'&&!Array.isArray(v))dailyReports=v;}
-  }catch(e){}
-  try{
-    const c=localStorage.getItem(KEY_CR);
-    if(c){const v=JSON.parse(c);if(v&&typeof v==='object'&&!Array.isArray(v))commissionRates=normalizeCommissionRates(v);}
-  }catch(e){}
-}
 /* ===== 画面切り替え ===== */
 function show(page){
-  reloadPersistentDataForDisplay();
   sessionStorage.setItem("yakuhin_current_page",page);
   const pages=["calc","history","delivery","deliveryHistory","daily","weekly","chem","customer"];
   pages.forEach(p=>{
@@ -2111,14 +2076,8 @@ function show(page){
   if(page==="history" && typeof renderHistory==="function") {
     if($("historyWeeklyListView")?.classList.contains("hidden")) renderHistory(); else renderHistoryWeeklyListView();
   }
-  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") {
-    if($('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistory();
-    else renderDeliveryHistoryWeeklyListView();
-  }
-  if(page==="daily" && typeof renderDailyReport==="function") {
-    if($('dailyListView')?.classList.contains('hidden')) { renderDailyReport(); setTimeout(updateDailyCalc,0); }
-    else renderDailyList();
-  }
+  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") renderDeliveryHistory();
+  if(page==="daily" && typeof renderDailyReport==="function") { renderDailyReport(); setTimeout(updateDailyCalc,0); }
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
   if(page==="chem" && typeof renderChemList==="function") renderChemList();
   if(page==="customer" && typeof renderCustomers==="function") renderCustomers();
@@ -2242,6 +2201,14 @@ updateDeliveryHistoryDateLabel();
 $("historyDateText").onclick=()=>{const el=$("historyDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
 $("deliveryHistoryDateText").onclick=()=>{const el=$("deliveryHistoryDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
 renderHistory();renderDeliveryHistory();
+function refreshAfterCalcResultClose(){
+  /* 入力計算結果ダイアログを閉じた直後だけ、履歴表示を最新状態に再描画する。
+     データの保存・クラウド同期・画面移動の仕組みは変更しない。 */
+  try{ if(typeof renderHistory==="function") renderHistory(); }catch(e){}
+  try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
+  try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
+  try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
+}
 $("calcResultClose").onclick=()=>{
  const goHistory=registeredResultDialog;
  const returnPage=calcResultReturnPage||"history";
@@ -2249,6 +2216,7 @@ $("calcResultClose").onclick=()=>{
  pendingHistoryRecord=null;
  registeredResultDialog=false;
  calcResultReturnPage="history";
+ refreshAfterCalcResultClose();
  if(goHistory){show(returnPage);if(returnPage==="weekly") renderWeeklyReport(); else renderHistory();}
 };
 $("calcResultLoad").onclick=()=>{if(pendingHistoryRecord){const x=pendingHistoryRecord;pendingHistoryRecord=null;closeCalcResultDialog();loadHistoryRecord(x)}else{closeCalcResultDialog()}};
@@ -2324,10 +2292,7 @@ $("deliveryEditSaveBtn").onclick=function(){
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
   closeDeliveryEdit();
-  if($('deliveryHistoryDate')) $('deliveryHistoryDate').value=editDate;
-  updateDeliveryHistoryDateLabel();
   renderDeliveryHistory();
-  if(!$("deliveryHistoryWeeklyListView")?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
 };
 $("deliveryEditDeleteBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
@@ -2338,7 +2303,6 @@ $("deliveryEditDeleteBtn").onclick=function(){
   scheduleCloudSync();
   closeDeliveryEdit();
   renderDeliveryHistory();
-  if(!$("deliveryHistoryWeeklyListView")?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
 };
 $("deliveryEditCancelBtn").onclick=closeDeliveryEdit;
 $("deliveryEditModal").addEventListener("click",function(e){
