@@ -2293,6 +2293,8 @@ $("deliveryEditSaveBtn").onclick=function(){
   scheduleCloudSync();
   closeDeliveryEdit();
   renderDeliveryHistory();
+  if(!$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
+  updateDeliveryHistoryDateLabel();
 };
 $("deliveryEditDeleteBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
@@ -2303,6 +2305,8 @@ $("deliveryEditDeleteBtn").onclick=function(){
   scheduleCloudSync();
   closeDeliveryEdit();
   renderDeliveryHistory();
+  if(!$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
+  updateDeliveryHistoryDateLabel();
 };
 $("deliveryEditCancelBtn").onclick=closeDeliveryEdit;
 $("deliveryEditModal").addEventListener("click",function(e){
@@ -2707,37 +2711,24 @@ restoreLastVehicleType();
 }
 </style>
 
-
-<style id="final-safe-layout-fix-20260907">
-/* 最終確認用：納品編集の日付欄を重量・容量欄と同じ幅に固定 */
-#deliveryEditModal #deliveryEditDate,
-#deliveryEditModal #deliveryEditKg,
-#deliveryEditModal #deliveryEditL{
-  display:block !important;
-  width:100% !important;
-  max-width:100% !important;
-  min-width:0 !important;
-  box-sizing:border-box !important;
-  margin-left:0 !important;
-  margin-right:0 !important;
-}
-
-/* 運転日報：始業・終業の入力欄を2列で完全に分離 */
+<style id="daily-worktime-safe-fix-20260907">
+/* 運転日報：始業・終業の時間欄を2列で確実に分離（他機能は変更しない） */
 #dailyWorkTimeSection .detail > .grid2:first-child{
   display:grid !important;
   grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
   gap:8px !important;
   width:100% !important;
+  min-width:0 !important;
 }
-#dailyWorkTimeSection .detail > .grid2:first-child > input[type="time"]{
+#dailyWorkTimeSection #dailyStartTime,
+#dailyWorkTimeSection #dailyEndTime{
   display:block !important;
   width:100% !important;
-  max-width:100% !important;
   min-width:0 !important;
-  margin:0 !important;
+  max-width:100% !important;
   box-sizing:border-box !important;
-  padding-left:8px !important;
-  padding-right:8px !important;
-  text-align:center !important;
+}
+@media (max-width:420px){
+  #dailyWorkTimeSection .detail > .grid2:first-child{gap:6px !important;}
 }
 </style>
