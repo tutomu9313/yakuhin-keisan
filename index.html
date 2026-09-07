@@ -489,7 +489,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  <div class="card">
   <div class="daily-report-date-nav">
    <button id="dailyPrevBtn" class="gray" type="button" onclick="window.goDailyDate(-1)">‹</button>
-   <div id="dailyReportDateText" class="daily-report-date"></div>
+   <button id="dailyReportDateText" class="daily-report-date date-display-button" type="button" aria-label="日付を選択"></button>
    <button id="dailyNextBtn" class="gray" type="button" onclick="window.goDailyDate(1)">›</button>
   </div>
   <input id="dailyReportDate" type="date" style="display:none">
@@ -1743,7 +1743,7 @@ function showDailyListView(){const d=$("dailyDetailView"),l=$("dailyListView");i
 function renderDailyReport(){
  const dateInput=$("dailyReportDate"); if(!dateInput)return;
  const iso=dateInput.value||isoToday(); dateInput.value=iso;
- const dp=iso.split("-").map(Number);$("dailyReportDateText").textContent=dp[0]+"年"+dp[1]+"月"+dp[2]+"日";
+ const dp=iso.split("-").map(Number); const dObj=new Date(dp[0],dp[1]-1,dp[2]); const wd=["日","月","火","水","木","金","土"][dObj.getDay()]; $("dailyReportDateText").textContent=dp[0]+"年"+dp[1]+"月"+dp[2]+"日（"+wd+"）";
  const saved=dailyReports[iso];
  const lastVehicle=localStorage.getItem("yakuhin_last_vehicle_type");
  const defaultDailyVehicle=(lastVehicle==="10t"||lastVehicle==="4t")?lastVehicle:"4t";
@@ -2416,7 +2416,8 @@ restoreLastVehicleType();
 (function(){
   const CFG={
     historyDate:{button:'historyDateText',label:'historyDateLabel',render:()=>{try{window.renderHistory&&window.renderHistory();}catch(e){}}},
-    deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){}}}
+    deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){}}},
+    dailyReportDate:{button:'dailyReportDateText',label:'dailyReportDateText',render:()=>{try{window.renderDailyReport&&window.renderDailyReport();}catch(e){}}}
   };
   let activeInput=null, viewYear=0, viewMonth=0;
   function isoParts(v){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
@@ -2461,7 +2462,7 @@ restoreLastVehicleType();
   function changeMonth(delta){viewMonth+=delta;if(viewMonth<0){viewMonth=11;viewYear--;}if(viewMonth>11){viewMonth=0;viewYear++;}render();position();}
   function choose(y,m,d){if(!activeInput)return; activeInput.value=isoDate(y,m,d); const c=CFG[activeInput.id]; const lab=document.getElementById(c.label); if(lab)lab.textContent=label(y,m,d); close(); c.render(); activeInput.dispatchEvent(new Event('change',{bubbles:true}));}
   function bind(id){const c=CFG[id], btn=document.getElementById(c.button), input=document.getElementById(id); if(!btn||!input)return; btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open(id);},true); input.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(id);}},true);}
-  function init(){build(); bind('historyDate'); bind('deliveryHistoryDate');}
+  function init(){build(); bind('historyDate'); bind('deliveryHistoryDate'); bind('dailyReportDate');}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
