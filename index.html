@@ -2028,7 +2028,7 @@ function renderHistoryWeeklyList(){
    lastDate=x.date;
    const delivered=!!findLinkedDelivery(x);
    const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
-   tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td>"+esc(x.chemical||"")+status+"</td>";
+   tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><span style='font-weight:700'>"+esc(x.chemical||"")+"</span>"+status+"</td>";
    tr.addEventListener("click",()=>showCalcResultDialog(x,true,"history"));
    body.appendChild(tr);
  });
