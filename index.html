@@ -1487,14 +1487,14 @@ function deleteHistoryRecord(x){
  const idx=history.indexOf(x);
  if(idx<0)return;
  if(confirm((x.time?x.time+" ":"")+x.customer+" / "+x.chemical+" の履歴を削除しますか？")){
+   closeHistoryModal();
    deleteLinkedDeliveryHistory(x);
    history.splice(idx,1);
    save(KEY_H,history);
-   closeHistoryModal();
    renderHistory();
-   if(!$("historyWeeklyListView")?.classList.contains("hidden")) renderHistoryWeeklyList();
-   renderDeliveryHistory();
-   if(!$("deliveryHistoryWeeklyListView")?.classList.contains("hidden")) renderDeliveryHistoryWeeklyList();
+   try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
+   try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
+   try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
  }
 }
 function loadHistoryRecord(x){
@@ -2023,10 +2023,12 @@ function renderHistoryWeeklyList(){
  const rows=history.filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.time||"99:99").localeCompare(String(b.time||"99:99"))||((a.created||0)-(b.created||0)));
  body.innerHTML="";
  if(!rows.length){body.innerHTML='<tr><td colspan="4" class="daily-list-empty">この週の注文はありません。</td></tr>';return;}
+ let lastDate="";
  rows.forEach((x,i)=>{
    const tr=document.createElement("tr"); tr.dataset.orderIndex=String(history.indexOf(x)); tr.title="タップして入力計算結果を表示";
    const d=localDateFromISO(x.date);
-   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   const dateText=x.date===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   lastDate=x.date;
    const delivered=!!findLinkedDelivery(x);
    const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
    tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td>"+esc(x.chemical||"")+status+"</td>";
@@ -2271,17 +2273,17 @@ $("calcResultDelete").onclick=()=>{
   if(confirm((x.time?x.time+" ":"")+x.customer+" / "+x.chemical+" の履歴を削除しますか？")){
     const idx=history.indexOf(x);
     if(idx>=0){
-      deleteLinkedDeliveryHistory(x);
-      history.splice(idx,1);
-      save(KEY_H,history);
       pendingHistoryRecord=null;
       const returnPage=calcResultReturnPage||"history";
       closeCalcResultDialog();
       calcResultReturnPage="history";
+      deleteLinkedDeliveryHistory(x);
+      history.splice(idx,1);
+      save(KEY_H,history);
       if(returnPage==="weekly") renderWeeklyReport(); else renderHistory();
-      if(!$("historyWeeklyListView")?.classList.contains("hidden")) renderHistoryWeeklyList();
-      renderDeliveryHistory();
-      if(!$("deliveryHistoryWeeklyListView")?.classList.contains("hidden")) renderDeliveryHistoryWeeklyList();
+      try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
+      try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
+      try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
     }
   }
 };
