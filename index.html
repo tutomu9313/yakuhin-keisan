@@ -1266,7 +1266,7 @@ function saveDelivery(){
      if(!departments[customer].includes(department)){departments[customer].push(department);saveDepartments();}
    }
    showCalcResultDialog(rec);
-   clearDraft();resetDeliveryForm();renderHistory();
+   clearDraft();resetDeliveryForm();refreshAllHistoryDisplays();
    return;
  }
  const selectedDate=$("dateDisplay").value||$("dateDisplay").dataset.iso||isoToday();
@@ -1282,7 +1282,7 @@ function saveDelivery(){
  }
  showCalcResultDialog(rec);clearDraft();resetDeliveryForm();
  if($("historyDate"))$("historyDate").value=rec.date;
- renderHistory();
+ refreshAllHistoryDisplays();
 }
 
 let deliverySourceOrder=null;
@@ -1491,10 +1491,7 @@ function deleteHistoryRecord(x){
    deleteLinkedDeliveryHistory(x);
    history.splice(idx,1);
    save(KEY_H,history);
-   renderHistory();
-   try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
-   try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
-   try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
+   refreshAllHistoryDisplays();
  }
 }
 function loadHistoryRecord(x){
@@ -2121,9 +2118,13 @@ function show(page){
   if($("title")) $("title").textContent=titles[page]||"薬品配達・容量計算";
 
   if(page==="history" && typeof renderHistory==="function") {
+    refreshAllHistoryDisplays();
     if($("historyWeeklyListView")?.classList.contains("hidden")) renderHistory(); else renderHistoryWeeklyListView();
   }
-  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") renderDeliveryHistory();
+  if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") {
+    refreshAllHistoryDisplays();
+    if($("deliveryHistoryWeeklyListView")?.classList.contains("hidden")) renderDeliveryHistory(); else renderDeliveryHistoryWeeklyListView();
+  }
   if(page==="daily" && typeof renderDailyReport==="function") { renderDailyReport(); setTimeout(updateDailyCalc,0); }
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
   if(page==="chem" && typeof renderChemList==="function") renderChemList();
@@ -2248,13 +2249,14 @@ updateDeliveryHistoryDateLabel();
 $("historyDateText").onclick=()=>{const el=$("historyDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
 $("deliveryHistoryDateText").onclick=()=>{const el=$("deliveryHistoryDate");if(!el)return;try{if(typeof el.showPicker==="function"){el.showPicker();return;}}catch(e){};el.focus();el.click();};
 renderHistory();renderDeliveryHistory();
-function refreshAfterCalcResultClose(){
-  /* 入力計算結果ダイアログを閉じた直後だけ、履歴表示を最新状態に再描画する。
-     データの保存・クラウド同期・画面移動の仕組みは変更しない。 */
+function refreshAllHistoryDisplays(){
   try{ if(typeof renderHistory==="function") renderHistory(); }catch(e){}
   try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
   try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
   try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
+}
+function refreshAfterCalcResultClose(){
+  refreshAllHistoryDisplays();
 }
 $("calcResultClose").onclick=()=>{
  const goHistory=registeredResultDialog;
@@ -2280,10 +2282,8 @@ $("calcResultDelete").onclick=()=>{
       deleteLinkedDeliveryHistory(x);
       history.splice(idx,1);
       save(KEY_H,history);
-      if(returnPage==="weekly") renderWeeklyReport(); else renderHistory();
-      try{ if(typeof renderHistoryWeeklyList==="function" && !$('historyWeeklyListView')?.classList.contains('hidden')) renderHistoryWeeklyList(); }catch(e){}
-      try{ if(typeof renderDeliveryHistory==="function") renderDeliveryHistory(); }catch(e){}
-      try{ if(typeof renderDeliveryHistoryWeeklyList==="function" && !$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList(); }catch(e){}
+      refreshAllHistoryDisplays();
+      if(returnPage==="weekly") renderWeeklyReport();
     }
   }
 };
@@ -2342,8 +2342,7 @@ $("deliveryEditSaveBtn").onclick=function(){
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
   closeDeliveryEdit();
-  renderDeliveryHistory();
-  if(!$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
+  refreshAllHistoryDisplays();
   updateDeliveryHistoryDateLabel();
 };
 $("deliveryEditDeleteBtn").onclick=function(){
@@ -2354,8 +2353,7 @@ $("deliveryEditDeleteBtn").onclick=function(){
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
   closeDeliveryEdit();
-  renderDeliveryHistory();
-  if(!$('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) renderDeliveryHistoryWeeklyList();
+  refreshAllHistoryDisplays();
   updateDeliveryHistoryDateLabel();
 };
 $("deliveryEditCancelBtn").onclick=closeDeliveryEdit;
@@ -2409,7 +2407,7 @@ $("deliverySaveBtn").onclick=function(){
   deliverySourceOrder=null;
   if($("deliveryHistoryDate")) $("deliveryHistoryDate").value=deliveryDate;
   show("deliveryHistory");
-  renderDeliveryHistory();
+  refreshAllHistoryDisplays();
 };
 
 $("deliveryCancelBtn").onclick=()=>{deliverySourceOrder=null;show("history");};
