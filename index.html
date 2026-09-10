@@ -2074,7 +2074,7 @@ function renderDeliveryHistoryWeeklyList(){
      if(Number.isFinite(deliveryKg) && density>0) deliveryL = deliveryKg/density;
    }
    const kgText = Number.isFinite(deliveryKg) ? formatQuantity(deliveryKg)+" kg" : "— kg";
-   const lText = Number.isFinite(deliveryL) ? formatQuantity(deliveryL)+" L" : "— L";
+   const lText = Number.isFinite(deliveryL) ? Number(deliveryL).toFixed(1)+" L" : "— L";
    tr.innerHTML="<td>"+dateText+"</td><td><div>"+esc(x.customer||"")+"</div><div style='margin-top:3px;font-weight:700'>"+esc(x.chemical||"")+"</div></td><td>"+esc(x.department||"")+"</td><td><div>"+kgText+"</div><div style='margin-top:2px'>"+lText+"</div></td>";
    tr.title="タップして納品データを編集";
    tr.addEventListener("click",()=>{
