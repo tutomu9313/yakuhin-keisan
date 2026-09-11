@@ -573,7 +573,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   </div>
  </div>
  <div class="card" id="dailyDeliverySection">
-  <h3 style="margin:0 0 14px">配達実績 <strong id="dailyDeliveryCount" class="daily-report-value" style="float:right;font-size:22px">0 回</strong></h3>
+  <h3 style="margin:0 0 14px">配達実績 <span style="float:right;display:flex;gap:14px;align-items:baseline;font-size:17px"><strong id="dailyDeliveryCount" class="daily-report-value" style="font-size:22px">0 回</strong><strong id="dailyDeliveryTotalKg" class="daily-report-value" style="font-size:22px">0 kg</strong></span></h3>
   <div id="dailyDeliveryCards"></div>
  </div>
  <div class="card" id="dailyCommissionSection">
@@ -1846,6 +1846,8 @@ function renderDailyReport(){
  const rows=dailyDeliveriesForDate(iso);
  const count=saved&&Number.isFinite(Number(saved.deliveryCount))?Number(saved.deliveryCount):rows.length;
  $("dailyDeliveryCount").textContent=count+" 回";
+ const deliveryTotalKg=rows.reduce((sum,x)=>{const kg=Number(x&&x.deliveryKg);return sum+(Number.isFinite(kg)?kg:0);},0);
+ $("dailyDeliveryTotalKg").textContent=formatQuantity(deliveryTotalKg)+" kg";
  renderDailyDeliveryCards(rows);
 
  if(saved){
