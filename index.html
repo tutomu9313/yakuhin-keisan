@@ -2062,11 +2062,13 @@ function renderDeliveryHistoryWeeklyList(){
  const rows=deliveryHistory.filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.plannedTime||"99:99").localeCompare(String(b.plannedTime||"99:99"))||String(a.time||"99:99").localeCompare(String(b.time||"99:99")));
  body.innerHTML="";
  if(!rows.length){body.innerHTML='<tr><td colspan="4" class="daily-list-empty">この週の納品記録はありません。</td></tr>';return;}
+ let previousDate="";
  rows.forEach(x=>{
    const tr=document.createElement("tr");
    tr.title="タップして入力計算結果を表示";
    const d=localDateFromISO(x.date);
-   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   const dateText=x.date===previousDate?"":((d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）");
+   previousDate=x.date||"";
    const deliveryKg = Number(x.deliveryKg);
    let deliveryL = Number(x.deliveryL);
    if(!Number.isFinite(deliveryL)) {
