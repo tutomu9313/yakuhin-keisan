@@ -1337,7 +1337,8 @@ function formatOrderUnit(u){return u==="m3"?"m³":(u||"kg")}
 function formatQuantity(value){
  const n=Number(value);
  if(!Number.isFinite(n)) return "";
- return String(Number(n.toFixed(10)));
+ const normalized=Number(n.toFixed(10));
+ return normalized.toLocaleString("en-US",{useGrouping:true,maximumFractionDigits:10});
 }
 function deliveryOrderKey(rec){
  return [rec.date||"",rec.time||"",rec.customer||"",rec.chemical||"",rec.unit||"",Number(rec.amount)||0].join("|");
