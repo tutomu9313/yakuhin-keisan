@@ -258,6 +258,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <style id="daily-delivery-header-17px">
 #dailyDeliverySection > h3{font-size:17px !important;}
 #dailyDeliveryCount{font-size:17px !important;}
+#dailyCommissionSection > h3{font-size:17px !important;}
 </style>
 
 <style id="daily-compact-run-worktime">
@@ -431,7 +432,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 #dailyCommissionSection .commission-line{display:grid;grid-template-columns:minmax(78px,auto) minmax(0,1fr);gap:10px;align-items:center}
 #dailyCommissionSection .commission-line + .commission-line{margin-top:10px}
 #dailyCommissionSection .commission-label{font-weight:700;white-space:nowrap}
-#dailyCommissionSection .commission-value{text-align:right;min-width:0;line-height:1.45}
+#dailyCommissionSection .commission-value{text-align:right;min-width:0;line-height:1.45;white-space:pre-line}
 #dailyCommissionSection .commission-adjustment-line{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #e5e5ea}
 #dailyCommissionSection .commission-adjustment-label{font-weight:700;white-space:nowrap}
 #dailyCommissionSection #dailyCountAdjustment{width:125px;height:40px;text-align:right;font-size:17px}
@@ -2216,7 +2217,7 @@ function updateDailyCalc(){
   const dp2=dist2*Number(rate2.distance);
   const stats=getDailyCombinedStats(iso);
   renderCountCommission(stats.count,stats.adjustment);
-  $("dailyDistanceFormula").textContent=vehicle+"："+dist+" km × "+Number(rate.distance).toLocaleString("ja-JP")+"円 = "+dp.toLocaleString("ja-JP")+"円"+(dailyRunHasSecondary()?" / "+secondary+"："+dist2+" km × "+Number(rate2.distance).toLocaleString("ja-JP")+"円 = "+dp2.toLocaleString("ja-JP")+"円":"");
+  $("dailyDistanceFormula").textContent=vehicle+"："+dist+" km × "+Number(rate.distance).toLocaleString("ja-JP")+"円 = "+dp.toLocaleString("ja-JP")+"円"+(dailyRunHasSecondary()?"\n"+secondary+"："+dist2+" km × "+Number(rate2.distance).toLocaleString("ja-JP")+"円 = "+dp2.toLocaleString("ja-JP")+"円":"");
   $("dailyCommissionTotal").textContent=stats.totalCommission.toLocaleString("ja-JP")+"円";
 }
 function formatDailyMinutes(mins){
