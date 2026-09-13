@@ -633,15 +633,35 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <label for="deliveryDate">納品日</label>
   <input id="deliveryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold">
  </div>
- <div class="card"><label>注文数量</label><div class="grid2">
-  <div class="box"><small>重量</small><strong id="deliveryOrderKg">—</strong></div>
-  <div class="box"><small>容量</small><strong id="deliveryOrderL">—</strong></div>
- </div></div>
+ <div class="card"><label>注文数量</label>
+  <div style="display:flex;gap:10px;margin-top:8px">
+   <div class="box" style="flex:1;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+    <small style="font-size:16px;color:#666">重量</small><strong id="deliveryOrderKg" style="font-size:20px">—</strong>
+   </div>
+   <div class="box" style="flex:1;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+    <small style="font-size:16px;color:#666">容量</small><strong id="deliveryOrderL" style="font-size:20px">—</strong>
+   </div>
+  </div>
+ </div>
  <div class="card">
-  <label style="margin-top:4px">正味重量（Kg）</label>
-  <input id="deliveryKg" type="number" inputmode="decimal" step="0.01" placeholder="正味重量">
-  <label style="margin-top:14px">納品容量（L）</label>
-  <input id="deliveryL" type="text" readonly placeholder="自動計算">
+  <div class="grid2" style="margin-top:4px">
+   <div class="box">
+    <small style="font-size:13px;color:#666;font-weight:700">正味重量</small>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+     <input id="deliveryKg" type="number" inputmode="decimal" step="0.01" placeholder="—" style="margin-top:0;flex:1;min-width:0;box-sizing:border-box">
+     <span style="font-size:13px;font-weight:700;white-space:nowrap">kg</span>
+    </div>
+   </div>
+   <div class="box">
+    <small style="font-size:13px;color:#666;font-weight:700">納品容量</small>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+     <input id="deliveryL" type="text" readonly placeholder="—" style="margin-top:0;flex:1;min-width:0;box-sizing:border-box">
+     <span style="font-size:13px;font-weight:700;white-space:nowrap">L</span>
+    </div>
+   </div>
+  </div>
+  <div id="deliveryWeightDiff" style="font-size:13px;margin-top:6px;color:#000">重量差：— kg</div>
+  <div id="deliveryCapacityDiff" style="font-size:13px;margin-top:4px;color:#000">容量差：— L</div>
  </div>
  <div class="card">
   <button id="deliverySaveBtn">納品を保存</button><button id="deliveryCancelBtn" class="gray">キャンセル</button>
@@ -1471,26 +1491,37 @@ function openDeliveryRegistration(x){
   $("deliveryDepartment").textContent=x.department||"—";
   $("deliveryDepartmentRow").style.display=x.department?"":"none";
   $("deliveryChemical").textContent=x.chemical||"—";
-  const warningNameStyle=x.warning ? "color:#ff3b30;font-weight:700" : "font-weight:700";
-  $("deliveryCustomer").style.cssText=warningNameStyle;
-  $("deliveryChemical").style.cssText=warningNameStyle;
+  // 取引先名は警告対象でも常に通常色。薬品名だけ警告時に赤字で表示する。
+  $("deliveryCustomer").style.cssText="color:#1c1c1e;font-weight:700";
+  $("deliveryChemical").style.cssText=x.warning
+    ? "color:#ff3b30;font-weight:700;font-size:20px;line-height:1.35"
+    : "color:#1c1c1e;font-weight:700;font-size:20px;line-height:1.35";
   const warningNotice=$("deliveryWarningNotice");
   if(warningNotice){
     warningNotice.textContent=x.warning?"※譲受書必須※":"";
     warningNotice.style.cssText=x.warning?"color:#ff3b30;font-weight:700;margin-top:6px":"display:none";
   }
-  $("deliveryOrderKg").textContent=formatQuantity(x.kg)+" kg";
-  $("deliveryOrderL").textContent=formatQuantity(x.L)+" L";
+  $("deliveryOrderKg").textContent=(Number.isFinite(Number(x.kg))?Number(x.kg).toLocaleString("ja-JP",{maximumFractionDigits:2}):"—")+" kg";
+  $("deliveryOrderL").textContent=(Number.isFinite(Number(x.L))?Number(x.L).toLocaleString("ja-JP",{minimumFractionDigits:1,maximumFractionDigits:1}):"—")+" L";
   $("deliveryDate").value=x.date||isoToday();
   $("deliveryKg").value="";
   $("deliveryL").value="";
+  $("deliveryWeightDiff").textContent="重量差：— kg";
+  $("deliveryCapacityDiff").textContent="容量差：— L";
   show("delivery");
   $("deliveryKg").focus();
 }
 function calcDeliveryAmount(){
   if(!deliverySourceOrder)return;
   const kg=Number($("deliveryKg").value), d=Number(deliverySourceOrder.density);
-  $("deliveryL").value=(Number.isFinite(kg)&&kg>0&&d>0)?(kg/d).toFixed(1):"";
+  const deliveryL=(Number.isFinite(kg)&&kg>0&&d>0)?(kg/d):NaN;
+  $("deliveryL").value=Number.isFinite(deliveryL)?deliveryL.toFixed(1):"";
+  const orderKg=Number(deliverySourceOrder.kg);
+  const weightDiff=Number.isFinite(kg)&&Number.isFinite(orderKg)?kg-orderKg:NaN;
+  $("deliveryWeightDiff").textContent="重量差："+(Number.isFinite(weightDiff)?Math.round(weightDiff):"—")+" kg";
+  const orderL=Number(deliverySourceOrder.L);
+  const diff=Number.isFinite(deliveryL)&&Number.isFinite(orderL)?deliveryL-orderL:NaN;
+  $("deliveryCapacityDiff").textContent="容量差："+(Number.isFinite(diff)?diff.toFixed(1):"—")+" L";
 }
 let selectedHistoryRecord=null;
 let editingHistoryRecord=null;
@@ -1599,7 +1630,7 @@ function renderHistory(){
    const div=document.createElement("div");div.className="item";div.onclick=()=>showCalcResultDialog(x,true);
    const isDelivered=!!findLinkedDelivery(x);
    const chemStyle=x.warning?"color:#ff3b30;font-weight:bold":"font-weight:bold";
-   const chemStyleWithSize=chemStyle+";font-size:16px;font-weight:700";
+   const chemStyleWithSize=chemStyle+";font-size:20px;font-weight:700;line-height:1.35";
    const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
    const orderLabel=orderUnit==="m3"?"m³":orderUnit;
    const histL=formatQuantity(trunc2(x.L!=null?x.L:Number(x.m3||0)*1000));
