@@ -2465,10 +2465,10 @@ function saveDailyReport(){
   try{scheduleCloudSync();}catch(e){console.warn("日報のクラウド同期予約に失敗しました",e);}
   localStorage.setItem("yakuhin_last_vehicle_type",vehicle);
   if(primaryComplete || (secondShown&&Number.isFinite(secondIn))){
+    // 保存後も入力データはそのまま残し、走行距離表示を最新の入力値へ更新してから画面位置だけ最上部へ戻す
+    updateDailyDistanceImmediate();
+    window.scrollTo({top:0,left:0,behavior:"auto"});
     alert(secondShown?"4t・10tの日報を保存しました。":vehicle+"の日報を保存しました。");
-    $("outOdometer").value=""; $("inOdometer").value="";
-    if(secondShown){$("outOdometer2").value="";$("inOdometer2").value="";}
-    updateDailyWorkDuration(); updateDailyDistanceImmediate(); updateDailyReturnDependentSections();
   }else{
     alert(vehicle+"の出庫kmを保存しました。終了後帰庫kmを入力してください。");
   }
