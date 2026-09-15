@@ -606,7 +606,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   <div id="dailyRunPrimaryBlock" class="daily-run-entry">
    <div class="grid2">
     <div><input id="outOdometer" type="number" inputmode="numeric" placeholder="出庫km" aria-label="出庫km"></div>
-    <div><input id="inOdometer" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="帰庫km"></div>
+    <div><input id="inOdometer" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="帰庫km" oninput="window.updateDailyDistanceImmediate&&window.updateDailyDistanceImmediate()"></div>
    </div>
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
   </div>
@@ -614,7 +614,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
    <div class="daily-secondary-vehicle-label"><span>乗換後の車種</span><div style="display:flex;align-items:center;gap:8px"><strong id="dailySecondaryVehicle">10t</strong><button id="dailySecondaryDeleteBtn" type="button" class="red" style="min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:14px;line-height:1" onclick="window.deleteDailySecondaryVehicle()">削除</button></div></div>
    <div class="grid2">
     <div><input id="outOdometer2" type="number" inputmode="numeric" placeholder="出庫km" aria-label="乗換後 出庫km"></div>
-    <div><input id="inOdometer2" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="乗換後 帰庫km"></div>
+    <div><input id="inOdometer2" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="乗換後 帰庫km" oninput="window.updateDailyDistanceImmediate&&window.updateDailyDistanceImmediate()"></div>
    </div>
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance2" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
   </div>
@@ -2121,6 +2121,8 @@ function deleteDailySecondaryVehicle(){
  setDailySecondaryVisible(false,primary);
  updateDailyDistanceImmediate();
  renderDailyReport();
+ // 乗換後の車両を削除したら、日報画面を上端へ戻す
+ window.scrollTo(0,0);
 }
 window.deleteDailySecondaryVehicle=deleteDailySecondaryVehicle;
 function updateDailyReturnDependentSections(){
@@ -2337,14 +2339,22 @@ function renderDailyReport(){
   $("dailyCommissionTotal").textContent=stats.totalCommission.toLocaleString("ja-JP")+"円";
   updateDailyReturnDependentSections();
 }
+function refreshDailyReportForDateChange(){
+ const i=$("dailyReportDate");
+ if(!i)return;
+ renderDailyReport();
+ try{updateDailyCalc();}catch(e){}
+ try{window.syncDailyReportDateLabel&&window.syncDailyReportDateLabel();}catch(e){}
+ window.scrollTo({top:0,left:0,behavior:"auto"});
+}
+window.refreshDailyReportForDateChange=refreshDailyReportForDateChange;
 function goDailyDate(delta){
  const i=$("dailyReportDate");
  if(!i)return;
  const base=(/^\d{4}-\d{2}-\d{2}$/.test(i.value)?i.value:isoToday());
  const next=dailyDateShift(base,Number(delta)||0);
  i.value=next;
- renderDailyReport();
- window.scrollTo(0,0);
+ refreshDailyReportForDateChange();
 }
 function renderDailyDeliveryCards(rows){
  const wrap=$("dailyDeliveryCards");
@@ -2426,6 +2436,10 @@ function deleteDailyReport(){
  try{scheduleCloudSync();}catch(e){console.warn("日報のクラウド同期予約に失敗しました",e);}
  renderDailyReport();
  alert("日報を削除しました。");
+ if(typeof showDailyListView==="function"){
+  showDailyListView();
+ }
+ window.scrollTo({top:0,left:0,behavior:"auto"});
 }
 window.deleteDailyReport=deleteDailyReport;
 ["dailyStartTime","dailyEndTime"].forEach(id=>{const el=$(id);if(el){el.addEventListener("input",updateDailyWorkDuration);el.addEventListener("change",updateDailyWorkDuration);}});
@@ -2932,6 +2946,12 @@ document.addEventListener("DOMContentLoaded",function(){
   window.show(savedPage);
   document.getElementById("dailyReportDate").value=isoToday();
   // 日付移動はHTML側のonclickから直接呼び出す。
+  const dailyDateInput=document.getElementById("dailyReportDate");
+  if(dailyDateInput){
+    dailyDateInput.addEventListener("change",function(){
+      if(typeof window.refreshDailyReportForDateChange==="function") window.refreshDailyReportForDateChange();
+    });
+  }
   document.getElementById("dailyVehicleType").addEventListener("change",function(){ localStorage.setItem("yakuhin_last_vehicle_type",this.value); renderDailyReport(); });
   ["outOdometer","inOdometer","outOdometer2","inOdometer2"].forEach(function(id){var el=document.getElementById(id);if(el){el.addEventListener("input",updateDailyDistanceImmediate);el.addEventListener("change",updateDailyDistanceImmediate);el.addEventListener("blur",updateDailyDistanceImmediate);}});
   document.getElementById("dailyChangeVehicleBtn").addEventListener("click",function(){
@@ -3135,9 +3155,13 @@ restoreLastVehicleType();
     const lab=document.getElementById(c.label);
     if(lab)lab.textContent=label(y,m,d);
     close();
-    /* 日付変更後は、選択日を確実に反映してから画面を再描画する */
+    /* 日付変更後は、選択した日付のデータを確実に再描画し、画面を上端へ戻す */
     try{ input.dispatchEvent(new Event('change',{bubbles:true})); }catch(e){}
     try{ c.render&&c.render(); }catch(e){}
+    if(input.id==='dailyReportDate'){
+      try{ window.refreshDailyReportForDateChange&&window.refreshDailyReportForDateChange(); }catch(e){}
+      return;
+    }
     /* Firefoxでイベント順序が異なる場合にも備えて再描画を1回だけ予約 */
     setTimeout(()=>{try{c.render&&c.render();}catch(e){}},0);
   }
