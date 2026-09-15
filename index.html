@@ -45,6 +45,7 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
 .history-weekly-status{display:block;font-size:12px;font-weight:700;margin-top:4px}
 .history-weekly-status.delivered{color:#34c759}
 .history-weekly-status.undelivered{color:#ff3b30}
+.history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:20px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:700;}
 .daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
@@ -547,7 +548,11 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  </div>
  <div id="historyWeeklyListView" class="hidden">
   <div class="card">
-   <div id="historyWeeklyListPeriod" class="daily-list-period"></div>
+   <div class="history-weekly-nav">
+    <button class="gray" type="button" onclick="window.shiftHistoryWeekly(-1)">‹</button>
+    <div id="historyWeeklyListPeriod" class="daily-list-period" style="margin:0"></div>
+    <button class="gray" type="button" onclick="window.shiftHistoryWeekly(1)">›</button>
+   </div>
    <table class="history-weekly-table">
     <thead><tr><th>日付</th><th>取引先</th><th>部署</th><th>薬品名</th></tr></thead>
     <tbody id="historyWeeklyListBody"></tbody>
@@ -576,7 +581,11 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  </div>
  <div id="deliveryHistoryWeeklyListView" class="hidden">
   <div class="card">
-   <div id="deliveryHistoryWeeklyListPeriod" class="daily-list-period"></div>
+   <div class="history-weekly-nav">
+    <button class="gray" type="button" onclick="window.shiftDeliveryHistoryWeekly(-1)">‹</button>
+    <div id="deliveryHistoryWeeklyListPeriod" class="daily-list-period" style="margin:0"></div>
+    <button class="gray" type="button" onclick="window.shiftDeliveryHistoryWeekly(1)">›</button>
+   </div>
    <table class="history-weekly-table">
     <thead><tr><th>納品日</th><th>取引先</th><th>部署</th><th>納品量</th></tr></thead>
     <tbody id="deliveryHistoryWeeklyListBody"></tbody>
@@ -2495,6 +2504,16 @@ function historyWeeklyRangeFor(ref){
  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
  return {from:isoFromLocalDate(mon),to:isoFromLocalDate(sun)};
 }
+function shiftHistoryWeekly(delta){
+ const input=$("historyDate");
+ const d=localDateFromISO(input?.value||isoToday());
+ d.setDate(d.getDate()+Number(delta||0)*7);
+ if(input) input.value=isoFromLocalDate(d);
+ updateHistoryDateLabel();
+ renderHistoryWeeklyList();
+ window.scrollTo(0,0);
+}
+window.shiftHistoryWeekly=shiftHistoryWeekly;
 function renderHistoryWeeklyList(){
  const body=$("historyWeeklyListBody"),period=$("historyWeeklyListPeriod");
  if(!body||!period)return;
@@ -2537,6 +2556,16 @@ function deliveryHistoryWeeklyRangeFor(ref){
  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
  return {from:isoFromLocalDate(mon),to:isoFromLocalDate(sun)};
 }
+function shiftDeliveryHistoryWeekly(delta){
+ const input=$("deliveryHistoryDate");
+ const d=localDateFromISO(input?.value||isoToday());
+ d.setDate(d.getDate()+Number(delta||0)*7);
+ if(input) input.value=isoFromLocalDate(d);
+ updateDeliveryHistoryDateLabel();
+ renderDeliveryHistoryWeeklyList();
+ window.scrollTo(0,0);
+}
+window.shiftDeliveryHistoryWeekly=shiftDeliveryHistoryWeekly;
 function renderDeliveryHistoryWeeklyList(){
  const body=$("deliveryHistoryWeeklyListBody"),period=$("deliveryHistoryWeeklyListPeriod");
  if(!body||!period)return;
