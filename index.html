@@ -623,19 +623,19 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   #weeklyPrintArea *{visibility:visible !important}
   #weeklyPrintArea .weekly-print-title{font-size:18px;font-weight:700;text-align:center;margin:0 0 1.5mm}
   #weeklyPrintArea .weekly-print-period{text-align:center;font-size:10pt;margin:0 0 2mm}
-  #weeklyPrintArea table{width:100% !important;max-width:none !important;margin-right:auto !important;margin-left:0 !important;border-collapse:collapse !important;table-layout:fixed !important;font-size:8.5pt !important}
+  #weeklyPrintArea table{width:100% !important;max-width:none !important;margin-right:auto !important;margin-left:0 !important;border-collapse:collapse !important;table-layout:fixed !important;font-size:7.5pt !important}
   #weeklyPrintArea th,#weeklyPrintArea td{border:1px solid #555 !important;padding:2px 3px !important;vertical-align:middle !important;line-height:1.12 !important;overflow-wrap:anywhere}
   #weeklyPrintArea th{background:#eee !important;font-weight:700 !important;text-align:center !important}
   #weeklyPrintArea td.num{text-align:right !important;white-space:nowrap !important}
   #weeklyPrintArea td.center{text-align:center !important}
-  #weeklyPrintArea td.weekly-print-distance{font-size:8.5pt !important;line-height:1.08 !important;white-space:nowrap !important;text-align:left !important;vertical-align:middle !important}
+  #weeklyPrintArea td.weekly-print-distance{font-size:7.5pt !important;line-height:1.08 !important;white-space:nowrap !important;text-align:left !important;vertical-align:middle !important}
   #weeklyPrintArea .weekly-print-distance-line{display:grid !important;grid-template-columns:2.2em minmax(0,1fr) !important;align-items:baseline !important;height:1em !important}
   #weeklyPrintArea .weekly-print-distance-vehicle{display:block !important;width:2.2em !important}
   #weeklyPrintArea tr{page-break-inside:avoid}
   #weeklyPrintArea tr.subtotal td{font-weight:700;background:#f6f6f6 !important}
   #weeklyPrintArea tr.subtotal td.worktime{text-align:left !important;white-space:nowrap !important}
   #weeklyPrintArea .weekly-print-worktime-text,.weekly-print-commission-text{display:inline-block !important;white-space:nowrap !important}
-  #weeklyPrintArea .weekly-print-commission-text{margin-left:10px !important;font-weight:700 !important;font-size:8.5pt !important}
+  #weeklyPrintArea .weekly-print-commission-text{margin-left:10px !important;font-weight:700 !important;font-size:7.5pt !important}
   #weeklyPrintArea tr.weekly-print-blank td{height:4.2mm !important}
   #weeklyPrintArea .weekly-print-summary-totals{display:flex !important;justify-content:flex-end !important;align-items:baseline !important;gap:18mm !important;margin-top:1.8mm !important}
   #weeklyPrintArea .weekly-print-total{margin-top:0 !important;text-align:right;font-weight:700;font-size:10pt}
@@ -1816,10 +1816,13 @@ function markTankSettingSnapshot(){tankSettingSnapshot=getTankSettingState();}
 function isTankSettingDirty(){return !!tankSettingSnapshot && getTankSettingState()!==tankSettingSnapshot;}
 
 function resetDeliveryForm(){
+ $("dateDisplay").dataset.iso=isoToday();
+ $("dateDisplay").value=isoToday();
  $("customer").value="";
  $("department").value="";
  $("plannedTime").value="";
  $("customerSuggest").classList.add("hidden");
+ $("departmentSuggest")?.classList.add("hidden");
  if($("resultCard")) $("resultCard").style.display="none";
  setCalcEnabled(false);
  clearDraft();
@@ -3706,8 +3709,8 @@ function show(page){
   }
   const currentPage=sessionStorage.getItem("yakuhin_current_page")||"calc";
   if(page!==currentPage){
-    if(currentPage==="calc"&&isCalcFormDirty()){
-      if(!confirmUnsavedLeave("入力内容が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+    if(currentPage==="calc"){
+      if(isCalcFormDirty()&&!confirmUnsavedLeave("入力内容が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
       resetDeliveryForm();
     }
     if(currentPage==="delivery"&&isDeliveryRegistrationDirty()){
@@ -3733,7 +3736,8 @@ function show(page){
 
   // 下部ナビ：現在表示しているページだけ青背景＋白文字で表示
   const navMap={calc:"navCalc",history:"navHistory",deliveryHistory:"navDeliveryHistory",daily:"navDaily",weekly:"navWeekly"};
-  Object.values(navMap).forEach(id=>{const b=$(id);if(b)b.classList.remove("active-nav");});
+  // 「設定」を一度選択した後も、他のナビ選択時に設定の選択状態が残らないようにする。
+  [...Object.values(navMap),"navSettings"].forEach(id=>{const b=$(id);if(b)b.classList.remove("active-nav");});
   const activeNav=$(navMap[page]);
   if(activeNav)activeNav.classList.add("active-nav");
 
