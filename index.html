@@ -723,9 +723,19 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   height:36px !important;
   margin:0 !important;
 }
+#deliveryViewModal #deliveryViewSaveBtn,
 #deliveryViewModal #deliveryViewEditBtn{
   grid-column:1/-1 !important;
   width:100% !important;
+}
+#deliveryViewModal #deliveryViewSaveBtn{
+  background:#007aff !important;
+  color:#fff !important;
+}
+#deliveryViewModal #deliveryViewEditBtn{
+  background:#fff !important;
+  color:#007aff !important;
+  border:1px solid #007aff !important;
 }
 @media(max-width:420px){
   #deliveryViewModal .modal-card{
@@ -1188,9 +1198,10 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
     <div class="delivery-tank-result-line"><span>タンク容量との差</span><span id="deliveryViewTankDifference" class="delivery-tank-result-value">— L</span></div>
    </div>
    <div id="deliveryViewTankStatus" class="error">入力してください</div>
-   <div class="delivery-tank-note">タンク容量・残量は L または m³ で入力できます。m³ は自動的に L に換算して確認します。今回の納品量は L で入力します。</div>
+   <div class="delivery-tank-note">タンク容量・残量は L または m³ で入力できます。m³ は自動的に L に換算して確認します。今回の納品量は L で入力します。確認した内容は自動で記録されます。</div>
   </div>
   <div class="modal-actions">
+   <button id="deliveryViewSaveBtn" class="full">保存して閉じる</button>
    <button id="deliveryViewEditBtn">編集</button>
    <button id="deliveryViewCloseBtn" class="gray full">閉じる</button>
   </div>
@@ -2003,6 +2014,8 @@ function renderDeliveryHistory(){
 
 let deliveryViewIndex=-1;
 let deliveryEditIndex=-1;
+let deliveryViewTankSavedState="";
+let deliveryViewTankEditedSinceOpen=false;
 function formatDeliveryViewDate(iso){
   if(!validISO(iso)) return "—";
   const d=localDateFromISO(iso);
@@ -2036,13 +2049,18 @@ function openDeliveryView(i){
     "<div style='margin-top:3px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit||"")+(x.orderUnit!=="kg"&&Number.isFinite(orderKg)?"／注文重量："+formatQuantity(orderKg)+" kg":"")+"</div>"+
     "<div style='margin-top:3px'>納品重量："+(Number.isFinite(deliveryKg)?formatQuantity(deliveryKg):"—")+" kg <span style='font-size:14px'>／重量差："+signed(weightDiff)+" kg</span></div>"+
     "<div style='margin-top:3px;font-weight:700'>納品容量："+(Number.isFinite(deliveryL)?formatQuantity(deliveryL):"—")+" L <span style='font-size:14px;font-weight:400'>／容量差："+signedCapacity(capacityDiff)+" L</span></div>";
-  // 納品データに保存されている容量を、納品前確認の初期値として表示
-  $("deliveryViewTankCapacity").value="";
-  $("deliveryViewTankCapacityUnit").value="L";
-  $("deliveryViewTankRemaining").value="";
-  $("deliveryViewTankRemainingUnit").value="L";
-  $("deliveryViewTankDelivery").value=Number.isFinite(deliveryL)?String(Math.trunc(deliveryL*100)/100):"";
+  // 保存済みの納品前タンク確認データがあれば復元。無ければ今回の納品容量だけ初期表示。
+  const savedTank=x.tankCheck&&typeof x.tankCheck==="object"?x.tankCheck:{};
+  $("deliveryViewTankCapacity").value=savedTank.capacity??"";
+  $("deliveryViewTankCapacityUnit").value=savedTank.capacityUnit||"L";
+  $("deliveryViewTankRemaining").value=savedTank.remaining??"";
+  $("deliveryViewTankRemainingUnit").value=savedTank.remainingUnit||"L";
+  $("deliveryViewTankDelivery").value=savedTank.deliveryL!=null
+    ? String(savedTank.deliveryL)
+    : (Number.isFinite(deliveryL)?String(Math.trunc(deliveryL*100)/100):"");
   updateDeliveryTankCheck();
+  deliveryViewTankSavedState=getDeliveryTankState();
+  deliveryViewTankEditedSinceOpen=false;
   $("deliveryViewModal").classList.remove("hidden");
   $("deliveryViewModal").setAttribute("aria-hidden","false");
 }
@@ -2055,6 +2073,44 @@ function deliveryTankToL(value,unit){
 }
 function formatTankLiters(value){
   return Number.isFinite(value)?Number(value).toLocaleString("ja-JP",{minimumFractionDigits:0,maximumFractionDigits:2})+" L":"— L";
+}
+function getDeliveryTankState(){
+  return JSON.stringify({
+    capacity:String($("deliveryViewTankCapacity").value??""),
+    capacityUnit:String($("deliveryViewTankCapacityUnit").value||"L"),
+    remaining:String($("deliveryViewTankRemaining").value??""),
+    remainingUnit:String($("deliveryViewTankRemainingUnit").value||"L"),
+    deliveryL:String($("deliveryViewTankDelivery").value??"")
+  });
+}
+function isDeliveryTankDirty(){
+  return deliveryViewTankEditedSinceOpen;
+}
+function discardAndCloseDeliveryView(){
+  deliveryViewTankSavedState="";
+  deliveryViewTankEditedSinceOpen=false;
+  closeDeliveryView();
+}
+
+function saveDeliveryTankCheck(cap,rem,add,availableL,afterL,differenceL,statusText,statusClass){
+  if(deliveryViewIndex<0)return;
+  const x=deliveryHistory[deliveryViewIndex];
+  if(!x)return;
+  x.tankCheck={
+    capacity:$("deliveryViewTankCapacity").value,
+    capacityUnit:$("deliveryViewTankCapacityUnit").value||"L",
+    remaining:$("deliveryViewTankRemaining").value,
+    remainingUnit:$("deliveryViewTankRemainingUnit").value||"L",
+    deliveryL:$("deliveryViewTankDelivery").value,
+    availableL:Number.isFinite(availableL)?Number(availableL):null,
+    afterL:Number.isFinite(afterL)?Number(afterL):null,
+    differenceL:Number.isFinite(differenceL)?Number(differenceL):null,
+    status:statusText||"",
+    statusClass:statusClass||""
+  };
+  deliveryHistory[deliveryViewIndex]=x;
+  localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
+  scheduleCloudSync();
 }
 function updateDeliveryTankCheck(){
   const cap=deliveryTankToL($("deliveryViewTankCapacity").value,$("deliveryViewTankCapacityUnit").value);
@@ -2099,6 +2155,7 @@ function updateDeliveryTankCheck(){
     status.className="danger";
   }
 }
+
 function closeDeliveryView(){
   deliveryViewIndex=-1;
   $("deliveryViewModal").classList.add("hidden");
@@ -3585,20 +3642,53 @@ $("deliveryEditSaveBtn").onclick=function(){
   refreshAllHistoryDisplays();
   updateDeliveryHistoryDateLabel();
 };
+$("deliveryViewSaveBtn").onclick=function(){
+  if(deliveryViewIndex<0)return;
+  const cap=deliveryTankToL($("deliveryViewTankCapacity").value,$("deliveryViewTankCapacityUnit").value);
+  const rem=deliveryTankToL($("deliveryViewTankRemaining").value,$("deliveryViewTankRemainingUnit").value);
+  const add=deliveryTankToL($("deliveryViewTankDelivery").value,"L");
+  if(!(Number.isFinite(cap)&&Number.isFinite(rem)&&Number.isFinite(add))){
+    alert("タンク容量・現在の残量・今回の納品量を入力してください。");
+    return;
+  }
+  const status=$("deliveryViewTankStatus");
+  const available=cap-rem;
+  const after=rem+add;
+  const difference=cap-after;
+  saveDeliveryTankCheck(cap,rem,add,available,after,difference,status.textContent,status.className);
+  deliveryViewTankSavedState=getDeliveryTankState();
+  deliveryViewTankEditedSinceOpen=false;
+  closeDeliveryView();
+};
 $("deliveryViewEditBtn").onclick=function(){
   if(deliveryViewIndex<0)return;
+  if(isDeliveryTankDirty()){
+    const ok=confirm("タンク確認の変更を保存せずに編集画面へ移動しますか？");
+    if(!ok)return;
+  }
   const i=deliveryViewIndex;
   closeDeliveryView();
   openDeliveryEdit(i);
 };
-$("deliveryViewTankCapacity").addEventListener("input",updateDeliveryTankCheck);
-$("deliveryViewTankCapacityUnit").addEventListener("change",updateDeliveryTankCheck);
-$("deliveryViewTankRemaining").addEventListener("input",updateDeliveryTankCheck);
-$("deliveryViewTankRemainingUnit").addEventListener("change",updateDeliveryTankCheck);
-$("deliveryViewTankDelivery").addEventListener("input",updateDeliveryTankCheck);
-$("deliveryViewCloseBtn").onclick=closeDeliveryView;
+$("deliveryViewTankCapacity").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
+$("deliveryViewTankCapacityUnit").addEventListener("change",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
+$("deliveryViewTankRemaining").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
+$("deliveryViewTankRemainingUnit").addEventListener("change",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
+$("deliveryViewTankDelivery").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
+$("deliveryViewCloseBtn").onclick=function(){
+  if(isDeliveryTankDirty()){
+    const ok=confirm("タンク確認のデータが保存されていません。保存せずに閉じてもよろしいですか？");
+    if(!ok)return;
+  }
+  discardAndCloseDeliveryView();
+};
 $("deliveryViewModal").addEventListener("click",function(e){
-  if(e.target===$("deliveryViewModal"))closeDeliveryView();
+  if(e.target!==$("deliveryViewModal"))return;
+  if(isDeliveryTankDirty()){
+    const ok=confirm("タンク確認のデータが保存されていません。保存せずに閉じてもよろしいですか？");
+    if(!ok)return;
+  }
+  discardAndCloseDeliveryView();
 });
 $("deliveryEditHistoryBtn").onclick=window.returnToOrderHistoryFromDeliveryEdit;
 $("deliveryEditDeleteBtn").onclick=function(){
