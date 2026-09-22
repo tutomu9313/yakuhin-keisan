@@ -472,7 +472,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 }
 .delivery-tank-input-wrap{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 78px;
+  grid-template-columns:minmax(0,1fr) 64px;
   gap:8px;
   min-width:0;
   width:100%;
@@ -541,7 +541,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
     max-width:calc(100% - 20px) !important;
   }
   .delivery-tank-row{grid-template-columns:86px minmax(0,1fr);}
-  .delivery-tank-input-wrap{grid-template-columns:minmax(0,1fr) 76px;}
+  .delivery-tank-input-wrap{grid-template-columns:minmax(0,1fr) 64px;}
 }
 </style>
 <style id="commission-adjustment-style">
@@ -633,6 +633,104 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   #weeklyPrintArea .weekly-print-note{margin-top:1.2mm !important;}
 }
 </style>
+</style>
+
+<style id="delivery-view-tank-check-compact">
+/* 納品データ：タンク確認を1画面に収めるためのコンパクト表示 */
+#deliveryViewModal .modal-card{
+  padding:12px !important;
+  max-height:calc(100vh - 8px) !important;
+  overflow-y:auto !important;
+}
+#deliveryViewInfo{
+  line-height:1.25 !important;
+  margin-bottom:4px !important;
+}
+#deliveryViewInfo > div{
+  margin-top:1px !important;
+  font-size:13px !important;
+}
+#deliveryViewInfo > div:first-child{
+  font-size:14px !important;
+  margin-bottom:1px !important;
+}
+#deliveryViewModal .modal-card h3{
+  font-size:17px !important;
+  margin-bottom:6px !important;
+}
+#deliveryViewInfo{
+  line-height:1.45 !important;
+  margin-bottom:7px !important;
+}
+#deliveryViewInfo > div{
+  margin-top:2px !important;
+}
+#deliveryViewTankCheck{
+  margin-top:5px !important;
+  padding:8px !important;
+  border-radius:11px !important;
+}
+#deliveryViewTankCheckTitle{
+  font-size:14px !important;
+  margin-bottom:4px !important;
+  line-height:1.2 !important;
+}
+.delivery-tank-row{
+  grid-template-columns:82px minmax(0,1fr) !important;
+  gap:5px !important;
+  margin-top:3px !important;
+}
+.delivery-tank-row label{
+  font-size:12px !important;
+}
+.delivery-tank-input-wrap{
+  grid-template-columns:minmax(0,1fr) 56px !important;
+  gap:5px !important;
+}
+#deliveryViewTankCheck input,#deliveryViewTankCheck select{
+  height:34px !important;
+  font-size:14px !important;
+}
+.delivery-tank-converted{
+  margin-top:1px !important;
+  font-size:10px !important;
+}
+.delivery-tank-result{
+  margin-top:6px !important;
+  padding:6px 8px !important;
+  border-radius:9px !important;
+}
+.delivery-tank-result-line{
+  margin-top:2px !important;
+  font-size:11px !important;
+}
+#deliveryViewTankStatus{
+  margin-top:5px !important;
+  padding:6px !important;
+  font-size:13px !important;
+  border-radius:9px !important;
+}
+.delivery-tank-note{
+  margin-top:4px !important;
+  font-size:9px !important;
+  line-height:1.2 !important;
+}
+#deliveryViewModal .modal-actions{
+  margin-top:6px !important;
+  gap:5px !important;
+}
+#deliveryViewModal .modal-actions button{
+  height:36px !important;
+  margin:0 !important;
+}
+@media(max-width:420px){
+  #deliveryViewModal .modal-card{
+    width:calc(100% - 12px) !important;
+    max-width:calc(100% - 12px) !important;
+  }
+  .delivery-tank-row{grid-template-columns:82px minmax(0,1fr) !important;}
+  .delivery-tank-input-wrap{grid-template-columns:minmax(0,1fr) 58px !important;}
+}
 </style>
 </head>
 <body>
@@ -1927,10 +2025,10 @@ function openDeliveryView(i){
     return t>0?"+"+t.toFixed(2):t.toFixed(2);
   };
   $("deliveryViewInfo").innerHTML=
+    "<div style='font-size:17px;font-weight:700;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
     "<div style='font-size:16px'>取引先："+esc(x.customer||"")+"</div>"+
     (x.department?"<div style='font-size:16px;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+ 
     "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
-    "<div style='margin-top:6px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
     "<div style='margin-top:3px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit||"")+(x.orderUnit!=="kg"&&Number.isFinite(orderKg)?"／注文重量："+formatQuantity(orderKg)+" kg":"")+"</div>"+
     "<div style='margin-top:3px'>納品重量："+(Number.isFinite(deliveryKg)?formatQuantity(deliveryKg):"—")+" kg <span style='font-size:14px'>／重量差："+signed(weightDiff)+" kg</span></div>"+
     "<div style='margin-top:3px;font-weight:700'>納品容量："+(Number.isFinite(deliveryL)?formatQuantity(deliveryL):"—")+" L <span style='font-size:14px;font-weight:400'>／容量差："+signedCapacity(capacityDiff)+" L</span></div>";
