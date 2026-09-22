@@ -561,7 +561,12 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #tankSettingList .tank-setting-meta{margin-top:4px;color:#666;font-size:14px;line-height:1.5}
 #tankSettingList .tank-setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 #tankSettingList .tank-setting-actions button{height:40px;margin:0;font-size:14px}
-#deliveryViewTankSelectWrap label{font-size:14px;font-weight:700}
+#deliveryViewTankSelectWrap label{font-size:14px !important;font-weight:700;margin:0;display:flex;align-items:center;white-space:nowrap;line-height:1.2}
+#deliveryViewTankSelectWrap .delivery-tank-select-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center}
+#deliveryViewTankSelectWrap .delivery-tank-select-row select{width:100%;margin:0;height:34px !important;font-size:14px !important;box-sizing:border-box !important}
+@media(max-width:420px){
+  #deliveryViewTankSelectWrap .delivery-tank-select-row{grid-template-columns:86px minmax(0,1fr);gap:6px}
+}
 </style>
 <style id="commission-adjustment-style">
 #countAdjustmentModal .modal-card{max-height:80vh;overflow:auto}
@@ -1205,10 +1210,12 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   <h3>納品データ</h3>
   <div id="deliveryViewInfo" style="line-height:1.8;margin-bottom:10px"></div>
   <div id="deliveryViewTankSelectWrap" style="display:none;margin:-2px 0 8px">
-   <label style="color:#000">タンク</label>
-   <select id="deliveryViewTankSelect" style="margin-top:4px;height:42px">
-    <option value="">手動入力</option>
-   </select>
+   <div class="delivery-tank-select-row">
+    <label for="deliveryViewTankSelect">タンク</label>
+    <select id="deliveryViewTankSelect" style="height:42px">
+     <option value="">手動入力</option>
+    </select>
+   </div>
   </div>
   <div id="deliveryViewTankSelectNote" class="note" style="display:none;margin:0 0 8px"></div>
   <div id="deliveryViewTankCheck">
@@ -1773,6 +1780,41 @@ function updateCustomerSuggest(filter){
  });
  box.classList.toggle("hidden",list.length===0);
 }
+function getCalcFormState(){
+  return JSON.stringify({
+    date:String($("dateDisplay")?.dataset.iso||$("dateDisplay")?.value||""),
+    customer:String($("customer")?.value||""),
+    department:String($("department")?.value||""),
+    plannedTime:String($("plannedTime")?.value||""),
+    vehicleType:String($("vehicleType")?.value||""),
+    chemical:String($("chemical")?.value||""),
+    density:String($("density")?.value||""),
+    amount:String($("amount")?.value||""),
+    unit:String($("unit")?.value||"")
+  });
+}
+function markCalcFormSnapshot(){calcFormSnapshot=getCalcFormState();}
+function isCalcFormDirty(){return !!calcFormSnapshot && getCalcFormState()!==calcFormSnapshot;}
+function confirmUnsavedLeave(message){return confirm(message);}
+
+function getDeliveryRegistrationState(){
+  return JSON.stringify({date:String($("deliveryDate")?.value||""),kg:String($("deliveryKg")?.value||"")});
+}
+function markDeliveryRegistrationSnapshot(){deliveryRegistrationSnapshot=getDeliveryRegistrationState();}
+function isDeliveryRegistrationDirty(){return !!deliverySourceOrder && !!deliveryRegistrationSnapshot && getDeliveryRegistrationState()!==deliveryRegistrationSnapshot;}
+
+function getDailyReportState(){
+  return JSON.stringify({date:String($("dailyReportDate")?.value||""),vehicle:String($("dailyVehicleType")?.value||""),start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||""),out1:String($("outOdometer")?.value||""),in1:String($("inOdometer")?.value||""),out2:String($("outOdometer2")?.value||""),in2:String($("inOdometer2")?.value||""),adjustment:String($("dailyCountAdjustment")?.value||"")});
+}
+function markDailyReportSnapshot(){dailyReportSnapshot=getDailyReportState();}
+function isDailyReportDirty(){return !!dailyReportSnapshot && getDailyReportState()!==dailyReportSnapshot;}
+
+function getTankSettingState(){
+  return JSON.stringify({customer:String($("tankSettingCustomer")?.value||""),department:String($("tankSettingDepartment")?.value||""),chemical:String($("tankSettingChemical")?.value||""),name:String($("tankSettingName")?.value||""),capacity:String($("tankSettingCapacity")?.value||""),unit:String($("tankSettingCapacityUnit")?.value||"")});
+}
+function markTankSettingSnapshot(){tankSettingSnapshot=getTankSettingState();}
+function isTankSettingDirty(){return !!tankSettingSnapshot && getTankSettingState()!==tankSettingSnapshot;}
+
 function resetDeliveryForm(){
  $("customer").value="";
  $("department").value="";
@@ -1784,6 +1826,7 @@ function resetDeliveryForm(){
  editingHistoryRecord=null;
  editingHistoryIndex=-1;
  $("saveBtn").textContent="計算登録";
+ markCalcFormSnapshot();
 }
 
 let pendingHistoryRecord=null;
@@ -2186,7 +2229,7 @@ function openDeliveryView(i){
     return t>0?"+"+t.toFixed(2):t.toFixed(2);
   };
   $("deliveryViewInfo").innerHTML=
-    "<div style='font-size:17px;font-weight:700;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
+    "<div style='font-size:17px;font-weight:400;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
     "<div style='font-size:16px'>取引先："+esc(x.customer||"")+"</div>"+
     (x.department?"<div style='font-size:16px;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+ 
     "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
@@ -2345,6 +2388,9 @@ function openDeliveryEdit(i){
   const x=deliveryHistory[i];
   if(!x)return;
   deliveryEditIndex=i;
+  deliveryEditOriginalDate=x.date||"";
+  deliveryEditOriginalKg=x.deliveryKg!=null?String(x.deliveryKg):"";
+  deliveryEditSaved=false;
   const orderUnit=String(x.orderUnit||"");
   $("deliveryEditInfo").innerHTML=
     "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px;font-weight:700'>薬品名："+esc(x.chemical||"")+"</span>"+
@@ -2362,12 +2408,30 @@ function openDeliveryEdit(i){
   $("deliveryEditModal").classList.remove("hidden");
   $("deliveryEditModal").setAttribute("aria-hidden","false");
 }
+function isDeliveryEditDirty(){
+  if(deliveryEditIndex<0)return false;
+  if(deliveryEditSaved)return false;
+  const date=$("deliveryEditDate");
+  const kg=$("deliveryEditKg");
+  return String(date?.value||"")!==String(deliveryEditOriginalDate||"") || String(kg?.value??"")!==String(deliveryEditOriginalKg??"");
+}
+function confirmCloseDeliveryEdit(){
+  if(!isDeliveryEditDirty())return true;
+  return confirm("納品データの変更が保存されていません。保存せずに閉じてもよろしいですか？");
+}
 function closeDeliveryEdit(){
+  if(!confirmCloseDeliveryEdit())return;
   deliveryEditIndex=-1;
+  deliveryEditSaved=false;
+  deliveryEditOriginalDate="";
+  deliveryEditOriginalKg="";
   $("deliveryEditModal").classList.add("hidden");
   $("deliveryEditModal").setAttribute("aria-hidden","true");
 }
 function returnToOrderHistoryFromDeliveryEdit(){
+  if(!confirmCloseDeliveryEdit())return;
+  // ここでは確認済みなので、closeDeliveryEdit() で二重確認しない。
+  deliveryEditSaved=true;
   const x=(deliveryEditIndex>=0&&deliveryHistory[deliveryEditIndex])?deliveryHistory[deliveryEditIndex]:null;
   let order=null;
   if(x){
@@ -2410,6 +2474,7 @@ function openDeliveryRegistration(x){
   $("deliveryL").value="";
   $("deliveryWeightDiff").textContent="重量差：— kg";
   $("deliveryCapacityDiff").textContent="容量差：— L";
+  markDeliveryRegistrationSnapshot();
   show("delivery");
   $("deliveryKg").focus();
 }
@@ -2428,6 +2493,13 @@ function calcDeliveryAmount(){
 let selectedHistoryRecord=null;
 let editingHistoryRecord=null;
 let editingHistoryIndex=-1;
+let deliveryEditOriginalDate="";
+let deliveryEditOriginalKg="";
+let deliveryEditSaved=false;
+let calcFormSnapshot="";
+let deliveryRegistrationSnapshot="";
+let dailyReportSnapshot="";
+let tankSettingSnapshot="";
 /* ===== 履歴操作 ===== */
 function openHistoryModal(x){
  selectedHistoryRecord=x;
@@ -2483,6 +2555,7 @@ function loadHistoryRecord(x){
  $("amount").value=x.amount!=null?x.amount:(savedUnit==="kg"?x.kg:savedUnit==="L"?x.L:x.m3);
  $("saveBtn").textContent="修正";
  calc();
+ markCalcFormSnapshot();
  show("calc");
 }
 
@@ -2647,6 +2720,7 @@ function resetTankSettingForm(){
   populateTankSettingDepartments(); if($("tankSettingChemical")&&chemicals.length)$("tankSettingChemical").selectedIndex=0;
   $("tankSettingName").value="";$("tankSettingCapacity").value="";$("tankSettingCapacityUnit").value="L";updateTankSettingConverted();
   if($("tankSettingSaveBtn"))$("tankSettingSaveBtn").textContent="登録";
+  markTankSettingSnapshot();
 }
 function renderTankSettings(){
   populateTankSettingCustomers();populateTankSettingChemicals();populateTankSettingDepartments();
@@ -2665,7 +2739,7 @@ function renderTankSettings(){
 function editTankSetting(index){
   const t=tankSettings[index];if(!t)return;editingTankIndex=index;
   populateTankSettingCustomers();populateTankSettingChemicals();$("tankSettingCustomer").value=t.customer||"";populateTankSettingDepartments();$("tankSettingDepartment").value=t.department||"";$("tankSettingChemical").value=t.chemical||"";$("tankSettingName").value=t.tankName||"";$("tankSettingCapacity").value=t.capacity??"";$("tankSettingCapacityUnit").value=t.unit||t.capacityUnit||"L";updateTankSettingConverted();
-  if($("tankSettingSaveBtn"))$("tankSettingSaveBtn").textContent="保存";window.scrollTo(0,0);
+  if($("tankSettingSaveBtn"))$("tankSettingSaveBtn").textContent="保存";markTankSettingSnapshot();window.scrollTo(0,0);
 }
 function saveTankSetting(){
   const customer=$("tankSettingCustomer")?.value||"",department=$("tankSettingDepartment")?.value||"",chemical=$("tankSettingChemical")?.value||"",tankName=$("tankSettingName")?.value.trim()||"",capacityRaw=$("tankSettingCapacity")?.value??"",unit=$("tankSettingCapacityUnit")?.value||"L",capacity=Number(capacityRaw);
@@ -3113,6 +3187,7 @@ function renderDailyReport(){
   renderCountCommission(stats.count,getSavedAdjustment(iso));
   $("dailyCommissionTotal").textContent=stats.totalCommission.toLocaleString("ja-JP")+"円";
   updateDailyReturnDependentSections();
+  markDailyReportSnapshot();
 }
 function refreshDailyReportForDateChange(){
  const i=$("dailyReportDate");
@@ -3619,6 +3694,36 @@ function showDeliveryHistoryWeeklyListView(){
 window.renderDeliveryHistoryWeeklyList=renderDeliveryHistoryWeeklyList;
 /* ===== 画面切り替え ===== */
 function show(page){
+  // 編集ダイアログが開いている場合も、下部ナビなどの画面移動前に未保存確認を行う。
+  if(typeof deliveryEditIndex!=="undefined"&&deliveryEditIndex>=0&&isDeliveryEditDirty()){
+    if(!confirmUnsavedLeave("納品データの変更が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+    deliveryEditSaved=true;
+    closeDeliveryEdit();
+  }
+  if(typeof deliveryViewIndex!=="undefined"&&deliveryViewIndex>=0&&isDeliveryTankDirty()){
+    if(!confirmUnsavedLeave("タンク確認のデータが保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+    discardAndCloseDeliveryView();
+  }
+  const currentPage=sessionStorage.getItem("yakuhin_current_page")||"calc";
+  if(page!==currentPage){
+    if(currentPage==="calc"&&isCalcFormDirty()){
+      if(!confirmUnsavedLeave("入力内容が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+      resetDeliveryForm();
+    }
+    if(currentPage==="delivery"&&isDeliveryRegistrationDirty()){
+      if(!confirmUnsavedLeave("納品データの変更が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+      deliverySourceOrder=null;
+      deliveryRegistrationSnapshot="";
+    }
+    if(currentPage==="daily"&&isDailyReportDirty()){
+      if(!confirmUnsavedLeave("運転日報の変更が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+      markDailyReportSnapshot();
+    }
+    if(currentPage==="tank"&&isTankSettingDirty()){
+      if(!confirmUnsavedLeave("タンク設定の変更が保存されていません。保存せずに画面を移動してもよろしいですか？"))return;
+      resetTankSettingForm();
+    }
+  }
   sessionStorage.setItem("yakuhin_current_page",page);
   const pages=["calc","history","delivery","deliveryHistory","daily","weekly","chem","customer","tank"];
   pages.forEach(p=>{
@@ -3706,7 +3811,11 @@ $("amount").oninput=calc;
 $("unit").onchange=calc;
 
 $("saveBtn").onclick=saveDelivery;
-$("inputCancelBtn").onclick=()=>{resetDeliveryForm();show("calc");};
+$("inputCancelBtn").onclick=()=>{
+  if(isCalcFormDirty()&&!confirmUnsavedLeave("入力内容が保存されていません。保存せずに画面を離れてもよろしいですか？"))return;
+  resetDeliveryForm();
+  show("calc");
+};
 $("customer").onfocus=()=>{
  const box=$("customerSuggest");
  if(box)box.classList.add("hidden");
@@ -3787,7 +3896,7 @@ $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
-restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}autoBackup();
+restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}markCalcFormSnapshot();markDeliveryRegistrationSnapshot();markTankSettingSnapshot();autoBackup();
 $("historyDate").value=$("historyDate").value||isoToday();
 $("deliveryHistoryDate").value=$("deliveryHistoryDate").value||isoToday();
 $("historyDate").addEventListener("change",()=>{updateHistoryDateLabel();renderHistory();if(!$("historyWeeklyListView")?.classList.contains("hidden"))renderHistoryWeeklyList();});
@@ -3889,6 +3998,7 @@ $("deliveryEditSaveBtn").onclick=function(){
   deliveryHistory[deliveryEditIndex]=x;
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
+  deliveryEditSaved=true;
   closeDeliveryEdit();
   refreshAllHistoryDisplays();
   updateDeliveryHistoryDateLabel();
@@ -3950,6 +4060,7 @@ $("deliveryEditDeleteBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
   const x=deliveryHistory[deliveryEditIndex];
   if(!confirm("この納品データを削除しますか？"))return;
+  deliveryEditSaved=true;
   deliveryHistory.splice(deliveryEditIndex,1);
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
@@ -4006,12 +4117,18 @@ $("deliverySaveBtn").onclick=function(){
   localStorage.setItem("yakuhin_delivery_history",JSON.stringify(deliveryHistory));
   scheduleCloudSync();
   deliverySourceOrder=null;
+  deliveryRegistrationSnapshot="";
   if($("deliveryHistoryDate")) $("deliveryHistoryDate").value=deliveryDate;
   show("deliveryHistory");
   refreshAllHistoryDisplays();
 };
 
-$("deliveryCancelBtn").onclick=()=>{deliverySourceOrder=null;show("history");};
+$("deliveryCancelBtn").onclick=()=>{
+  if(isDeliveryRegistrationDirty()&&!confirmUnsavedLeave("納品データの変更が保存されていません。保存せずに画面を離れてもよろしいですか？"))return;
+  deliverySourceOrder=null;
+  deliveryRegistrationSnapshot="";
+  show("history");
+};
 
 $("deliveryKg").oninput=calcDeliveryAmount;
 
