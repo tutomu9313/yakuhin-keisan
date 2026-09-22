@@ -554,6 +554,81 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   .delivery-tank-input-wrap{grid-template-columns:minmax(0,1fr) 65px;}
 }
 </style>
+<style id="tank-grouping-trial-style">
+
+#tankSettingList .tank-setting-group .tank-setting-item{cursor:pointer;}
+#tankSettingList .tank-setting-group .tank-setting-item .tank-setting-actions{display:none;}
+#tankSettingList .tank-setting-group .tank-setting-item.is-selected{
+  background:#eef7ff;
+  border-radius:10px;
+  padding-left:8px;
+  padding-right:8px;
+}
+#tankSettingList .tank-setting-group .tank-setting-item.is-selected .tank-setting-actions{display:grid;}
+
+#tankSettingList .tank-setting-group{
+  border:1px solid #b9ddff;
+  border-radius:14px;
+  background:#f8fbff;
+  padding:10px;
+  margin-top:10px;
+}
+#tankSettingList .tank-setting-group-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:4px 2px 9px;
+  border-bottom:1px solid #dbeeff;
+}
+#tankSettingList .tank-setting-group-header strong{
+  display:block;
+  font-size:17px;
+}
+#tankSettingList .tank-setting-group-sub{
+  display:block;
+  margin-top:3px;
+  color:#666;
+  font-size:13px;
+}
+#tankSettingList .tank-setting-group-count{
+  white-space:nowrap;
+  padding:4px 9px;
+  border-radius:999px;
+  background:#e7f2ff;
+  color:#007aff;
+  font-size:13px;
+  font-weight:700;
+}
+#tankSettingList .tank-setting-group .tank-setting-item{
+  padding:10px 0;
+  border-bottom:1px solid #e5e5ea;
+}
+#tankSettingList .tank-setting-group .tank-setting-item:last-child{
+  border-bottom:0;
+}
+#tankSettingList .tank-setting-group .tank-setting-title{
+  font-size:16px;
+  font-weight:700;
+  text-align:left;
+  padding-left:8px;
+}
+#tankSettingList .tank-setting-group .tank-setting-capacity{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  margin-top:4px;
+  color:#666;
+  font-size:14px;
+}
+#tankSettingList .tank-setting-group .tank-setting-capacity strong{
+  color:#111;
+  font-size:16px;
+  min-width:90px;
+  text-align:center;
+}
+</style>
 <style id="tank-settings-style">
 #tankSettingList .tank-setting-item{padding:12px 0;border-bottom:1px solid #e5e5ea}
 #tankSettingList .tank-setting-item:last-child{border-bottom:0}
@@ -568,6 +643,22 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   #deliveryViewTankSelectWrap .delivery-tank-select-row{grid-template-columns:86px minmax(0,1fr);gap:6px}
 }
 </style>
+<style id="tank-settings-success-style">
+#tankSettingList .tank-setting-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+#tankSettingList .tank-setting-summary-title{font-size:18px;font-weight:800;color:#1c1c1e}
+#tankSettingList .tank-setting-count{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 12px;border-radius:16px;background:#e8f2ff;color:#007aff;font-size:15px;font-weight:800}
+#tankSettingList .tank-setting-item{padding:16px 14px;margin:0 0 12px;border:2px solid #d7e8ff;border-radius:16px;background:#f7fbff;box-shadow:0 1px 3px #0000000b}
+#tankSettingList .tank-setting-item:last-child{margin-bottom:0}
+#tankSettingList .tank-setting-title{font-weight:800;font-size:21px;line-height:1.25;color:#111;margin-bottom:8px}
+#tankSettingList .tank-setting-meta{margin-top:0;color:#5b6573;font-size:15px;line-height:1.65}
+#tankSettingList .tank-setting-capacity{display:flex;align-items:baseline;gap:10px;margin-top:8px;color:#444;font-size:15px;font-weight:700}
+#tankSettingList .tank-setting-capacity strong{font-size:22px;color:#111;letter-spacing:.2px}
+#tankSettingList .tank-setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+#tankSettingList .tank-setting-actions button{height:42px;margin:0;font-size:15px}
+#tankSettingList .tank-setting-add{width:100%;height:46px;margin:12px 0 0;border:2px solid #007aff;background:#fff;color:#007aff;font-size:16px;font-weight:800}
+#tankSettingList .tank-setting-empty{padding:16px 8px;color:#777;text-align:center}
+</style>
+
 <style id="commission-adjustment-style">
 #countAdjustmentModal .modal-card{max-height:80vh;overflow:auto}
 .count-adjustment-fixed{display:grid;grid-template-columns:1fr auto;gap:8px;padding:7px 0;border-bottom:1px solid #eee}
@@ -1595,6 +1686,13 @@ function updateResultStyle(c){
  const isWarning=!!(c&&c.warning);
  box.classList.toggle("warning",isWarning);
 }
+function ensurePlannedTime(){
+ const plannedTime=$("plannedTime")?.value||"";
+ if(plannedTime) return true;
+ alert("予定時間を入力してください。");
+ $("plannedTime")?.focus();
+ return false;
+}
 function loadChem(){
  const idx=$("chemical").value;
  if(idx===""){ $("density").value=""; updateResultStyle(null); calc(); return; }
@@ -1925,6 +2023,7 @@ function closeCalcResultDialog(){
 let saveDeliveryInProgress=false;
 async function saveDelivery(){
  if(saveDeliveryInProgress)return;
+ if(!ensurePlannedTime())return;
  const customer=$("customer").value.trim(), department=$("department").value.trim(), c=chemicals[Number($("chemical").value)], r=calc();
  if(!customer){alert("先に取引先を入力してください。");$("customer").focus();return}
  if(!c||r.kg<=0){alert("薬品・数量・単位・比重を確認してください。");return}
@@ -2169,46 +2268,83 @@ function refreshDeliveryViewTankSelector(){
   setupDeliveryViewTankSelector(x,savedTank);
   updateDeliveryTankCheck();
 }
+const NEW_DELIVERY_TANK_VALUE="__new_tank__";
+function suggestedDeliveryTankName(matches){
+  const used=new Set((matches||[]).map(t=>normalizeTankMatchValue(t?.tankName)).filter(Boolean));
+  for(let n=1;n<100;n++){
+    const name=`第${n}タンク`;
+    if(!used.has(normalizeTankMatchValue(name)))return name;
+  }
+  return "新しいタンク";
+}
 function setupDeliveryViewTankSelector(x,savedTank){
   const wrap=$("deliveryViewTankSelectWrap"),select=$("deliveryViewTankSelect"),note=$("deliveryViewTankSelectNote");
   if(!wrap||!select)return;
   const matches=getMatchingTankSettingsForDelivery(x);
-  select.innerHTML='<option value="">手動入力</option>';
-  matches.forEach(t=>{const op=document.createElement("option");op.value=t.id||"";op.textContent=tankOptionLabel(t);select.appendChild(op);});
-  let selectedId=savedTank.tankId||"";
-  if(selectedId&&!matches.some(t=>String(t.id)===String(selectedId)))selectedId="";
-  if(!selectedId&&!savedTank.capacity&&matches.length===1)selectedId=matches[0].id||"";
-  select.value=selectedId;
+  const savedId=String(savedTank?.tankId||"");
+  const validSaved=!!savedId&&matches.some(t=>String(t.id)===savedId);
 
+  select.innerHTML="";
+  note.style.display="none";
+  wrap.style.display="block";
   select.disabled=false;
+
   if(matches.length===0){
-    wrap.style.display="none";
-    note.style.display="block";
-    note.textContent="この薬品のタンク設定は未登録です。容量を手入力できます。";
-  }
-  else if(matches.length===1){
-    wrap.style.display="block";
-    note.style.display="none";
+    const op=document.createElement("option");
+    op.value="";
+    op.textContent="手動入力（初回保存で自動登録）";
+    select.appendChild(op);
+    select.value="";
     select.disabled=true;
-  }
-  else{
-    wrap.style.display="block";
     note.style.display="block";
-    note.textContent="同じ取引先・部署・薬品に複数のタンクがあります。納品するタンクを選択してください。";
-    select.disabled=false;
+    note.textContent="初回保存時に、取引先・部署・薬品・タンク名・容量を自動登録します。";
+    return;
   }
-  if(selectedId){
-    const t=matches.find(v=>String(v.id)===String(selectedId));
-    if(t){
-      $("deliveryViewTankCapacity").value=t.capacity??"";
-      $("deliveryViewTankCapacityUnit").value=t.unit||t.capacityUnit||"L";
-    }
-  }
+
+  matches.forEach(t=>{
+    const op=document.createElement("option");
+    op.value=String(t.id||"");
+    op.textContent=tankOptionLabel(t);
+    select.appendChild(op);
+  });
+
+  const newOp=document.createElement("option");
+  newOp.value=NEW_DELIVERY_TANK_VALUE;
+  newOp.textContent="＋ 新しいタンクを登録";
+  select.appendChild(newOp);
+
+  const selectedValue=validSaved?savedId:String(matches[0]?.id||"");
+  select.value=selectedValue;
+  note.style.display="block";
+  note.textContent="登録済みタンクを選ぶか、「＋ 新しいタンクを登録」から追加できます。";
+  applySelectedDeliveryTankSetting(false);
 }
 function applySelectedDeliveryTankSetting(markDirty=true){
-  const id=$("deliveryViewTankSelect")?.value;if(!id)return;
-  const t=(tankSettings||[]).find(v=>String(v.id)===String(id));if(!t)return;
-  $("deliveryViewTankCapacity").value=t.capacity??"";$("deliveryViewTankCapacityUnit").value=t.unit||t.capacityUnit||"L";
+  const id=$("deliveryViewTankSelect")?.value||"";
+  const capInput=$("deliveryViewTankCapacity"),capUnit=$("deliveryViewTankCapacityUnit");
+
+  if(id===NEW_DELIVERY_TANK_VALUE){
+    if(capInput){capInput.disabled=false;capInput.value="";}
+    if(capUnit)capUnit.disabled=false;
+    if(markDirty)deliveryViewTankEditedSinceOpen=true;
+    updateDeliveryTankCheck();
+    return;
+  }
+
+  if(!id){
+    if(capInput)capInput.disabled=false;
+    if(capUnit)capUnit.disabled=false;
+    if(markDirty)deliveryViewTankEditedSinceOpen=true;
+    updateDeliveryTankCheck();
+    return;
+  }
+
+  const t=(tankSettings||[]).find(v=>String(v.id)===String(id));
+  if(!t)return;
+  if(capInput)capInput.value=t.capacity??"";
+  if(capUnit)capUnit.value=t.unit||t.capacityUnit||"L";
+  if(capInput)capInput.disabled=true;
+  if(capUnit)capUnit.disabled=true;
   if(markDirty)deliveryViewTankEditedSinceOpen=true;
   updateDeliveryTankCheck();
 }
@@ -2282,6 +2418,37 @@ function discardAndCloseDeliveryView(){
   deliveryViewTankSavedState="";
   deliveryViewTankEditedSinceOpen=false;
   closeDeliveryView();
+}
+
+function createDeliveryAutoTankSetting(x,tankName,capacityRaw,unit){
+  const customer=String(x?.customer||"").trim();
+  const department=String(x?.department||"").trim();
+  const chemical=String(x?.chemical||"").trim();
+  const name=String(tankName||"").trim()||"第1タンク";
+  const normalizedCustomer=normalizeTankMatchValue(customer);
+  const normalizedDepartment=normalizeTankMatchValue(department);
+  const normalizedChemical=normalizeTankMatchValue(chemical);
+  const normalizedName=normalizeTankMatchValue(name);
+  const duplicate=(tankSettings||[]).find(t=>
+    normalizeTankMatchValue(t.customer)===normalizedCustomer &&
+    normalizeTankMatchValue(t.department)===normalizedDepartment &&
+    normalizeTankMatchValue(t.chemical)===normalizedChemical &&
+    normalizeTankMatchValue(t.tankName)===normalizedName
+  );
+  if(duplicate)return duplicate;
+  const record={
+    id:"tank_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7),
+    customer,
+    department,
+    chemical,
+    tankName:name,
+    capacity:String(capacityRaw??""),
+    unit:unit||"L"
+  };
+  tankSettings.push(record);
+  save(KEY_TANK,tankSettings);
+  try{renderTankSettings();}catch(e){}
+  return record;
 }
 
 function saveDeliveryTankCheck(cap,rem,add,availableL,afterL,differenceL,statusText,statusClass){
@@ -2711,6 +2878,8 @@ function populateTankSettingDepartments(){
 function populateTankSettingChemicals(){
   const sel=$("tankSettingChemical"); if(!sel)return; const current=sel.value; sel.innerHTML="";
   (chemicals||[]).slice().sort((a,b)=>{const ao=Number.isFinite(Number(a.sortOrder))?Number(a.sortOrder):9999;const bo=Number.isFinite(Number(b.sortOrder))?Number(b.sortOrder):9999;return ao-bo||String(a.name||"").localeCompare(String(b.name||""),"ja",{numeric:true});}).forEach(c=>{const op=document.createElement("option");op.value=c.name;op.textContent=c.name;sel.appendChild(op);});
+  const all=document.createElement("option");all.value="__ALL_TANKS__";all.textContent="すべてのタンク";
+  sel.insertBefore(all,sel.firstChild);
   if(current && [...sel.options].some(o=>o.value===current))sel.value=current;
 }
 function updateTankSettingConverted(){
@@ -2728,16 +2897,124 @@ function resetTankSettingForm(){
 function renderTankSettings(){
   populateTankSettingCustomers();populateTankSettingChemicals();populateTankSettingDepartments();
   const box=$("tankSettingList");if(!box)return;box.innerHTML="";
-  const list=(tankSettings||[]).slice().sort((a,b)=>String(a.customer||"").localeCompare(String(b.customer||""),"ja")||String(a.department||"").localeCompare(String(b.department||""),"ja")||String(a.chemical||"").localeCompare(String(b.chemical||""),"ja")||String(a.tankName||"").localeCompare(String(b.tankName||""),"ja"));
-  if(!list.length){box.innerHTML='<div style="color:#777;text-align:center;padding:10px">登録済みタンクはありません。</div>';return;}
-  list.forEach(t=>{
-    const index=tankSettings.indexOf(t); const item=document.createElement("div");item.className="tank-setting-item";
-    const cap=deliveryTankToL(t.capacity,t.unit||t.capacityUnit||"L");
-    item.innerHTML='<div class="tank-setting-title">'+esc(t.tankName||"タンク")+'</div>'+'<div class="tank-setting-meta">'+esc(t.customer||"")+" ／ "+esc(t.department||"部署なし")+" ／ "+esc(t.chemical||"")+"<br>容量："+esc(Number.isFinite(cap)?formatTankLiters(cap):"— L")+'</div>'+'<div class="tank-setting-actions"><button type="button" data-act="edit">編集</button><button type="button" class="red" data-act="delete">削除</button></div>';
-    item.querySelector('[data-act="edit"]').onclick=()=>editTankSetting(index);
-    item.querySelector('[data-act="delete"]').onclick=()=>deleteTankSetting(index);
-    box.appendChild(item);
-  });
+  const selectedCustomer=String($("tankSettingCustomer")?.value||"").trim();
+  const selectedDepartment=String($("tankSettingDepartment")?.value||"").trim();
+  const selectedChemical=String($("tankSettingChemical")?.value||"").trim();
+  const customerKey=normalizeTankMatchValue(selectedCustomer);
+  const departmentKey=normalizeTankMatchValue(selectedDepartment);
+  const chemicalKey=normalizeTankMatchValue(selectedChemical);
+
+  if(!selectedCustomer||!selectedChemical)return;
+
+  let list=(tankSettings||[]);
+  if(selectedChemical==="__ALL_TANKS__"){
+    /* 「すべてのタンク」= 選択した取引先に登録された全タンク */
+    list=list.filter(t=>normalizeTankMatchValue(t.customer)===customerKey);
+  }else{
+    list=list.filter(t=>normalizeTankMatchValue(t.customer)===customerKey
+      && normalizeTankMatchValue(t.department)===departmentKey
+      && normalizeTankMatchValue(t.chemical)===chemicalKey);
+  }
+
+  list=list.slice().sort((a,b)=>
+    String(a.chemical||"").localeCompare(String(b.chemical||""),"ja",{numeric:true,sensitivity:"base"})||
+    String(a.department||"").localeCompare(String(b.department||""),"ja",{numeric:true,sensitivity:"base"})||
+    String(a.tankName||"").localeCompare(String(b.tankName||""),"ja",{numeric:true,sensitivity:"base"})
+  );
+
+  if(selectedChemical==="__ALL_TANKS__"){
+    /* 全タンクは薬品＋部署ごとにグループ化 */
+    const groups=new Map();
+    list.forEach(t=>{
+      const key=normalizeTankMatchValue(t.chemical)+"|"+normalizeTankMatchValue(t.department);
+      if(!groups.has(key))groups.set(key,[]);
+      groups.get(key).push(t);
+    });
+
+    groups.forEach(groupList=>{
+      const chemName=String(groupList[0]?.chemical||"");
+      const deptName=String(groupList[0]?.department||"");
+      const group=document.createElement("div");
+      group.className="tank-setting-group";
+
+      const header=document.createElement("div");
+      header.className="tank-setting-group-header";
+      header.innerHTML='<div><strong>'+esc(chemName||"薬品未設定")+'</strong><span class="tank-setting-group-sub">'+esc(selectedCustomer)+' ／ '+esc(deptName||"部署なし")+'</span></div><span class="tank-setting-group-count">'+groupList.length+'基</span>';
+      group.appendChild(header);
+
+      groupList.forEach(t=>{
+        const index=tankSettings.indexOf(t);
+        const item=document.createElement("div");
+        item.className="tank-setting-item";
+        const cap=deliveryTankToL(t.capacity,t.unit||t.capacityUnit||"L");
+        item.innerHTML='<div class="tank-setting-title">'+esc(t.tankName||"タンク")+'</div>'+
+          '<div class="tank-setting-capacity"><span>容量</span><strong>'+esc(Number.isFinite(cap)?formatTankLiters(cap):"— L")+'</strong></div>'+
+          '<div class="tank-setting-actions"><button type="button" data-act="edit">編集</button><button type="button" class="red" data-act="delete">削除</button></div>';
+        item.querySelector('[data-act="edit"]').onclick=(e)=>{e.stopPropagation();editTankSetting(index);};
+        item.querySelector('[data-act="delete"]').onclick=(e)=>{e.stopPropagation();deleteTankSetting(index);};
+        item.addEventListener("click",()=>{
+          group.querySelectorAll(".tank-setting-item.is-selected").forEach(el=>{if(el!==item)el.classList.remove("is-selected");});
+          item.classList.toggle("is-selected");
+        });
+        group.appendChild(item);
+      });
+      box.appendChild(group);
+    });
+  }else{
+    const group=document.createElement("div");
+    group.className="tank-setting-group";
+    const header=document.createElement("div");
+    header.className="tank-setting-group-header";
+    header.innerHTML='<div><strong>'+esc(selectedChemical)+'</strong><span class="tank-setting-group-sub">'+esc(selectedCustomer)+' ／ '+esc(selectedDepartment||"部署なし")+'</span></div><span class="tank-setting-group-count">'+list.length+'基</span>';
+    group.appendChild(header);
+
+    if(!list.length){
+      const empty=document.createElement("div");
+      empty.className="tank-setting-empty";
+      empty.textContent="この取引先・部署・薬品に登録されているタンクはありません。";
+      group.appendChild(empty);
+    }else{
+      list.forEach(t=>{
+        const index=tankSettings.indexOf(t);
+        const item=document.createElement("div");
+        item.className="tank-setting-item";
+        const cap=deliveryTankToL(t.capacity,t.unit||t.capacityUnit||"L");
+        item.innerHTML='<div class="tank-setting-title">'+esc(t.tankName||"タンク")+'</div>'+
+          '<div class="tank-setting-capacity"><span>容量</span><strong>'+esc(Number.isFinite(cap)?formatTankLiters(cap):"— L")+'</strong></div>'+
+          '<div class="tank-setting-actions"><button type="button" data-act="edit">編集</button><button type="button" class="red" data-act="delete">削除</button></div>';
+        item.querySelector('[data-act="edit"]').onclick=(e)=>{e.stopPropagation();editTankSetting(index);};
+        item.querySelector('[data-act="delete"]').onclick=(e)=>{e.stopPropagation();deleteTankSetting(index);};
+        item.addEventListener("click",()=>{
+          group.querySelectorAll(".tank-setting-item.is-selected").forEach(el=>{if(el!==item)el.classList.remove("is-selected");});
+          item.classList.toggle("is-selected");
+        });
+        group.appendChild(item);
+      });
+    }
+    box.appendChild(group);
+  }
+
+  const add=document.createElement("button");
+  add.type="button";add.className="tank-setting-add";add.textContent="＋ 新しいタンクを登録";
+  add.onclick=()=>{
+    const customer=String($("tankSettingCustomer")?.value||"");
+    const department=String($("tankSettingDepartment")?.value||"");
+    const chemical=String($("tankSettingChemical")?.value||"");
+    resetTankSettingForm();
+    if($("tankSettingCustomer")&&customer){
+      $("tankSettingCustomer").value=customer;
+      populateTankSettingDepartments();
+    }
+    if($("tankSettingDepartment")&&[...$("tankSettingDepartment").options].some(o=>o.value===department)){
+      $("tankSettingDepartment").value=department;
+    }
+    if($("tankSettingChemical")){
+      $("tankSettingChemical").value=(chemical==="__ALL_TANKS__"||!chemical)?"":chemical;
+    }
+    renderTankSettings();
+    window.scrollTo(0,0);
+  };
+  box.appendChild(add);
 }
 function editTankSetting(index){
   const t=tankSettings[index];if(!t)return;editingTankIndex=index;
@@ -3736,8 +4013,8 @@ function show(page){
 
   // 下部ナビ：現在表示しているページだけ青背景＋白文字で表示
   const navMap={calc:"navCalc",history:"navHistory",deliveryHistory:"navDeliveryHistory",daily:"navDaily",weekly:"navWeekly"};
-  // 「設定」を一度選択した後も、他のナビ選択時に設定の選択状態が残らないようにする。
-  [...Object.values(navMap),"navSettings"].forEach(id=>{const b=$(id);if(b)b.classList.remove("active-nav");});
+  // ナビ項目をすべて解除してから、現在のページだけを選択状態にする。
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active-nav"));
   const activeNav=$(navMap[page]);
   if(activeNav)activeNav.classList.add("active-nav");
 
@@ -3766,7 +4043,36 @@ function show(page){
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
   if(page==="chem" && typeof renderChemList==="function") renderChemList();
   if(page==="customer" && typeof renderCustomers==="function") renderCustomers();
-  if(page==="tank" && typeof renderTankSettings==="function") renderTankSettings();
+  if(page==="tank" && typeof renderTankSettings==="function") {
+    renderTankSettings();
+    if(typeof editingTankIndex!=="undefined" && editingTankIndex<0){
+      /* 新規でタンク設定を開いたときは、選択肢の先頭に空欄を入れて
+         ブラウザ上でも確実に「未選択」と表示する。 */
+      const customerSel=$("tankSettingCustomer");
+      if(customerSel){
+        const blankCustomer=document.createElement("option");
+        blankCustomer.value="";
+        blankCustomer.textContent="";
+        customerSel.insertBefore(blankCustomer,customerSel.firstChild);
+        customerSel.value="";
+      }
+      populateTankSettingDepartments();
+      const chemicalSel=$("tankSettingChemical");
+      if(chemicalSel){
+        const blankChemical=document.createElement("option");
+        blankChemical.value="";
+        blankChemical.textContent="";
+        chemicalSel.insertBefore(blankChemical,chemicalSel.firstChild);
+        chemicalSel.value="";
+      }
+      $("tankSettingName").value="";
+      $("tankSettingCapacity").value="";
+      $("tankSettingCapacityUnit").value="L";
+      updateTankSettingConverted();
+      if($("tankSettingList")) $("tankSettingList").innerHTML="";
+      markTankSettingSnapshot();
+    }
+  }
 
   window.scrollTo(0,0);
 }
@@ -3780,7 +4086,7 @@ function closeSettings(){
  $("settingsModal").classList.add("hidden");
  $("settingsModal").setAttribute("aria-hidden","true");
 }
-$("navSettings").onclick=()=>{updateCloudAccountUI();["navCalc","navHistory","navDeliveryHistory","navDaily","navWeekly"].forEach(id=>$(id)?.classList.remove("active-nav"));$("navSettings").classList.add("active-nav");openSettings();};
+$("navSettings").onclick=()=>{updateCloudAccountUI();document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active-nav"));$("navSettings").classList.add("active-nav");openSettings();};
 $("settingsChemBtn").onclick=()=>{closeSettings();show("chem");};
 $("settingsCustomerBtn").onclick=()=>{closeSettings();show("customer");};
 $("settingsTankBtn").onclick=()=>{closeSettings();show("tank");};
@@ -3803,12 +4109,34 @@ $("settingsModal").addEventListener("click",e=>{if(e.target===$("settingsModal")
 
 function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
 
-$("tankSettingCustomer")?.addEventListener("change",populateTankSettingDepartments);
+$("tankSettingCustomer")?.addEventListener("change",()=>{
+  populateTankSettingDepartments();
+  /* 取引先を選んだ直後は「すべてのタンク」を初期選択にする */
+  const chemicalSel=$("tankSettingChemical");
+  if(chemicalSel){
+    chemicalSel.value="__ALL_TANKS__";
+  }
+  renderTankSettings();
+});
+$("tankSettingDepartment")?.addEventListener("change",()=>renderTankSettings());
+$("tankSettingChemical")?.addEventListener("change",()=>renderTankSettings());
 $("tankSettingCapacity")?.addEventListener("input",updateTankSettingConverted);
 $("tankSettingCapacityUnit")?.addEventListener("change",updateTankSettingConverted);
 $("tankSettingSaveBtn")?.addEventListener("click",saveTankSetting);
 $("tankSettingClearBtn")?.addEventListener("click",resetTankSettingForm);
 
+$("chemical").addEventListener("pointerdown",(e)=>{
+ if(!$("plannedTime")?.value){
+   e.preventDefault();
+   ensurePlannedTime();
+ }
+});
+$("chemical").addEventListener("keydown",(e)=>{
+ if(!$("plannedTime")?.value && (e.key==="ArrowDown"||e.key==="ArrowUp"||e.key==="Enter"||e.key===" "||e.key==="F4")){
+   e.preventDefault();
+   ensurePlannedTime();
+ }
+});
 $("chemical").onchange=loadChem;
 $("density").oninput=calc;
 $("amount").oninput=calc;
@@ -4009,13 +4337,42 @@ $("deliveryEditSaveBtn").onclick=function(){
 };
 $("deliveryViewSaveBtn").onclick=function(){
   if(deliveryViewIndex<0)return;
-  const cap=deliveryTankToL($("deliveryViewTankCapacity").value,$("deliveryViewTankCapacityUnit").value);
-  const rem=deliveryTankToL($("deliveryViewTankRemaining").value,$("deliveryViewTankRemainingUnit").value);
-  const add=deliveryTankToL($("deliveryViewTankDelivery").value,"L");
+  const current=deliveryHistory[deliveryViewIndex];
+  const matches=current?getMatchingTankSettingsForDelivery(current):[];
+  let selectedTankId=$("deliveryViewTankSelect")?.value||"";
+
+  const capInput=$("deliveryViewTankCapacity");
+  const capUnitInput=$("deliveryViewTankCapacityUnit");
+  const remInput=$("deliveryViewTankRemaining");
+  const remUnitInput=$("deliveryViewTankRemainingUnit");
+  const addInput=$("deliveryViewTankDelivery");
+  const cap=deliveryTankToL(capInput.value,capUnitInput.value);
+  const rem=deliveryTankToL(remInput.value,remUnitInput.value);
+  const add=deliveryTankToL(addInput.value,"L");
   if(!(Number.isFinite(cap)&&Number.isFinite(rem)&&Number.isFinite(add))){
     alert("タンク容量・現在の残量・今回の納品量を入力してください。");
     return;
   }
+
+  // タンク未登録、または「＋ 新しいタンクを登録」を選択した場合は、保存時に自動登録する。
+  const addingNewTank=selectedTankId===NEW_DELIVERY_TANK_VALUE || matches.length===0;
+  if(addingNewTank && current){
+    const tankName=suggestedDeliveryTankName(matches);
+    const record=createDeliveryAutoTankSetting(current,tankName,capInput.value,capUnitInput.value||"L");
+    selectedTankId=String(record.id||"");
+    const sel=$("deliveryViewTankSelect");
+    if(sel){
+      const exists=Array.from(sel.options).some(op=>String(op.value)===selectedTankId);
+      if(!exists){
+        const op=document.createElement("option");
+        op.value=selectedTankId;
+        op.textContent=tankOptionLabel(record);
+        sel.insertBefore(op,sel.lastElementChild||null);
+      }
+      sel.value=selectedTankId;
+    }
+  }
+
   const status=$("deliveryViewTankStatus");
   const available=cap-rem;
   const after=rem+add;
@@ -4158,6 +4515,10 @@ window.saveCommissionRates = saveCommissionRates;
 
 })();
 document.addEventListener("DOMContentLoaded",function(){
+  // ナビを押した瞬間に古い選択状態を全解除する（設定を含む）。
+  document.querySelector("nav")?.addEventListener("click",function(){
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active-nav"));
+  },true);
   document.getElementById("navCalc").onclick=function(){window.show("calc");};
   document.getElementById("navHistory").onclick=function(){window.show("history");};
   document.getElementById("navDeliveryHistory").onclick=function(){window.show("deliveryHistory");};
