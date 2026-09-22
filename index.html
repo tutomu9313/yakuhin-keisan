@@ -438,8 +438,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <style id="delivery-view-tank-check-style">
 /* 納品データ：納品前のタンク容量確認 */
 #deliveryViewModal .modal-card{
-  width:370px !important;
-  max-width:calc(100% - 20px) !important;
+  width:350px !important;
+  max-width:90% !important;
   box-sizing:border-box !important;
   max-height:calc(100vh - 20px) !important;
   overflow-y:auto !important;
@@ -472,8 +472,8 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 }
 .delivery-tank-input-wrap{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 64px;
-  gap:8px;
+  grid-template-columns:145px 52px;
+  gap:4px;
   min-width:0;
   width:100%;
 }
@@ -677,14 +677,14 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 }
 .delivery-tank-row{
   grid-template-columns:82px minmax(0,1fr) !important;
-  gap:5px !important;
+  gap:4px !important;
   margin-top:3px !important;
 }
 .delivery-tank-row label{
   font-size:12px !important;
 }
 .delivery-tank-input-wrap{
-  grid-template-columns:minmax(0,1fr) 56px !important;
+  grid-template-columns:145px 52px !important;
   gap:5px !important;
 }
 #deliveryViewTankCheck input,#deliveryViewTankCheck select{
@@ -723,13 +723,17 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   height:36px !important;
   margin:0 !important;
 }
+#deliveryViewModal #deliveryViewEditBtn{
+  grid-column:1/-1 !important;
+  width:100% !important;
+}
 @media(max-width:420px){
   #deliveryViewModal .modal-card{
-    width:calc(100% - 12px) !important;
-    max-width:calc(100% - 12px) !important;
+    width:350px !important;
+    max-width:calc(100% - 20px) !important;
   }
   .delivery-tank-row{grid-template-columns:82px minmax(0,1fr) !important;}
-  .delivery-tank-input-wrap{grid-template-columns:minmax(0,1fr) 58px !important;}
+  .delivery-tank-input-wrap{grid-template-columns:145px 52px !important;}
 }
 </style>
 </head>
@@ -2043,7 +2047,9 @@ function openDeliveryView(i){
   $("deliveryViewModal").setAttribute("aria-hidden","false");
 }
 function deliveryTankToL(value,unit){
-  const n=Number(value);
+  const raw=String(value??"").trim();
+  if(raw==="")return NaN;
+  const n=Number(raw);
   if(!Number.isFinite(n)||n<0)return NaN;
   return unit==="m3"?n*1000:n;
 }
@@ -2070,10 +2076,11 @@ function updateDeliveryTankCheck(){
     return;
   }
   if(rem>cap){
+    const overflowL=rem+add-cap;
     available.textContent=formatTankLiters(cap-rem).replace("-","");
     after.textContent=formatTankLiters(rem+add);
     difference.textContent=formatTankLiters(cap-(rem+add));
-    status.textContent="残量がタンク容量を超えています";
+    status.textContent="納品不可（タンク容量を超えます）";
     status.className="danger";
     return;
   }
@@ -2084,9 +2091,10 @@ function updateDeliveryTankCheck(){
   after.textContent=formatTankLiters(afterL);
   difference.textContent=(differenceL>=0?formatTankLiters(differenceL):"-"+formatTankLiters(Math.abs(differenceL)));
   if(afterL<=cap){
-    status.textContent=differenceL===0?"納品可能（余裕なし）":"納品可能";
+    status.textContent="納品可能";
     status.className="safe";
   }else{
+    const overflowL=afterL-cap;
     status.textContent="納品不可（タンク容量を超えます）";
     status.className="danger";
   }
