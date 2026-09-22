@@ -46,7 +46,7 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
 .history-weekly-status.delivered{color:#34c759}
 .history-weekly-status.undelivered{color:#ff3b30}
 .history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:20px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:700;}
-.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
+.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:12px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
@@ -591,7 +591,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 
 <section id="historyPage" class="hidden">
  <div class="card daily-view-tabs"><button id="historyViewToggleBtn" type="button">一覧を見る</button></div>
- <div id="historyDetailView">
+ <div id="historyDetailView" class="hidden">
   <div class="card">
    <div class="daily-report-date-nav history-date-nav">
     <button id="historyPrevBtn" class="gray" type="button" onclick="window.shiftHistoryDate(-1)">‹</button>
@@ -606,7 +606,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
   </div></div>
   <div class="card" id="historyList"></div>
  </div>
- <div id="historyWeeklyListView" class="hidden">
+ <div id="historyWeeklyListView">
   <div class="card">
    <div class="history-weekly-nav">
     <button class="gray" type="button" onclick="window.shiftHistoryWeekly(-1)">‹</button>
@@ -624,7 +624,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 <section id="weeklyPage" class="hidden"><div class="card"><input id="weeklyDate" type="date" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div><button id="weeklyPrintBtn" type="button" style="margin-top:12px;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
 <section id="deliveryHistoryPage" class="hidden">
  <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
- <div id="deliveryHistoryDetailView">
+ <div id="deliveryHistoryDetailView" class="hidden">
  <div class="card">
   <div class="daily-report-date-nav history-date-nav">
    <button id="deliveryHistoryPrevBtn" class="gray" type="button" onclick="window.shiftDeliveryHistoryDate(-1)">‹</button>
@@ -639,7 +639,7 @@ nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
  </div></div>
  <div class="card" id="deliveryHistoryList"></div>
  </div>
- <div id="deliveryHistoryWeeklyListView" class="hidden">
+ <div id="deliveryHistoryWeeklyListView">
   <div class="card">
    <div class="history-weekly-nav">
     <button class="gray" type="button" onclick="window.shiftDeliveryHistoryWeekly(-1)">‹</button>
@@ -2882,7 +2882,7 @@ function renderHistoryWeeklyList(){
 function updateHistoryViewToggle(){
  const b=$("historyViewToggleBtn"); if(!b)return;
  const listHidden=$("historyWeeklyListView")?.classList.contains("hidden");
- b.textContent=listHidden?"一覧を見る":"注文履歴に戻る";
+ b.textContent=listHidden?"一覧を見る":"注文履歴詳細";
 }
 function showHistoryDetailView(){
  const d=$("historyDetailView"),l=$("historyWeeklyListView"); if(d)d.classList.remove("hidden"); if(l)l.classList.add("hidden"); updateHistoryViewToggle(); renderHistory();
@@ -2945,7 +2945,7 @@ function renderDeliveryHistoryWeeklyList(){
 function updateDeliveryHistoryViewToggle(){
  const b=$("deliveryHistoryViewToggleBtn"); if(!b)return;
  const listHidden=$("deliveryHistoryWeeklyListView")?.classList.contains("hidden");
- b.textContent=listHidden?"一覧を見る":"納品履歴に戻る";
+ b.textContent=listHidden?"一覧を見る":"納品履歴詳細";
 }
 function showDeliveryHistoryDetailView(){
  const d=$("deliveryHistoryDetailView"),l=$("deliveryHistoryWeeklyListView"); if(d)d.classList.remove("hidden"); if(l)l.classList.add("hidden"); updateDeliveryHistoryViewToggle(); renderDeliveryHistory();
@@ -2978,11 +2978,11 @@ function show(page){
 
   if(page==="history" && typeof renderHistory==="function") {
     refreshAllHistoryDisplays();
-    if($("historyWeeklyListView")?.classList.contains("hidden")) renderHistory(); else renderHistoryWeeklyListView();
+    showHistoryWeeklyListView();
   }
   if(page==="deliveryHistory" && typeof renderDeliveryHistory==="function") {
     refreshAllHistoryDisplays();
-    if($("deliveryHistoryWeeklyListView")?.classList.contains("hidden")) renderDeliveryHistory(); else renderDeliveryHistoryWeeklyListView();
+    showDeliveryHistoryWeeklyListView();
   }
   if(page==="daily" && typeof renderDailyReport==="function") { renderDailyReport(); setTimeout(updateDailyCalc,0); }
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
