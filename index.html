@@ -847,6 +847,12 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   background:#007aff !important;
   color:#fff !important;
 }
+#deliveryViewModal #deliveryViewSaveBtn:disabled{
+  background:#8e8e93 !important;
+  color:#fff !important;
+  opacity:.65 !important;
+  cursor:not-allowed !important;
+}
 #deliveryViewModal #deliveryViewEditBtn{
   background:#fff !important;
   color:#007aff !important;
@@ -860,6 +866,15 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   .delivery-tank-row{grid-template-columns:82px minmax(0,1fr) !important;}
   .delivery-tank-input-wrap{grid-template-columns:125px 62px !important;}
 }
+</style>
+<style id="weekly-print-button-height-fix">
+#weeklyPrintBtn{height:42px !important;}
+</style>
+<style id="tank-page-all-buttons-42px">
+/* タンク設定：ページ内のボタン高さを42pxに統一 */
+#tankPage button{height:42px !important;}
+#tankPage .tank-setting-actions button{height:42px !important;}
+#tankPage .tank-setting-add{height:42px !important;}
 </style>
 </head>
 <body>
@@ -957,7 +972,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
  </div>
 </section>
 
-<section id="weeklyPage" class="hidden"><div class="card"><input id="weeklyDate" type="date" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div><button id="weeklyPrintBtn" type="button" style="margin-top:12px;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
+<section id="weeklyPage" class="hidden"><div class="card"><input id="weeklyDate" type="date" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
 <section id="deliveryHistoryPage" class="hidden">
  <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
  <div id="deliveryHistoryDetailView" class="hidden">
@@ -1308,7 +1323,6 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
     </select>
    </div>
   </div>
-  <div id="deliveryViewTankSelectNote" class="note" style="display:none;margin:0 0 8px"></div>
   <div id="deliveryViewTankCheck">
    <div id="deliveryViewTankCheckTitle">タンク容量確認（納品前のチェック）</div>
    <div class="delivery-tank-row">
@@ -1352,11 +1366,10 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
     <div class="delivery-tank-result-line"><span>タンク容量との差</span><span id="deliveryViewTankDifference" class="delivery-tank-result-value">— L</span></div>
    </div>
    <div id="deliveryViewTankStatus" class="error">入力してください</div>
-   <div class="delivery-tank-note">タンク容量・残量は L または m³ で入力できます。m³ は自動的に L に換算して確認します。今回の納品量は L で入力します。確認した内容は自動で記録されます。</div>
   </div>
   <div class="modal-actions">
    <button id="deliveryViewEditBtn">編集</button>
-   <button id="deliveryViewSaveBtn">保存して閉じる</button>
+   <button id="deliveryViewSaveBtn" disabled>保存</button>
    <button id="deliveryViewCloseBtn" class="gray full">閉じる</button>
   </div>
  </div>
@@ -2278,14 +2291,13 @@ function suggestedDeliveryTankName(matches){
   return "新しいタンク";
 }
 function setupDeliveryViewTankSelector(x,savedTank){
-  const wrap=$("deliveryViewTankSelectWrap"),select=$("deliveryViewTankSelect"),note=$("deliveryViewTankSelectNote");
+  const wrap=$("deliveryViewTankSelectWrap"),select=$("deliveryViewTankSelect");
   if(!wrap||!select)return;
   const matches=getMatchingTankSettingsForDelivery(x);
   const savedId=String(savedTank?.tankId||"");
   const validSaved=!!savedId&&matches.some(t=>String(t.id)===savedId);
 
   select.innerHTML="";
-  note.style.display="none";
   wrap.style.display="block";
   select.disabled=false;
 
@@ -2296,8 +2308,10 @@ function setupDeliveryViewTankSelector(x,savedTank){
     select.appendChild(op);
     select.value="";
     select.disabled=true;
-    note.style.display="block";
-    note.textContent="初回保存時に、取引先・部署・薬品・タンク名・容量を自動登録します。";
+    // 登録済みタンクがない場合は手動入力できるように戻す
+    const capInput=$("deliveryViewTankCapacity"),capUnit=$("deliveryViewTankCapacityUnit");
+    if(capInput)capInput.disabled=false;
+    if(capUnit)capUnit.disabled=false;
     return;
   }
 
@@ -2315,8 +2329,6 @@ function setupDeliveryViewTankSelector(x,savedTank){
 
   const selectedValue=validSaved?savedId:String(matches[0]?.id||"");
   select.value=selectedValue;
-  note.style.display="block";
-  note.textContent="登録済みタンクを選ぶか、「＋ 新しいタンクを登録」から追加できます。";
   applySelectedDeliveryTankSetting(false);
 }
 function applySelectedDeliveryTankSetting(markDirty=true){
@@ -2388,6 +2400,7 @@ function openDeliveryView(i){
   updateDeliveryTankCheck();
   deliveryViewTankSavedState=getDeliveryTankState();
   deliveryViewTankEditedSinceOpen=false;
+  updateDeliveryViewSaveButton();
   $("deliveryViewModal").classList.remove("hidden");
   $("deliveryViewModal").setAttribute("aria-hidden","false");
 }
@@ -2412,7 +2425,15 @@ function getDeliveryTankState(){
   });
 }
 function isDeliveryTankDirty(){
+  try{
+    if(deliveryViewTankSavedState!=='') return getDeliveryTankState()!==deliveryViewTankSavedState;
+  }catch(e){}
   return deliveryViewTankEditedSinceOpen;
+}
+function updateDeliveryViewSaveButton(){
+  const btn=$("deliveryViewSaveBtn");
+  if(!btn)return;
+  btn.disabled=!isDeliveryTankDirty();
 }
 function discardAndCloseDeliveryView(){
   deliveryViewTankSavedState="";
@@ -2887,10 +2908,41 @@ function updateTankSettingConverted(){
   if($("tankSettingConverted"))$("tankSettingConverted").textContent="換算："+(Number.isFinite(v)?formatTankLiters(v):"— L");
 }
 function resetTankSettingForm(){
-  editingTankIndex=-1; populateTankSettingCustomers(); populateTankSettingChemicals();
-  if($("tankSettingCustomer")&&customers.length)$("tankSettingCustomer").selectedIndex=0;
-  populateTankSettingDepartments(); if($("tankSettingChemical")&&chemicals.length)$("tankSettingChemical").selectedIndex=0;
-  $("tankSettingName").value="";$("tankSettingCapacity").value="";$("tankSettingCapacityUnit").value="L";updateTankSettingConverted();
+  editingTankIndex=-1;
+  populateTankSettingCustomers();
+  populateTankSettingChemicals();
+
+  // 「入力クリア」では取引先・薬品も未選択に戻す。
+  const customerSel=$("tankSettingCustomer");
+  if(customerSel){
+    if(!Array.from(customerSel.options).some(o=>o.value==="")){
+      const blank=document.createElement("option");
+      blank.value="";
+      blank.textContent="";
+      customerSel.insertBefore(blank,customerSel.firstChild);
+    }
+    customerSel.value="";
+  }
+
+  populateTankSettingDepartments();
+
+  const chemicalSel=$("tankSettingChemical");
+  if(chemicalSel){
+    if(!Array.from(chemicalSel.options).some(o=>o.value==="")){
+      const blank=document.createElement("option");
+      blank.value="";
+      blank.textContent="";
+      chemicalSel.insertBefore(blank,chemicalSel.firstChild);
+    }
+    chemicalSel.value="";
+  }
+
+  $("tankSettingName").value="";
+  $("tankSettingCapacity").value="";
+  $("tankSettingCapacityUnit").value="L";
+  updateTankSettingConverted();
+  // 「入力クリア」では下部の登録済みタンク表示もクリアする。
+  if($("tankSettingList"))$("tankSettingList").innerHTML="";
   if($("tankSettingSaveBtn"))$("tankSettingSaveBtn").textContent="登録";
   markTankSettingSnapshot();
 }
@@ -4085,6 +4137,13 @@ function openSettings(){
 function closeSettings(){
  $("settingsModal").classList.add("hidden");
  $("settingsModal").setAttribute("aria-hidden","true");
+
+ // 設定ダイアログを閉じたら、実際に表示しているページのナビを選択状態へ戻す。
+ const currentPage=sessionStorage.getItem("yakuhin_current_page")||"calc";
+ const navMap={calc:"navCalc",history:"navHistory",deliveryHistory:"navDeliveryHistory",daily:"navDaily",weekly:"navWeekly"};
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active-nav"));
+ const activeNav=$(navMap[currentPage]);
+ if(activeNav)activeNav.classList.add("active-nav");
 }
 $("navSettings").onclick=()=>{updateCloudAccountUI();document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active-nav"));$("navSettings").classList.add("active-nav");openSettings();};
 $("settingsChemBtn").onclick=()=>{closeSettings();show("chem");};
@@ -4380,7 +4439,8 @@ $("deliveryViewSaveBtn").onclick=function(){
   saveDeliveryTankCheck(cap,rem,add,available,after,difference,status.textContent,status.className);
   deliveryViewTankSavedState=getDeliveryTankState();
   deliveryViewTankEditedSinceOpen=false;
-  closeDeliveryView();
+  updateDeliveryViewSaveButton();
+  try{refreshAllHistoryDisplays();}catch(e){}
 };
 $("deliveryViewEditBtn").onclick=function(){
   if(deliveryViewIndex<0)return;
@@ -4395,12 +4455,13 @@ $("deliveryViewEditBtn").onclick=function(){
 $("deliveryViewTankSelect").addEventListener("change",function(){
   deliveryViewTankEditedSinceOpen=true;
   applySelectedDeliveryTankSetting(true);
+  updateDeliveryViewSaveButton();
 });
-$("deliveryViewTankCapacity").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
-$("deliveryViewTankCapacityUnit").addEventListener("change",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
-$("deliveryViewTankRemaining").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
-$("deliveryViewTankRemainingUnit").addEventListener("change",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
-$("deliveryViewTankDelivery").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();});
+$("deliveryViewTankCapacity").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();updateDeliveryViewSaveButton();});
+$("deliveryViewTankCapacityUnit").addEventListener("change",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();updateDeliveryViewSaveButton();});
+$("deliveryViewTankRemaining").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();updateDeliveryViewSaveButton();});
+$("deliveryViewTankRemainingUnit").addEventListener("change",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();updateDeliveryViewSaveButton();});
+$("deliveryViewTankDelivery").addEventListener("input",function(){deliveryViewTankEditedSinceOpen=true;updateDeliveryTankCheck();updateDeliveryViewSaveButton();});
 $("deliveryViewCloseBtn").onclick=function(){
   if(isDeliveryTankDirty()){
     const ok=confirm("タンク確認のデータが保存されていません。保存せずに閉じてもよろしいですか？");
