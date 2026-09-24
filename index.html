@@ -1227,6 +1227,23 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
  </div>
 </div>
 
+<div id="settingsCustomerConfirmModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>新しい取引先を登録</h3>
+  <label>取引先</label>
+  <input id="settingsCustomerConfirmName" type="text" readonly>
+  <label style="margin-top:12px">読み</label>
+  <input id="settingsCustomerConfirmReading" type="text" placeholder="読みを作成中…">
+  <div class="note" style="margin-top:5px">この読みで取引先を登録します。必要なら修正できます。</div>
+  <label style="margin-top:12px">部署名</label>
+  <input id="settingsCustomerConfirmDepartment" type="text" readonly>
+  <div class="modal-actions">
+   <button id="settingsCustomerConfirmCancel" class="gray" type="button">キャンセル</button>
+   <button id="settingsCustomerConfirmSave" type="button" disabled>登録</button>
+  </div>
+ </div>
+</div>
+
 <div id="customerModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
   <h3>客先を編集</h3>
@@ -3238,56 +3255,103 @@ function saveDepartments(){
  localStorage.setItem(KEY_P,JSON.stringify(departments));
  scheduleCloudSync();
 }
+let settingsCustomerConfirmToken=0;
+function closeSettingsCustomerConfirm(){
+ settingsCustomerConfirmToken++;
+ $("settingsCustomerConfirmModal").classList.add("hidden");
+ $("settingsCustomerConfirmModal").setAttribute("aria-hidden","true");
+}
 async function addCustomer(){
  const n=$("newCustomerName").value.trim();
  if(!n)return alert("取引先を入力してください。");
+ if(customers.includes(n))return alert("同じ取引先が既に登録されています。");
  const dept=$("newDepartmentName").value.trim();
- const btn=$("addCustomerBtn");
- const oldText=btn?btn.textContent:"新規登録";
- if(btn){btn.disabled=true;btn.textContent="読みを作成中…";}
+ const token=++settingsCustomerConfirmToken;
+ const nameEl=$("settingsCustomerConfirmName");
+ const readingEl=$("settingsCustomerConfirmReading");
+ const deptEl=$("settingsCustomerConfirmDepartment");
+ const saveBtn=$("settingsCustomerConfirmSave");
+ nameEl.value=n;
+ deptEl.value=dept;
+ readingEl.value="";
+ readingEl.placeholder="読みを作成中…";
+ saveBtn.disabled=true;
+ $("settingsCustomerConfirmModal").classList.remove("hidden");
+ $("settingsCustomerConfirmModal").setAttribute("aria-hidden","false");
  try{
-   // 取引先名の入力途中では読みを自動生成せず、ここで1回だけ生成する。
-   // iPhoneの日本語IME変換中に読み生成を走らせて画面操作を止めないよう、
-   // 読み生成は専用Workerで行う。
-   const readingEl=$("newCustomerReading");
-   let reading=normalizeReading(readingEl.value.trim());
-   const autoReadingName=String(readingEl.dataset.autoReadingName||"");
-   if(autoReadingName && autoReadingName!==n)reading="";
-   if(!isValidCustomerReading(reading,n)){
-     try{
-       reading=await generateCustomerReadingInWorker(n,8000);
-     }catch(e){
-       reading="";
-     }
-   }
+   const generated=await generateCustomerReadingInWorker(n,8000);
+   if(token!==settingsCustomerConfirmToken)return;
+   let reading=normalizeReading(generated);
    if(!isValidCustomerReading(reading,n))reading=fallbackCustomerReading(n);
-   if(reading)readingEl.value=reading;
-   if(!isValidCustomerReading(reading,n) && /[一-龯々〆ヵヶ]/.test(n)){
-     alert("読みを自動作成できませんでした。読み欄を確認してください。");
-     return;
+   if(reading){
+     readingEl.value=reading;
+     readingEl.placeholder="読み（ひらがな）";
+     saveBtn.disabled=false;
+   }else{
+     readingEl.placeholder="読みを入力してください";
+     saveBtn.disabled=false;
+     readingEl.focus();
    }
+ }catch(e){
+   if(token!==settingsCustomerConfirmToken)return;
+   const reading=fallbackCustomerReading(n);
+   if(reading){readingEl.value=reading;}
+   readingEl.placeholder="読みを入力してください";
+   saveBtn.disabled=false;
+ }
+}
+$("settingsCustomerConfirmCancel").onclick=closeSettingsCustomerConfirm;
+$("settingsCustomerConfirmModal").addEventListener("click",e=>{
+ if(e.target===$("settingsCustomerConfirmModal"))closeSettingsCustomerConfirm();
+});
+$("settingsCustomerConfirmSave").onclick=async()=>{
+ const token=settingsCustomerConfirmToken;
+ const n=$("settingsCustomerConfirmName").value.trim();
+ let reading=normalizeReading($("settingsCustomerConfirmReading").value.trim());
+ const dept=$("settingsCustomerConfirmDepartment").value.trim();
+ if(!n)return;
+ if(customers.includes(n)){
+   closeSettingsCustomerConfirm();
+   $("newCustomerName").value="";
+   $("newCustomerReading").value="";
+   $("newDepartmentName").value="";
+   renderCustomers();
+   updateCustomerSuggest("");
+   return;
+ }
+ if(!isValidCustomerReading(reading,n) && /[一-龯々〆ヵヶ]/.test(n)){
+   alert("読みを確認してください。");
+   $("settingsCustomerConfirmReading").focus();
+   return;
+ }
+ const btn=$("settingsCustomerConfirmSave");
+ const oldText=btn.textContent;
+ btn.disabled=true;
+ btn.textContent="登録中…";
+ try{
+   if(token!==settingsCustomerConfirmToken)return;
    customerReadings[n]=reading;
    localStorage.setItem(KEY_KR,JSON.stringify(customerReadings));
    scheduleCloudSync();
    if(!Array.isArray(departments[n]))departments[n]=[];
-   if(dept){
-     if(departmentNames(n).includes(dept)){alert("同じ部署名が既に登録されています。");return;}
-     departments[n].push(dept);
-     saveDepartments();
-   }
+   if(dept)departments[n].push(dept);
+   saveDepartments();
    if(!customers.includes(n))customers.push(n);
    save(KEY_K,customers);
    $("newCustomerName").value="";
    $("newCustomerReading").value="";
    delete $("newCustomerReading").dataset.autoReadingName;
    $("newDepartmentName").value="";
+   closeSettingsCustomerConfirm();
    renderCustomers();
    updateCustomerSuggest("");
    alert(dept?"取引先と部署を登録しました。":"取引先を登録しました。");
  }finally{
-   if(btn){btn.disabled=false;btn.textContent=oldText;}
+   btn.disabled=false;
+   btn.textContent=oldText;
  }
-}
+};
+
 function addChem(){const n=$("newChemName").value.trim(),o=$("newChemOrder").value.trim(),d=Number($("newChemDensity").value),ct=$("newChemCmTsum").value.trim();if(!n||!isFinite(d)||d<=0)return alert("薬品名と比重を入力してください。");if(ct!==""&&!isFinite(Number(ct)))return alert("cm/t積の数値を確認してください。");chemicals.push({name:n,sortOrder:o===""?null:Number(o),density:d,warning:$("newChemWarning").checked,cmTsum:ct===""?null:Number(ct)});save(KEY_C,chemicals);$("newChemName").value="";$("newChemDensity").value="";$("newChemOrder").value="";$("newChemCmTsum").value="";$("newChemWarning").checked=false;renderChemicals();alert("薬品を登録しました。")}
 function localDateFromISO(iso){const p=String(iso||isoToday()).split("-").map(Number);return new Date(p[0],p[1]-1,p[2]);}
 function isoFromLocalDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
