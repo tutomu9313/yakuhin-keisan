@@ -31,7 +31,7 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 .modal.hidden{display:none!important}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:100}
 .modal-card{width:350px;max-width:90%;background:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 35px #0004}
 .modal-card h3{margin:0 0 15px;font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}.modal-actions .green{background:#34c759!important;color:#fff!important}
-.suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}
+.suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}.suggest .quick-customer-register-option{padding:0;border:0}.suggest .quick-customer-register-option button{margin:0;width:100%;height:46px;border-radius:10px;background:#fff;color:#007aff;font-weight:700;text-align:left;padding:0 12px}.suggest .quick-customer-register-option button:active{background:#f2f2f7}
 .note{font-size:12px;color:#777;margin-top:7px;line-height:1.4}
 /* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(6,1fr);padding:7px 5px}
@@ -1212,6 +1212,21 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
  </div>
 </div>
 
+<div id="quickCustomerModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>新しい取引先を登録</h3>
+  <label>取引先</label>
+  <input id="quickCustomerName" type="text" readonly>
+  <label style="margin-top:12px">読み</label>
+  <input id="quickCustomerReading" type="text" placeholder="読みを作成中…">
+  <div class="note" style="margin-top:5px">この内容で取引先を登録します。読みは自動生成されます。</div>
+  <div class="modal-actions">
+   <button id="quickCustomerCancel" class="gray" type="button">キャンセル</button>
+   <button id="quickCustomerSave" type="button" disabled>登録</button>
+  </div>
+ </div>
+</div>
+
 <div id="customerModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
   <h3>客先を編集</h3>
@@ -1889,7 +1904,17 @@ function updateCustomerSuggest(filter){
    };
    box.appendChild(div);
  });
- box.classList.toggle("hidden",list.length===0);
+ if(q && list.length===0){
+   const wrap=document.createElement("div");
+   wrap.className="quick-customer-register-option";
+   const btn=document.createElement("button");
+   btn.type="button";
+   btn.textContent="＋ この取引先を新規登録";
+   btn.onclick=()=>openQuickCustomerRegister(String(filter||"").trim());
+   wrap.appendChild(btn);
+   box.appendChild(wrap);
+ }
+ box.classList.toggle("hidden",!q || (list.length===0 && !q));
 }
 function getCalcFormState(){
   return JSON.stringify({
@@ -4221,6 +4246,95 @@ $("inputCancelBtn").onclick=()=>{
 $("customer").onfocus=()=>{
  const box=$("customerSuggest");
  if(box)box.classList.add("hidden");
+};
+
+let quickCustomerRegistrationToken=0;
+function closeQuickCustomerRegister(){
+ $("quickCustomerModal").classList.add("hidden");
+ $("quickCustomerModal").setAttribute("aria-hidden","true");
+ quickCustomerRegistrationToken++;
+}
+async function openQuickCustomerRegister(name){
+ const n=String(name||"").trim();
+ if(!n)return;
+ if(customers.includes(n)){
+   $("customer").value=n;
+   $("customerSuggest").classList.add("hidden");
+   setCalcEnabled(true);
+   updateDepartmentSuggestions();
+   saveDraft();
+   return;
+ }
+ const token=++quickCustomerRegistrationToken;
+ $("quickCustomerName").value=n;
+ $("quickCustomerReading").value="";
+ $("quickCustomerReading").placeholder="読みを作成中…";
+ $("quickCustomerSave").disabled=true;
+ $("quickCustomerModal").classList.remove("hidden");
+ $("quickCustomerModal").setAttribute("aria-hidden","false");
+ try{$("quickCustomerName").focus();}catch(e){}
+ let reading="";
+ try{
+   reading=await Promise.race([
+     generateCustomerReading(n),
+     new Promise(resolve=>setTimeout(()=>resolve(""),5000))
+   ]);
+ }catch(e){reading="";}
+ if(token!==quickCustomerRegistrationToken)return;
+ if(!isValidCustomerReading(reading,n))reading=fallbackCustomerReading(n);
+ if(reading){
+   $("quickCustomerReading").value=reading;
+   $("quickCustomerSave").disabled=false;
+ }else{
+   $("quickCustomerReading").placeholder="読みを入力してください";
+   $("quickCustomerSave").disabled=false;
+ }
+}
+$("quickCustomerCancel").onclick=closeQuickCustomerRegister;
+$("quickCustomerModal").addEventListener("click",e=>{if(e.target===$("quickCustomerModal"))closeQuickCustomerRegister()});
+$("quickCustomerSave").onclick=async()=>{
+ const n=$("quickCustomerName").value.trim();
+ let reading=$("quickCustomerReading").value.trim();
+ if(!n)return;
+ if(customers.includes(n)){
+   closeQuickCustomerRegister();
+   $("customer").value=n;
+   $("customerSuggest").classList.add("hidden");
+   setCalcEnabled(true);
+   updateDepartmentSuggestions();
+   saveDraft();
+   return;
+ }
+ if(!reading)reading=fallbackCustomerReading(n);
+ if(!isValidCustomerReading(reading,n) && /[一-龯々〆ヵヶ]/.test(n)){
+   alert("読みを確認してください。");
+   $("quickCustomerReading").focus();
+   return;
+ }
+ const btn=$("quickCustomerSave");
+ const oldText=btn.textContent;
+ btn.disabled=true;
+ btn.textContent="登録中…";
+ try{
+   customerReadings[n]=reading;
+   localStorage.setItem(KEY_KR,JSON.stringify(customerReadings));
+   scheduleCloudSync();
+   if(!customers.includes(n))customers.push(n);
+   save(KEY_K,customers);
+   closeQuickCustomerRegister();
+   $("customer").value=n;
+   $("customerSuggest").classList.add("hidden");
+   $("customerSuggest").innerHTML="";
+   $("department").value="";
+   $("plannedTime").value="";
+   setCalcEnabled(true);
+   updateDepartmentSuggestions();
+   saveDraft();
+   calc();
+ }finally{
+   btn.disabled=false;
+   btn.textContent=oldText;
+ }
 };
 $("newCustomerName").addEventListener("input",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
 $("newCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
