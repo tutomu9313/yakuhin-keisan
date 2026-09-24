@@ -3124,11 +3124,15 @@ function openCustomerModal(i){
  editingCustomerIndex=i;
  $("modalCustomerName").value=n;
  const storedReading=customerReadings[n]||"";
- $("modalCustomerReading").value=isValidCustomerReading(storedReading,n)?storedReading:"";
+ const readingEl=$("modalCustomerReading");
+ readingEl.value=isValidCustomerReading(storedReading,n)?storedReading:"";
  $("modalCustomerDepartment").value=departmentNames(n).join("\n");
  $("customerModal").classList.remove("hidden");
  $("customerModal").setAttribute("aria-hidden","false");
  $("modalCustomerName").focus();
+ // 客先編集ダイアログを開いた時は、読みの自動生成を行わない。
+ // iPhoneでKuroshiro/Kuromojiの辞書初期化が操作を止めるのを防ぐ。
+ // 登録済みの読みがあれば、そのまま表示する。未登録なら手入力できる。
 }
 function closeCustomerModal(){
  $("customerModal").classList.add("hidden");
@@ -3143,15 +3147,12 @@ $("modalSaveCustomer").onclick=async()=>{
  if(n!==oldName&&customers.includes(n)){alert("同じ取引先が既に登録されています。");return}
  const btn=$("modalSaveCustomer");
  const oldText=btn?btn.textContent:"保存";
- if(btn){btn.disabled=true;btn.textContent="読みを作成中…";}
+ if(btn){btn.disabled=true;btn.textContent="保存中…";}
  try{
-   let reading=$("modalCustomerReading").value.trim();
-   if(!isValidCustomerReading(reading,n))reading=await generateCustomerReading(n);
-   if(reading)$("modalCustomerReading").value=reading;
-   if(!isValidCustomerReading(reading,n) && /[一-龯々〆ヵヶ]/.test(n)){
-     alert("読みを自動作成できませんでした。読み欄を確認してください。");
-     return;
-   }
+   // 保存時には読みの自動生成を待たない。
+   // 既に1文字でも有効な読みが入力・生成済みなら、その読みを保存する。
+   // 未生成でも取引先の保存は続行し、iPhoneで操作が止まらないようにする。
+   const reading=normalizeReading($("modalCustomerReading").value.trim());
    const deptText=$("modalCustomerDepartment").value||"";
    const newDepartments=[...new Set(deptText.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))];
    customers[i]=n;save(KEY_K,customers);
@@ -4210,8 +4211,6 @@ $("customer").onfocus=()=>{
 };
 $("newCustomerName").addEventListener("input",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
 $("newCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
-$("modalCustomerName").addEventListener("input",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
-$("modalCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
 $("customer").oninput=()=>{
  const name=$("customer").value.trim();
  if(name){
