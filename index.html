@@ -940,6 +940,50 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   height:36px !important;
 }
 </style>
+<style id="delivery-edit-buttons-gap-match-view">
+/* 納品データ編集：納品データ画面と同じボタン間隔にする */
+#deliveryEditModal .modal-actions{
+  margin-top:6px !important;
+  gap:5px !important;
+}
+#deliveryEditModal .modal-actions button{
+  margin:0 !important;
+}
+</style>
+
+<style id="app-standard-buttons-36px-gap5">
+/* 標準操作ボタン：納品データ編集画面を基準に高さ36px・主要ボタン群の間隔5pxへ統一。
+   ナビ・日付移動などの専用コントロールは既存サイズを維持する。 */
+button{height:36px !important;}
+
+/* 標準的なボタン群の間隔 */
+.actions{gap:5px !important;}
+.modal-actions{gap:5px !important;}
+.tank-setting-actions{gap:5px !important;}
+.daily-view-tabs{gap:5px !important;}
+
+/* 設定画面など、縦に連続する通常ボタンの間隔 */
+#deliveryPage .card > button + button{margin-top:5px !important;}
+
+/* 以前の個別高さ指定を、通常操作ボタンについては36pxに合わせる */
+#weeklyPrintBtn{height:36px !important;}
+#tankPage button{height:36px !important;}
+#tankPage .tank-setting-actions button{height:36px !important;}
+#tankPage .tank-setting-add{height:36px !important;}
+.suggest .quick-customer-register-option button{height:36px !important;}
+
+/* 専用コントロールは既存サイズを維持 */
+nav button{height:45px !important;}
+.daily-report-date-nav button{height:46px !important;}
+.date-display-button{height:46px !important;}
+.history-weekly-nav button{height:42px !important;}
+#historyCustomCalendar .hcc-head button{height:36px !important;}
+#historyCustomCalendar .hcc-day{height:38px !important;min-height:38px !important;}
+
+/* 確認済みの納品データ系ダイアログも36pxを維持 */
+#deliveryViewModal .modal-actions button{height:36px !important;}
+#deliveryEditModal .modal-actions button{height:36px !important;}
+</style>
 </head>
 <body>
 <div id="authGate">
