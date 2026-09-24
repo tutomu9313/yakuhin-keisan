@@ -2053,14 +2053,11 @@ async function saveDelivery(){
 
  try{
  const now=new Date();
- if(!isValidCustomerReading(customerReading(customer),customer)){
-   const generatedReading=await generateCustomerReading(customer);
-   if(generatedReading && isValidCustomerReading(generatedReading,customer)){
-     customerReadings[customer]=generatedReading;
-     localStorage.setItem(KEY_KR,JSON.stringify(customerReadings));
-     scheduleCloudSync();
-   }
- }
+ // 注文登録時は、読み仮名の自動生成を待たない。
+ // iPhoneではKuroshiro/Kuromojiの辞書初期化に時間がかかる場合があるため、
+ // 読みが1文字でも既に登録されていればそのまま使用し、
+ // 未登録でも注文登録そのものを止めない。
+ // 読み仮名の自動生成は、取引先登録画面側の処理に任せる。
  if(editingHistoryIndex>=0 && history[editingHistoryIndex]){
    const old=history[editingHistoryIndex];
    // 修正前の注文情報を保持し、納品済み注文の紐付け更新に使用する。
