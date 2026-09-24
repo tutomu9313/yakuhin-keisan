@@ -3246,20 +3246,16 @@ async function addCustomer(){
  const oldText=btn?btn.textContent:"新規登録";
  if(btn){btn.disabled=true;btn.textContent="読みを作成中…";}
  try{
-   // 読み欄に既に自動入力・手入力されている場合は、その値を優先する。
-   // 空欄の場合だけ自動生成する。iPhoneで辞書初期化が長引いても、
-   // 取引先登録処理そのものが無期限に待ち続けないよう5秒で打ち切る。
+   // 取引先名の入力途中では読みを自動生成せず、ここで1回だけ生成する。
+   // iPhoneの日本語IME変換中に読み生成を走らせて画面操作を止めないよう、
+   // 読み生成は専用Workerで行う。
    const readingEl=$("newCustomerReading");
-   let reading=readingEl.value.trim();
+   let reading=normalizeReading(readingEl.value.trim());
    const autoReadingName=String(readingEl.dataset.autoReadingName||"");
-   // 入力途中で自動生成された読み（例：「か」）は、完成した取引先名の読みとして使わない。
    if(autoReadingName && autoReadingName!==n)reading="";
    if(!isValidCustomerReading(reading,n)){
      try{
-       reading=await Promise.race([
-         generateCustomerReading(n),
-         new Promise(resolve=>setTimeout(()=>resolve(""),5000))
-       ]);
+       reading=await generateCustomerReadingInWorker(n,8000);
      }catch(e){
        reading="";
      }
@@ -4455,8 +4451,8 @@ $("quickCustomerSave").onclick=async()=>{
    btn.textContent=oldText;
  }
 };
-$("newCustomerName").addEventListener("input",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
-$("newCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
+// 設定画面の新規取引先は、入力途中には読み生成を実行しない。
+// 入力確定後（新規登録ボタン押下時）に1回だけWorkerで読みを生成する。
 $("newCustomerReading").addEventListener("input",()=>{ delete $("newCustomerReading").dataset.autoReadingName; });
 $("modalCustomerName").addEventListener("input",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
 $("modalCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
