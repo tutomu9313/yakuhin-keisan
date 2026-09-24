@@ -917,6 +917,10 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   font-size:17px !important;
 }
 </style>
+<style id="delivery-tank-title-match-delivery-date-font">
+/* タンク容量確認の見出しを納品日と同じ14pxにする（表示のみ） */
+#deliveryViewTankCheckTitle{font-size:14px !important;}
+</style>
 <style id="weekly-print-button-height-fix">
 #weeklyPrintBtn{height:42px !important;}
 </style>
@@ -929,6 +933,12 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 <style id="delivery-tank-result-font-plus1">
 /* タンク容量確認の結果3項目だけフォントを+1px */
 #deliveryViewTankCheck .delivery-tank-result-line{font-size:12px !important;}
+</style>
+<style id="delivery-edit-buttons-match-view">
+/* 納品データ編集：納品データ画面のボタン高さに合わせる */
+#deliveryEditModal .modal-actions button{
+  height:36px !important;
+}
 </style>
 </head>
 <body>
@@ -1477,6 +1487,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
    <button id="deliveryEditDeleteBtn" class="red">削除</button>
    <button id="deliveryEditSaveBtn">保存</button>
    <button id="deliveryEditHistoryBtn" type="button">注文履歴</button>
+   <button id="deliveryEditBackBtn" type="button" class="gray full">納品データへ戻る</button>
    <button id="deliveryEditCancelBtn" class="gray full">閉じる</button>
   </div>
  </div>
@@ -4853,6 +4864,15 @@ $("deliveryViewModal").addEventListener("click",function(e){
   discardAndCloseDeliveryView();
 });
 $("deliveryEditHistoryBtn").onclick=window.returnToOrderHistoryFromDeliveryEdit;
+$("deliveryEditBackBtn").onclick=function(){
+  if(deliveryEditIndex<0)return;
+  if(!confirmCloseDeliveryEdit())return;
+  const i=deliveryEditIndex;
+  // 確認済みなので closeDeliveryEdit() では二重確認しない。
+  deliveryEditSaved=true;
+  closeDeliveryEdit();
+  openDeliveryView(i);
+};
 $("deliveryEditDeleteBtn").onclick=function(){
   if(deliveryEditIndex<0)return;
   const x=deliveryHistory[deliveryEditIndex];
