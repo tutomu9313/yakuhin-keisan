@@ -3205,10 +3205,23 @@ async function addCustomer(){
  const oldText=btn?btn.textContent:"新規登録";
  if(btn){btn.disabled=true;btn.textContent="読みを作成中…";}
  try{
+   // 読み欄に既に自動入力・手入力されている場合は、その値を優先する。
+   // 空欄の場合だけ自動生成する。iPhoneで辞書初期化が長引いても、
+   // 取引先登録処理そのものが無期限に待ち続けないよう5秒で打ち切る。
    let reading=$("newCustomerReading").value.trim();
-   if(!reading)reading=await generateCustomerReading(n);
+   if(!isValidCustomerReading(reading,n)){
+     try{
+       reading=await Promise.race([
+         generateCustomerReading(n),
+         new Promise(resolve=>setTimeout(()=>resolve(""),5000))
+       ]);
+     }catch(e){
+       reading="";
+     }
+   }
+   if(!isValidCustomerReading(reading,n))reading=fallbackCustomerReading(n);
    if(reading)$("newCustomerReading").value=reading;
-   if(!reading && /[一-龯々〆ヵヶ]/.test(n)){
+   if(!isValidCustomerReading(reading,n) && /[一-龯々〆ヵヶ]/.test(n)){
      alert("読みを自動作成できませんでした。読み欄を確認してください。");
      return;
    }
