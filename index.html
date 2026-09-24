@@ -1867,17 +1867,33 @@ async function autoFillCustomerReading(nameEl,readingEl){
  const name=String(nameEl.value||"").trim();
  const token=++customerReadingInputToken;
  if(customerReadingBlurTimer)clearTimeout(customerReadingBlurTimer);
- if(!name){ readingEl.value=""; return; }
- if(isValidCustomerReading(String(readingEl.value||"").trim(),name))return;
+ if(!name){ readingEl.value=""; delete readingEl.dataset.autoReadingName; return; }
+ const currentReading=String(readingEl.value||"").trim();
+ const autoReadingName=String(readingEl.dataset.autoReadingName||"");
+ // 自動生成した読みが「前の入力途中の名前」に対するものなら、
+ // 現在の名前に対してもう一度生成する。これにより、iPhoneの日本語入力で
+ // 最初の「か」だけが読みとして残る問題を防ぐ。
+ if(currentReading && !autoReadingName)return;
+ if(currentReading && autoReadingName===name)return;
  const currentName=name;
  customerReadingBlurTimer=setTimeout(async()=>{
    if(token!==customerReadingInputToken)return;
    if(String(nameEl.value||"").trim()!==currentName)return;
-   if(isValidCustomerReading(String(readingEl.value||"").trim(),currentName))return;
+   const liveReading=String(readingEl.value||"").trim();
+   const liveAutoReadingName=String(readingEl.dataset.autoReadingName||"");
+   if(liveReading && !liveAutoReadingName)return;
+   if(liveReading && liveAutoReadingName===currentName)return;
    const reading=await generateCustomerReading(currentName);
    if(token!==customerReadingInputToken)return;
+   if(String(nameEl.value||"").trim()!==currentName)return;
    if(!reading)return;
-   if(String(readingEl.value||"").trim()==="")readingEl.value=reading;
+   const latestReading=String(readingEl.value||"").trim();
+   const latestAutoReadingName=String(readingEl.dataset.autoReadingName||"");
+   if(latestReading && !latestAutoReadingName)return;
+   if(!latestReading || latestAutoReadingName===currentName){
+     readingEl.value=reading;
+     readingEl.dataset.autoReadingName=currentName;
+   }
  },250);
 }
 function customerReading(name){return normalizeReading(customerReadings[name]||"")}
@@ -3233,7 +3249,11 @@ async function addCustomer(){
    // 読み欄に既に自動入力・手入力されている場合は、その値を優先する。
    // 空欄の場合だけ自動生成する。iPhoneで辞書初期化が長引いても、
    // 取引先登録処理そのものが無期限に待ち続けないよう5秒で打ち切る。
-   let reading=$("newCustomerReading").value.trim();
+   const readingEl=$("newCustomerReading");
+   let reading=readingEl.value.trim();
+   const autoReadingName=String(readingEl.dataset.autoReadingName||"");
+   // 入力途中で自動生成された読み（例：「か」）は、完成した取引先名の読みとして使わない。
+   if(autoReadingName && autoReadingName!==n)reading="";
    if(!isValidCustomerReading(reading,n)){
      try{
        reading=await Promise.race([
@@ -3245,7 +3265,7 @@ async function addCustomer(){
      }
    }
    if(!isValidCustomerReading(reading,n))reading=fallbackCustomerReading(n);
-   if(reading)$("newCustomerReading").value=reading;
+   if(reading)readingEl.value=reading;
    if(!isValidCustomerReading(reading,n) && /[一-龯々〆ヵヶ]/.test(n)){
      alert("読みを自動作成できませんでした。読み欄を確認してください。");
      return;
@@ -3263,6 +3283,7 @@ async function addCustomer(){
    save(KEY_K,customers);
    $("newCustomerName").value="";
    $("newCustomerReading").value="";
+   delete $("newCustomerReading").dataset.autoReadingName;
    $("newDepartmentName").value="";
    renderCustomers();
    updateCustomerSuggest("");
@@ -4436,6 +4457,10 @@ $("quickCustomerSave").onclick=async()=>{
 };
 $("newCustomerName").addEventListener("input",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
 $("newCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("newCustomerName"),$("newCustomerReading")));
+$("newCustomerReading").addEventListener("input",()=>{ delete $("newCustomerReading").dataset.autoReadingName; });
+$("modalCustomerName").addEventListener("input",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
+$("modalCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
+$("modalCustomerReading").addEventListener("input",()=>{ delete $("modalCustomerReading").dataset.autoReadingName; });
 $("customer").oninput=()=>{
  const name=$("customer").value.trim();
  if(name){
