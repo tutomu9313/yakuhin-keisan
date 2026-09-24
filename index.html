@@ -2436,8 +2436,7 @@ function openDeliveryView(i){
   };
   $("deliveryViewInfo").innerHTML=
     "<div style='font-size:17px;font-weight:400;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
-    "<div style='font-size:16px'>取引先："+esc(x.customer||"")+"</div>"+
-    (x.department?"<div style='font-size:16px;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+ 
+    "<div style='font-size:16px'>取引先："+esc(x.customer||"")+(x.department?" "+esc(x.department):"")+"</div>"+
     "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
     "<div style='margin-top:3px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit||"")+(x.orderUnit!=="kg"&&Number.isFinite(orderKg)?"／注文重量："+formatQuantity(orderKg)+" kg":"")+"</div>"+
     "<div style='margin-top:3px'>納品重量："+(Number.isFinite(deliveryKg)?formatQuantity(deliveryKg):"—")+" kg <span style='font-size:14px'>／重量差："+signed(weightDiff)+" kg</span></div>"+
