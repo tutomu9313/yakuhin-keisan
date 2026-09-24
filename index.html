@@ -4530,22 +4530,11 @@ $("newCustomerReading").addEventListener("input",()=>{ delete $("newCustomerRead
 $("modalCustomerName").addEventListener("input",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
 $("modalCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
 // 客先編集の「読み」は、入力中に読み生成処理を起動しない。
-// IME変換中はそのままにし、確定後にひらがな以外の文字だけ除去する。
-let modalCustomerReadingComposing=false;
-$("modalCustomerReading").addEventListener("compositionstart",()=>{ modalCustomerReadingComposing=true; });
-$("modalCustomerReading").addEventListener("compositionend",()=>{
-  modalCustomerReadingComposing=false;
+// 漢字・数字・英字などを入力しても、入力内容はそのまま残す。
+// 保存時にだけひらがな以外を検査して警告し、保存を中止する。
+$("modalCustomerReading").addEventListener("input",()=>{
   const el=$("modalCustomerReading");
   if(!el)return;
-  el.value=String(el.value||"").replace(/[^ぁ-ゖゝゞー]/g,"");
-  delete el.dataset.autoReadingName;
-});
-$("modalCustomerReading").addEventListener("input",(e)=>{
-  const el=$("modalCustomerReading");
-  if(!el)return;
-  if(!modalCustomerReadingComposing && !e.isComposing){
-    el.value=String(el.value||"").replace(/[^ぁ-ゖゝゞー]/g,"");
-  }
   delete el.dataset.autoReadingName;
 });
 $("customer").oninput=()=>{
