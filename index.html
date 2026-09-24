@@ -3203,14 +3203,23 @@ $("modalSaveCustomer").onclick=async()=>{
  const oldName=customers[i],n=$("modalCustomerName").value.trim();
  if(!n){alert("取引先を入力してください。");return}
  if(n!==oldName&&customers.includes(n)){alert("同じ取引先が既に登録されています。");return}
+
+ // 読み欄はひらがなのみ許可。
+ // 不正な文字のまま保存処理を開始しないことで、iPhoneでもボタンを固めない。
+ const rawReading=$("modalCustomerReading").value.trim();
+ if(rawReading && !/^[ぁ-ゖゝゞー]+$/.test(rawReading)){
+   alert("読みはひらがなで入力してください。\n漢字・数字・英字などは入力できません。");
+   $("modalCustomerReading").focus();
+   return;
+ }
+
  const btn=$("modalSaveCustomer");
  const oldText=btn?btn.textContent:"保存";
  if(btn){btn.disabled=true;btn.textContent="保存中…";}
  try{
    // 保存時には読みの自動生成を待たない。
-   // 既に1文字でも有効な読みが入力・生成済みなら、その読みを保存する。
-   // 未生成でも取引先の保存は続行し、iPhoneで操作が止まらないようにする。
-   const reading=normalizeReading($("modalCustomerReading").value.trim());
+   // 読みはひらがなとして入力された値だけを保存する。
+   const reading=normalizeReading(rawReading);
    const deptText=$("modalCustomerDepartment").value||"";
    const newDepartments=[...new Set(deptText.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))];
    customers[i]=n;save(KEY_K,customers);
@@ -4520,7 +4529,25 @@ $("quickCustomerSave").onclick=async()=>{
 $("newCustomerReading").addEventListener("input",()=>{ delete $("newCustomerReading").dataset.autoReadingName; });
 $("modalCustomerName").addEventListener("input",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
 $("modalCustomerName").addEventListener("blur",()=>autoFillCustomerReading($("modalCustomerName"),$("modalCustomerReading")));
-$("modalCustomerReading").addEventListener("input",()=>{ delete $("modalCustomerReading").dataset.autoReadingName; });
+// 客先編集の「読み」は、入力中に読み生成処理を起動しない。
+// IME変換中はそのままにし、確定後にひらがな以外の文字だけ除去する。
+let modalCustomerReadingComposing=false;
+$("modalCustomerReading").addEventListener("compositionstart",()=>{ modalCustomerReadingComposing=true; });
+$("modalCustomerReading").addEventListener("compositionend",()=>{
+  modalCustomerReadingComposing=false;
+  const el=$("modalCustomerReading");
+  if(!el)return;
+  el.value=String(el.value||"").replace(/[^ぁ-ゖゝゞー]/g,"");
+  delete el.dataset.autoReadingName;
+});
+$("modalCustomerReading").addEventListener("input",(e)=>{
+  const el=$("modalCustomerReading");
+  if(!el)return;
+  if(!modalCustomerReadingComposing && !e.isComposing){
+    el.value=String(el.value||"").replace(/[^ぁ-ゖゝゞー]/g,"");
+  }
+  delete el.dataset.autoReadingName;
+});
 $("customer").oninput=()=>{
  const name=$("customer").value.trim();
  if(name){
