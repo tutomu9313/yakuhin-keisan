@@ -4249,10 +4249,113 @@ $("customer").onfocus=()=>{
 };
 
 let quickCustomerRegistrationToken=0;
+let quickCustomerReadingWorker=null;
+let quickCustomerReadingWorkerPending=new Map();
+let quickCustomerReadingWorkerRequestId=0;
 function closeQuickCustomerRegister(){
  $("quickCustomerModal").classList.add("hidden");
  $("quickCustomerModal").setAttribute("aria-hidden","true");
  quickCustomerRegistrationToken++;
+}
+function createQuickCustomerReadingWorker(){
+ try{
+   const code=`
+     let enginePromise=null;
+     function normalizeReading(v){
+       const s=String(v||"").trim().toLowerCase();
+       return s.replace(/[ァ-ヶ]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0x60));
+     }
+     function latinLettersToKatakana(text){
+       const names={A:"エー",B:"ビー",C:"シー",D:"ディー",E:"イー",F:"エフ",G:"ジー",H:"エイチ",I:"アイ",J:"ジェイ",K:"ケー",L:"エル",M:"エム",N:"エヌ",O:"オー",P:"ピー",Q:"キュー",R:"アール",S:"エス",T:"ティー",U:"ユー",V:"ブイ",W:"ダブリュー",X:"エックス",Y:"ワイ",Z:"ゼット"};
+       return String(text||"").replace(/[A-Z]/gi,ch=>names[ch.toUpperCase()]||ch);
+     }
+     function isValidReading(reading,name){
+       const r=normalizeReading(reading),n=String(name||"").trim();
+       if(!r)return false;
+       if(/[一-龯々〆ヵヶ]/.test(r))return false;
+       if(n&&/[一-龯々〆ヵヶ]/.test(n)&&normalizeReading(n)===r)return false;
+       return true;
+     }
+     async function getEngine(){
+       if(enginePromise)return enginePromise;
+       enginePromise=(async()=>{
+         try{
+           if(typeof importScripts==="function"){
+             importScripts(
+               "https://cdn.jsdelivr.net/npm/kuroshiro@1.2.0/dist/kuroshiro.min.js",
+               "https://cdn.jsdelivr.net/npm/kuroshiro-analyzer-kuromoji@1.1.0/dist/kuroshiro-analyzer-kuromoji.min.js"
+             );
+           }
+           const KuroshiroClass=self.Kuroshiro&&self.Kuroshiro.default||self.Kuroshiro;
+           const KuromojiAnalyzerClass=self.KuromojiAnalyzer&&self.KuromojiAnalyzer.default||self.KuromojiAnalyzer;
+           if(typeof KuroshiroClass!=="function"||typeof KuromojiAnalyzerClass!=="function")return null;
+           const engine=new KuroshiroClass();
+           const analyzer=new KuromojiAnalyzerClass({dictPath:"https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/"});
+           await engine.init(analyzer);
+           return engine;
+         }catch(e){return null;}
+       })();
+       return enginePromise;
+     }
+     async function convert(name){
+       const text=String(name||"").trim();
+       if(!text)return "";
+       const prepared=latinLettersToKatakana(text);
+       if(!/[一-龯々〆ヵヶ]/.test(prepared))return normalizeReading(prepared);
+       const engine=await getEngine();
+       if(!engine)return "";
+       try{
+         const result=await engine.convert(prepared,{to:"hiragana",mode:"normal"});
+         const reading=String(result||"").trim();
+         return isValidReading(reading,text)?normalizeReading(reading):"";
+       }catch(e){return "";}
+     }
+     self.onmessage=async(e)=>{
+       const id=e&&e.data?e.data.id:0;
+       const name=e&&e.data?e.data.name:"";
+       const reading=await convert(name);
+       self.postMessage({id,reading});
+     };
+   `;
+   const blob=new Blob([code],{type:"application/javascript"});
+   return new Worker(URL.createObjectURL(blob));
+ }catch(e){return null;}
+}
+function getQuickCustomerReadingWorker(){
+ if(quickCustomerReadingWorker)return quickCustomerReadingWorker;
+ quickCustomerReadingWorker=createQuickCustomerReadingWorker();
+ if(!quickCustomerReadingWorker)return null;
+ quickCustomerReadingWorker.onmessage=(e)=>{
+   const id=e&&e.data?e.data.id:0;
+   const pending=quickCustomerReadingWorkerPending.get(id);
+   if(!pending)return;
+   quickCustomerReadingWorkerPending.delete(id);
+   clearTimeout(pending.timer);
+   pending.resolve(String(e.data.reading||""));
+ };
+ quickCustomerReadingWorker.onerror=()=>{
+   quickCustomerReadingWorkerPending.forEach(p=>{clearTimeout(p.timer);p.resolve("");});
+   quickCustomerReadingWorkerPending.clear();
+   try{quickCustomerReadingWorker.terminate();}catch(e){}
+   quickCustomerReadingWorker=null;
+ };
+ return quickCustomerReadingWorker;
+}
+function generateCustomerReadingInWorker(name,timeoutMs=8000){
+ const worker=getQuickCustomerReadingWorker();
+ if(!worker)return Promise.resolve("");
+ return new Promise(resolve=>{
+   const id=++quickCustomerReadingWorkerRequestId;
+   const timer=setTimeout(()=>{
+     const pending=quickCustomerReadingWorkerPending.get(id);
+     if(!pending)return;
+     quickCustomerReadingWorkerPending.delete(id);
+     pending.resolve("");
+   },timeoutMs);
+   quickCustomerReadingWorkerPending.set(id,{resolve,timer});
+   try{worker.postMessage({id,name:String(name||"")});}
+   catch(e){clearTimeout(timer);quickCustomerReadingWorkerPending.delete(id);resolve("");}
+ });
 }
 async function openQuickCustomerRegister(name){
  const n=String(name||"").trim();
@@ -4273,13 +4376,8 @@ async function openQuickCustomerRegister(name){
  $("quickCustomerModal").classList.remove("hidden");
  $("quickCustomerModal").setAttribute("aria-hidden","false");
  try{$("quickCustomerName").focus();}catch(e){}
- let reading="";
- try{
-   reading=await Promise.race([
-     generateCustomerReading(n),
-     new Promise(resolve=>setTimeout(()=>resolve(""),5000))
-   ]);
- }catch(e){reading="";}
+ let reading=fallbackCustomerReading(n);
+ if(!isValidCustomerReading(reading,n))reading=await generateCustomerReadingInWorker(n,8000);
  if(token!==quickCustomerRegistrationToken)return;
  if(!isValidCustomerReading(reading,n))reading=fallbackCustomerReading(n);
  if(reading){
