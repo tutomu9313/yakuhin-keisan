@@ -9,48 +9,48 @@
 *{box-sizing:border-box}
 body{margin:0;background:#fff;color:#111;font-family:Arial,"Yu Gothic",sans-serif}
 .app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#fff;padding-bottom:75px}
-header{text-align:center;font-size:22px;font-weight:bold;padding:10px 16px 15px}
+header{text-align:center;font-size:21px;font-weight:bold;padding:10px 16px 15px}
 /* ===== 入力・カード ===== */
 .card{background:#fff;margin:0 14px 12px;padding:16px;border-radius:16px;box-shadow:0 1px 4px #0001}
-label{display:block;color:#666;font-size:14px;margin-bottom:6px}
-input,select{width:100%;height:46px;border:1px solid #ccc;border-radius:11px;padding:0 12px;font-size:18px;background:#fff}
+label{display:block;color:#666;font-size:13px;margin-bottom:6px}
+input,select{width:100%;height:46px;border:1px solid #ccc;border-radius:11px;padding:0 12px;font-size:17px;background:#fff}
 input[readonly]{background:#f7f7f7}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.planned-vehicle-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .amountrow{display:grid;grid-template-columns:1fr 105px;gap:10px}
-button{width:100%;height:46px;border:0;border-radius:12px;background:#007aff;color:#fff;font-weight:bold;font-size:17px;margin-top:10px}
+button{width:100%;height:46px;border:0;border-radius:12px;background:#007aff;color:#fff;font-weight:bold;font-size:16px;margin-top:10px}
 button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}
 /* ===== 入力計算結果 ===== */
-.resultmain{background:#111;color:#fff;border-radius:15px;padding:15px}.resultmain.warning{background:#ff3b30;color:#fff}.resultmain small{opacity:.75}.resultmain strong{display:block;font-size:28px;margin-top:4px}
-.results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.box{background:#f2f2f7;border-radius:12px;padding:11px}.box small{display:block;color:#666}.box strong{display:block;font-size:21px;margin-top:4px}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary .box{text-align:center}.summary strong{font-size:26px}
+.resultmain{background:#111;color:#fff;border-radius:15px;padding:15px}.resultmain.warning{background:#ff3b30;color:#fff}.resultmain small{opacity:.75}.resultmain strong{display:block;font-size:27px;margin-top:4px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.box{background:#f2f2f7;border-radius:12px;padding:11px}.box small{display:block;color:#666}.box strong{display:block;font-size:20px;margin-top:4px}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary .box{text-align:center}.summary strong{font-size:25px}
 /* ===== 履歴・候補 ===== */
-.item{padding:12px 3px;border-bottom:1px solid #eee;cursor:pointer}.item:last-child{border-bottom:0}.item b{font-size:17px}
-.detail{background:#f2f2f7;border-radius:12px;padding:12px;margin-top:8px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{height:40px;font-size:15px}
+.item{padding:12px 3px;border-bottom:1px solid #eee;cursor:pointer}.item:last-child{border-bottom:0}.item b{font-size:16px}
+.detail{background:#f2f2f7;border-radius:12px;padding:12px;margin-top:8px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.actions button{height:40px;font-size:14px}
 /* ===== ダイアログ・表示制御 ===== */
 .hidden{display:none}
 .modal.hidden{display:none!important}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:100}
 .modal-card{width:350px;max-width:90%;background:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 35px #0004}
-.modal-card h3{margin:0 0 15px;font-size:21px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}.modal-actions .green{background:#34c759!important;color:#fff!important}
+.modal-card h3{margin:0 0 15px;font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}.modal-actions .green{background:#34c759!important;color:#fff!important}
 .suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}.suggest .quick-customer-register-option{padding:0;border:0}.suggest .quick-customer-register-option button{margin:0;width:100%;height:46px;border-radius:10px;background:#fff;color:#007aff;font-weight:700;text-align:left;padding:0 12px}.suggest .quick-customer-register-option button:active{background:#f2f2f7}
-.note{font-size:13px;color:#777;margin-top:7px;line-height:1.4}
+.note{font-size:12px;color:#777;margin-top:7px;line-height:1.4}
 /* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(6,1fr);padding:7px 5px}
-nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:14px}
-.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:21px}.daily-report-date{text-align:center;font-size:20px;font-weight:700}.date-display-button{border:0;background:transparent;margin:0;width:100%;height:46px;font-size:20px;font-weight:700;padding:0;cursor:pointer}.history-date-nav{margin:0}.daily-report-value{font-size:25px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:29px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:13px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:29px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:13px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:13px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}
-.history-weekly-table{width:100%;border-collapse:collapse;font-size:14px}
+nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
+.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.date-display-button{border:0;background:transparent;margin:0;width:100%;height:46px;font-size:19px;font-weight:700;padding:0;cursor:pointer}.history-date-nav{margin:0}.daily-report-value{font-size:24px;font-weight:800}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}
+.history-weekly-table{width:100%;border-collapse:collapse;font-size:13px}
 .history-weekly-table th,.history-weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:middle}
 .history-weekly-table th{font-weight:700;background:#f2f2f7}
 .history-weekly-table tr[data-order-index]{cursor:pointer}
 .history-weekly-table tr[data-order-index]:active{opacity:.65}
-.history-weekly-status{display:block;font-size:13px;font-weight:700;margin-top:4px}
+.history-weekly-status{display:block;font-size:12px;font-weight:700;margin-top:4px}
 .history-weekly-status.delivered{color:#34c759}
 .history-weekly-status.undelivered{color:#ff3b30}
-.history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:21px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:700;}
-.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:13px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:13px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
+.history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:20px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:700;}
+.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:12px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
-.registered-listbox-option{min-height:32px;padding:5px 9px;box-sizing:border-box;font-size:18px;line-height:22px;border-radius:7px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.registered-listbox-option{min-height:32px;padding:5px 9px;box-sizing:border-box;font-size:17px;line-height:22px;border-radius:7px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .registered-listbox-option:hover,.registered-listbox-option:active{background:#e5e5ea}
 <style>
 #deliveryEditModal .modal-card button{margin-top:8px !important;}
@@ -61,28 +61,28 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
 /* ===== デザインサンプル：機能は変更せず見た目だけ刷新 ===== */
 body{background:#f5f5f7;color:#1c1c1e;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Yu Gothic",sans-serif}
 .app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#f5f5f7;padding-bottom:82px}
-header{font-size:25px;font-weight:800;letter-spacing:-.4px;padding:18px 18px 16px;text-align:left}
+header{font-size:24px;font-weight:800;letter-spacing:-.4px;padding:18px 18px 16px;text-align:left}
 .card{background:#fff;margin:0 12px 12px;padding:17px;border-radius:18px;box-shadow:0 1px 3px #00000010}
-label{color:#6e6e73;font-size:14px;font-weight:600;margin-bottom:7px}
-input,select{height:48px;border:1px solid #d1d1d6;border-radius:12px;padding:0 13px;font-size:18px;background:#fff}
+label{color:#6e6e73;font-size:13px;font-weight:600;margin-bottom:7px}
+input,select{height:48px;border:1px solid #d1d1d6;border-radius:12px;padding:0 13px;font-size:17px;background:#fff}
 .planned-time-row{margin-top:12px;display:flex;align-items:center;gap:10px}.planned-time-row label{margin:0;white-space:nowrap}.planned-time-row input{width:140px;box-sizing:border-box}.planned-time-row select{width:112px;box-sizing:border-box}
 #dateDisplay,#historyDate,#deliveryHistoryDate,#deliveryDate{width:calc(100% - 25px)!important;max-width:100%;min-width:0;box-sizing:border-box}\n#historyDate,#deliveryHistoryDate{position:absolute!important;opacity:0!important;pointer-events:auto!important;width:calc(100% - 112px)!important;height:46px!important;padding:0!important;margin:0!important;border:0!important;left:56px;top:0;z-index:5;}
 .history-date-nav{position:relative;}
 input:focus,select:focus{outline:2px solid #007aff30;border-color:#007aff}
 .amountrow{grid-template-columns:1fr 105px;gap:10px}
-button{height:48px;border-radius:13px;font-size:17px;font-weight:700;margin-top:10px}
+button{height:48px;border-radius:13px;font-size:16px;font-weight:700;margin-top:10px}
 .resultmain{background:#1c1c1e;border-radius:16px;padding:16px}
-.resultmain strong{font-size:25px}
+.resultmain strong{font-size:24px}
 .results{gap:9px;margin-top:9px}
 .box{background:#f5f5f7;border-radius:14px;padding:12px}
-.box strong{font-size:20px}
+.box strong{font-size:19px}
 .item{padding:14px 4px;border-bottom:1px solid #e5e5ea}
 #registeredChemicalSelect{height:240px!important;min-height:240px!important;overflow-y:auto!important;padding:0!important;border-radius:12px!important}
 #registeredChemicalSelect option{padding:3px 10px;min-height:20px}
-.item b{font-size:17px}
-.note{font-size:13px;color:#8e8e93}
+.item b{font-size:16px}
+.note{font-size:12px;color:#8e8e93}
 nav{height:70px;width:390px;max-width:100%;padding:8px 6px 10px;background:#fff;border-top:1px solid #d1d1d6;box-shadow:0 -4px 14px #00000008}
-nav button{height:45px;color:#007aff;font-size:14px;border-radius:10px}
+nav button{height:45px;color:#007aff;font-size:13px;border-radius:10px}
 nav button.active-nav{background:#007aff !important;color:#fff !important}
 /* 納品データ：今回の納品量は編集禁止・黒文字で表示 */
 #deliveryViewTankDelivery[readonly]{background:#f7f7f7 !important;color:#111 !important;opacity:1 !important;-webkit-text-fill-color:#111 !important}
@@ -91,11 +91,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 .history-summary-card{padding:8px 10px;margin-bottom:10px}
 .history-summary{gap:8px}
 .history-summary .box{min-height:52px;padding:7px 6px;display:flex;align-items:baseline;justify-content:center;gap:7px}
-.history-summary .box small{font-size:13px;white-space:nowrap}
-.history-summary .box strong{font-size:22px;line-height:1.1;margin:0;white-space:nowrap}
+.history-summary .box small{font-size:12px;white-space:nowrap}
+.history-summary .box strong{font-size:21px;line-height:1.1;margin:0;white-space:nowrap}
 .modal{background:#00000055}
 .modal-card{width:350px;border-radius:22px;padding:20px}
-.modal-card h3{font-size:21px}
+.modal-card h3{font-size:20px}
 </style>
 
 <style id="v48-daily-detail-compact">
@@ -116,7 +116,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   margin-top:4px !important;
 }
 #dailyDeliveryDetailModal #dailyDeliveryDetailList b{
-  font-size:16px !important;
+  font-size:15px !important;
 }
 #dailyDeliveryDetailModal #dailyDeliveryDetailCloseBtn{
   margin-top:10px !important;
@@ -136,26 +136,26 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 
 <style>
 /* ダイアログのボタン文字だけ元の16pxに戻す */
-.modal-card button{font-size:17px!important}
+.modal-card button{font-size:16px!important}
 </style>
 
 <style id="v43-delivery-edit-font">
 #deliveryEditModal .modal-card h3{
-  font-size:21px !important;
+  font-size:20px !important;
   font-weight:700 !important;
   line-height:1.35 !important;
 }
 #deliveryEditInfo{
-  font-size:17px !important;
+  font-size:16px !important;
   line-height:1.8 !important;
   margin-bottom:10px;
 }
 #deliveryEditInfo b{
-  font-size:18px !important;
+  font-size:17px !important;
   font-weight:700 !important;
 }
 #deliveryEditModal label{
-  font-size:15px !important;
+  font-size:14px !important;
   font-weight:700 !important;
   line-height:1.4 !important;
 }
@@ -164,7 +164,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 
 <style id="v44-delivery-edit-item-font">
 #deliveryEditInfo > span:first-child{
-  font-size:17px !important;
+  font-size:16px !important;
   font-weight:400 !important;
 }
 #dailyDeliveryDetailList .item{
@@ -183,7 +183,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 /* 入力計算結果：取引先を部署名と同じ通常文字にする */
 #resultModal .result-customer,
 #calculationResultModal .result-customer {
-  font-size: 17px !important;
+  font-size: 16px !important;
   font-weight: 400 !important;
 }
 </style>
@@ -195,15 +195,15 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #authGate{position:fixed;inset:0;background:#f5f5f7;display:flex;align-items:center;justify-content:center;z-index:500;padding:18px}
 #authGate.hidden{display:none}
 .auth-card{width:350px;max-width:100%;background:#fff;border-radius:22px;padding:20px;box-shadow:0 10px 35px #0002}
-.auth-card h3{margin:0 0 8px;font-size:23px}.auth-card p{margin:0 0 14px;color:#666;font-size:14px;line-height:1.5}
-.auth-card input{margin-top:10px}.auth-card button{margin-top:10px}.auth-card button.gray{background:#8e8e93}.auth-message{font-size:14px;line-height:1.5;margin-top:10px;min-height:20px}.auth-message.ok{color:#34a853}.auth-message.err{color:#d93025}
-.cloud-status{font-size:15px;line-height:1.5;padding:10px 12px;background:#f2f2f7;border-radius:12px;margin-bottom:12px}.cloud-status.ok{background:#eaf8ee;color:#16803c}.cloud-status.warn{background:#fff3cd;color:#7a5d00}.cloud-email{font-size:14px;color:#666;margin-bottom:8px;word-break:break-all}
+.auth-card h3{margin:0 0 8px;font-size:22px}.auth-card p{margin:0 0 14px;color:#666;font-size:13px;line-height:1.5}
+.auth-card input{margin-top:10px}.auth-card button{margin-top:10px}.auth-card button.gray{background:#8e8e93}.auth-message{font-size:13px;line-height:1.5;margin-top:10px;min-height:20px}.auth-message.ok{color:#34a853}.auth-message.err{color:#d93025}
+.cloud-status{font-size:14px;line-height:1.5;padding:10px 12px;background:#f2f2f7;border-radius:12px;margin-bottom:12px}.cloud-status.ok{background:#eaf8ee;color:#16803c}.cloud-status.warn{background:#fff3cd;color:#7a5d00}.cloud-email{font-size:13px;color:#666;margin-bottom:8px;word-break:break-all}
 </style>
 <style id="daily-vehicle-inline-style">
 .daily-run-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
 .daily-run-header h3{margin:0;flex:0 0 auto}
 .daily-run-vehicle{display:flex;align-items:center;gap:6px;margin-left:auto}
-.daily-run-vehicle label{margin:0;white-space:nowrap;font-size:14px}
+.daily-run-vehicle label{margin:0;white-space:nowrap;font-size:13px}
 .daily-run-vehicle select{width:112px;margin:0}
 </style>
 
@@ -231,7 +231,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   flex:1;
 }
 .daily-delivery-card-customer{
-  font-size:15px;
+  font-size:14px;
   font-weight:700;
   line-height:1.25;
   overflow:hidden;
@@ -240,7 +240,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 .daily-delivery-card-chemical{
   margin-top:3px;
-  font-size:13px;
+  font-size:12px;
   color:#666;
   line-height:1.25;
   overflow:hidden;
@@ -252,14 +252,14 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   align-items:center;
   gap:8px;
   flex:0 0 auto;
-  font-size:14px;
+  font-size:13px;
   font-weight:700;
   white-space:nowrap;
 }
 .daily-delivery-card .daily-delivery-chevron{
   position:static;
   transform:none;
-  font-size:21px;
+  font-size:20px;
   line-height:1;
   color:#999;
 }
@@ -267,9 +267,9 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 
 
 <style id="daily-delivery-header-17px">
-#dailyDeliverySection > h3{font-size:18px !important;}
-#dailyDeliveryCount{font-size:18px !important;}
-#dailyCommissionSection > h3{font-size:18px !important;}
+#dailyDeliverySection > h3{font-size:17px !important;}
+#dailyDeliveryCount{font-size:17px !important;}
+#dailyCommissionSection > h3{font-size:17px !important;}
 </style>
 
 <style id="daily-compact-run-worktime">
@@ -283,13 +283,13 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   gap:8px !important;
 }
 #dailyRunSection .daily-run-header h3{
-  font-size:18px !important;
+  font-size:17px !important;
 }
 #dailyRunSection .daily-run-vehicle{
   gap:5px !important;
 }
 #dailyRunSection .daily-run-vehicle label{
-  font-size:13px !important;
+  font-size:12px !important;
 }
 #dailyRunSection .daily-run-vehicle select,
 #dailyRunSection input{
@@ -304,11 +304,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #dailyDistance,
 #dailyDistance2{
-  font-size:18px !important;
+  font-size:17px !important;
 }
 #dailyWorkTimeSection h3{
   margin:0 0 8px !important;
-  font-size:18px !important;
+  font-size:17px !important;
 }
 #dailyWorkTimeSection .detail{
   margin-top:0 !important;
@@ -334,16 +334,16 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   min-height:64px;
 }
 #dailyWorkTimeSection .box strong{
-  font-size:19px !important;
+  font-size:18px !important;
   margin-top:2px !important;
 }
 #dailyWorkTimeSection #dailyOvertime{
   height:38px !important;
-  font-size:17px !important;
+  font-size:16px !important;
   padding:0 10px !important;
 }
 #dailyWorkTimeSection .box span{
-  font-size:14px !important;
+  font-size:13px !important;
 }
 </style>
 
@@ -367,7 +367,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   box-sizing:border-box !important;
   padding-left:10px !important;
   padding-right:10px !important;
-  font-size:18px !important;
+  font-size:17px !important;
   -webkit-appearance:none !important;
   appearance:none !important;
 }
@@ -463,7 +463,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #deliveryViewTankCheckTitle{
   font-weight:700;
-  font-size:18px;
+  font-size:17px;
   margin-bottom:10px;
   color:#174a7e;
 }
@@ -477,7 +477,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 .delivery-tank-row label{
   margin:0;
   color:#1c1c1e;
-  font-size:15px;
+  font-size:14px;
   font-weight:700;
 }
 .delivery-tank-input-wrap{
@@ -496,7 +496,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 .delivery-tank-converted{
   margin-top:5px;
   text-align:right;
-  font-size:14px;
+  font-size:13px;
   color:#245ea8;
   font-weight:700;
 }
@@ -512,7 +512,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   justify-content:space-between;
   gap:10px;
   margin-top:5px;
-  font-size:15px;
+  font-size:14px;
 }
 .delivery-tank-result-line:first-child{margin-top:0}
 .delivery-tank-result-value{font-weight:700;white-space:nowrap}
@@ -522,7 +522,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   border-radius:12px;
   text-align:center;
   font-weight:800;
-  font-size:19px;
+  font-size:18px;
 }
 #deliveryViewTankStatus.safe{
   background:#e9f9ef;
@@ -541,7 +541,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 .delivery-tank-note{
   margin-top:7px;
-  font-size:13px;
+  font-size:12px;
   line-height:1.45;
   color:#666;
 }
@@ -583,13 +583,13 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #tankSettingList .tank-setting-group-header strong{
   display:block;
-  font-size:18px;
+  font-size:17px;
 }
 #tankSettingList .tank-setting-group-sub{
   display:block;
   margin-top:3px;
   color:#666;
-  font-size:14px;
+  font-size:13px;
 }
 #tankSettingList .tank-setting-group-count{
   white-space:nowrap;
@@ -597,7 +597,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   border-radius:999px;
   background:#e7f2ff;
   color:#007aff;
-  font-size:14px;
+  font-size:13px;
   font-weight:700;
 }
 #tankSettingList .tank-setting-group .tank-setting-item{
@@ -608,7 +608,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   border-bottom:0;
 }
 #tankSettingList .tank-setting-group .tank-setting-title{
-  font-size:17px;
+  font-size:16px;
   font-weight:700;
   text-align:left;
   padding-left:8px;
@@ -620,11 +620,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   gap:18px;
   margin-top:4px;
   color:#666;
-  font-size:15px;
+  font-size:14px;
 }
 #tankSettingList .tank-setting-group .tank-setting-capacity strong{
   color:#111;
-  font-size:17px;
+  font-size:16px;
   min-width:90px;
   text-align:center;
 }
@@ -632,30 +632,30 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 <style id="tank-settings-style">
 #tankSettingList .tank-setting-item{padding:12px 0;border-bottom:1px solid #e5e5ea}
 #tankSettingList .tank-setting-item:last-child{border-bottom:0}
-#tankSettingList .tank-setting-title{font-weight:700;font-size:17px}
-#tankSettingList .tank-setting-meta{margin-top:4px;color:#666;font-size:15px;line-height:1.5}
+#tankSettingList .tank-setting-title{font-weight:700;font-size:16px}
+#tankSettingList .tank-setting-meta{margin-top:4px;color:#666;font-size:14px;line-height:1.5}
 #tankSettingList .tank-setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-#tankSettingList .tank-setting-actions button{height:40px;margin:0;font-size:15px}
-#deliveryViewTankSelectWrap label{font-size:15px !important;font-weight:700;margin:0;display:flex;align-items:center;white-space:nowrap;line-height:1.2}
+#tankSettingList .tank-setting-actions button{height:40px;margin:0;font-size:14px}
+#deliveryViewTankSelectWrap label{font-size:14px !important;font-weight:700;margin:0;display:flex;align-items:center;white-space:nowrap;line-height:1.2}
 #deliveryViewTankSelectWrap .delivery-tank-select-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center}
-#deliveryViewTankSelectWrap .delivery-tank-select-row select{width:100%;margin:0;height:34px !important;font-size:15px !important;box-sizing:border-box !important}
+#deliveryViewTankSelectWrap .delivery-tank-select-row select{width:100%;margin:0;height:34px !important;font-size:14px !important;box-sizing:border-box !important}
 @media(max-width:420px){
   #deliveryViewTankSelectWrap .delivery-tank-select-row{grid-template-columns:86px minmax(0,1fr);gap:6px}
 }
 </style>
 <style id="tank-settings-success-style">
 #tankSettingList .tank-setting-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-#tankSettingList .tank-setting-summary-title{font-size:19px;font-weight:800;color:#1c1c1e}
-#tankSettingList .tank-setting-count{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 12px;border-radius:16px;background:#e8f2ff;color:#007aff;font-size:16px;font-weight:800}
+#tankSettingList .tank-setting-summary-title{font-size:18px;font-weight:800;color:#1c1c1e}
+#tankSettingList .tank-setting-count{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 12px;border-radius:16px;background:#e8f2ff;color:#007aff;font-size:15px;font-weight:800}
 #tankSettingList .tank-setting-item{padding:16px 14px;margin:0 0 12px;border:2px solid #d7e8ff;border-radius:16px;background:#f7fbff;box-shadow:0 1px 3px #0000000b}
 #tankSettingList .tank-setting-item:last-child{margin-bottom:0}
-#tankSettingList .tank-setting-title{font-weight:800;font-size:22px;line-height:1.25;color:#111;margin-bottom:8px}
-#tankSettingList .tank-setting-meta{margin-top:0;color:#5b6573;font-size:16px;line-height:1.65}
-#tankSettingList .tank-setting-capacity{display:flex;align-items:baseline;gap:10px;margin-top:8px;color:#444;font-size:16px;font-weight:700}
-#tankSettingList .tank-setting-capacity strong{font-size:23px;color:#111;letter-spacing:.2px}
+#tankSettingList .tank-setting-title{font-weight:800;font-size:21px;line-height:1.25;color:#111;margin-bottom:8px}
+#tankSettingList .tank-setting-meta{margin-top:0;color:#5b6573;font-size:15px;line-height:1.65}
+#tankSettingList .tank-setting-capacity{display:flex;align-items:baseline;gap:10px;margin-top:8px;color:#444;font-size:15px;font-weight:700}
+#tankSettingList .tank-setting-capacity strong{font-size:22px;color:#111;letter-spacing:.2px}
 #tankSettingList .tank-setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
-#tankSettingList .tank-setting-actions button{height:42px;margin:0;font-size:16px}
-#tankSettingList .tank-setting-add{width:100%;height:46px;margin:12px 0 0;border:2px solid #007aff;background:#fff;color:#007aff;font-size:17px;font-weight:800}
+#tankSettingList .tank-setting-actions button{height:42px;margin:0;font-size:15px}
+#tankSettingList .tank-setting-add{width:100%;height:46px;margin:12px 0 0;border:2px solid #007aff;background:#fff;color:#007aff;font-size:16px;font-weight:800}
 #tankSettingList .tank-setting-empty{padding:16px 8px;color:#777;text-align:center}
 </style>
 
@@ -672,7 +672,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #dailyCommissionSection .commission-value{text-align:right;min-width:0;line-height:1.45;white-space:pre-line}
 #dailyCommissionSection .commission-adjustment-line{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #e5e5ea}
 #dailyCommissionSection .commission-adjustment-label{font-weight:700;white-space:nowrap}
-#dailyCommissionSection #dailyCountAdjustment{width:125px;height:40px;text-align:right;font-size:18px}
+#dailyCommissionSection #dailyCountAdjustment{width:125px;height:40px;text-align:right;font-size:17px}
 #dailyCommissionSection .commission-yen{white-space:nowrap}
 #dailyCommissionSection .commission-total-line{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid #e5e5ea}
 #dailyCommissionSection .commission-total-label{font-weight:700}
@@ -681,11 +681,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 <style id="daily-vehicle-change-style">
 #dailyRunSection .daily-run-vehicle{display:flex;align-items:center;gap:6px;}
 #dailyRunSection .daily-run-vehicle select{width:92px;}
-#dailyRunSection .daily-change-vehicle-btn{width:auto;min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:15px;background:#007aff;}
+#dailyRunSection .daily-change-vehicle-btn{width:auto;min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:14px;background:#007aff;}
 #dailyRunSection .daily-change-vehicle-btn:disabled{background:#8e8e93;opacity:.75;}
 #dailyRunSection .daily-run-entry + .daily-run-entry{margin-top:10px;padding-top:10px;border-top:1px solid #e5e5ea;}
-#dailyRunSection .daily-secondary-vehicle-label{display:flex;align-items:center;justify-content:space-between;margin:0 0 7px;padding:0 2px;color:#666;font-size:14px;font-weight:600;}
-#dailyRunSection .daily-secondary-vehicle-label strong{font-size:17px;color:#1c1c1e;}
+#dailyRunSection .daily-secondary-vehicle-label{display:flex;align-items:center;justify-content:space-between;margin:0 0 7px;padding:0 2px;color:#666;font-size:13px;font-weight:600;}
+#dailyRunSection .daily-secondary-vehicle-label strong{font-size:16px;color:#1c1c1e;}
 </style>
 
 <style id="daily-list-table-scroll-fix">
@@ -712,7 +712,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   .app > *{display:none !important}
   #weeklyPrintArea{display:block !important;position:relative !important;left:0 !important;top:0 !important;width:100% !important;max-width:none !important;height:auto !important;min-height:0 !important;margin:0 !important;padding:0 !important;color:#111 !important;background:#fff !important;visibility:visible !important}
   #weeklyPrintArea *{visibility:visible !important}
-  #weeklyPrintArea .weekly-print-title{font-size:19px;font-weight:700;text-align:center;margin:0 0 1.5mm}
+  #weeklyPrintArea .weekly-print-title{font-size:18px;font-weight:700;text-align:center;margin:0 0 1.5mm}
   #weeklyPrintArea .weekly-print-period{text-align:center;font-size:10pt;margin:0 0 2mm}
   #weeklyPrintArea table{width:100% !important;max-width:none !important;margin-right:auto !important;margin-left:0 !important;border-collapse:collapse !important;table-layout:fixed !important;font-size:7.5pt !important}
   #weeklyPrintArea th,#weeklyPrintArea td{border:1px solid #555 !important;padding:2px 3px !important;vertical-align:middle !important;line-height:1.12 !important;overflow-wrap:anywhere}
@@ -763,14 +763,14 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #deliveryViewInfo > div{
   margin-top:1px !important;
-  font-size:14px !important;
+  font-size:13px !important;
 }
 #deliveryViewInfo > div:first-child{
-  font-size:15px !important;
+  font-size:14px !important;
   margin-bottom:1px !important;
 }
 #deliveryViewModal .modal-card h3{
-  font-size:18px !important;
+  font-size:17px !important;
   margin-bottom:6px !important;
 }
 #deliveryViewInfo{
@@ -786,7 +786,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   border-radius:11px !important;
 }
 #deliveryViewTankCheckTitle{
-  font-size:15px !important;
+  font-size:14px !important;
   margin-bottom:4px !important;
   line-height:1.2 !important;
 }
@@ -796,7 +796,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   margin-top:3px !important;
 }
 .delivery-tank-row label{
-  font-size:13px !important;
+  font-size:12px !important;
 }
 .delivery-tank-input-wrap{
   grid-template-columns:125px 62px !important;
@@ -804,11 +804,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #deliveryViewTankCheck input,#deliveryViewTankCheck select{
   height:34px !important;
-  font-size:15px !important;
+  font-size:14px !important;
 }
 .delivery-tank-converted{
   margin-top:1px !important;
-  font-size:11px !important;
+  font-size:10px !important;
 }
 .delivery-tank-result{
   margin-top:6px !important;
@@ -817,17 +817,17 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 .delivery-tank-result-line{
   margin-top:2px !important;
-  font-size:12px !important;
+  font-size:11px !important;
 }
 #deliveryViewTankStatus{
   margin-top:5px !important;
   padding:6px !important;
-  font-size:14px !important;
+  font-size:13px !important;
   border-radius:9px !important;
 }
 .delivery-tank-note{
   margin-top:4px !important;
-  font-size:10px !important;
+  font-size:9px !important;
   line-height:1.2 !important;
 }
 #deliveryViewModal .modal-actions{
@@ -865,6 +865,51 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   }
   .delivery-tank-row{grid-template-columns:82px minmax(0,1fr) !important;}
   .delivery-tank-input-wrap{grid-template-columns:125px 62px !important;}
+}
+</style>
+<style id="delivery-view-dialog-font-plus1">
+/* 納品データダイアログ：文字だけ1px拡大（配置・機能は変更しない） */
+#deliveryViewModal .modal-card{
+  font-size:calc(1em + 1px);
+}
+#deliveryViewModal .modal-card h3{
+  font-size:18px !important;
+}
+#deliveryViewInfo > div{
+  font-size:14px !important;
+}
+#deliveryViewInfo > div:first-child{
+  font-size:15px !important;
+}
+#deliveryViewTankCheckTitle{
+  font-size:15px !important;
+}
+.delivery-tank-row label{
+  font-size:13px !important;
+}
+#deliveryViewTankCheck input,#deliveryViewTankCheck select{
+  font-size:15px !important;
+}
+.delivery-tank-converted{
+  font-size:11px !important;
+}
+.delivery-tank-result-line{
+  font-size:12px !important;
+}
+#deliveryViewTankStatus{
+  font-size:14px !important;
+}
+.delivery-tank-note{
+  font-size:10px !important;
+}
+#deliveryViewTankSelectWrap label{
+  font-size:15px !important;
+}
+#deliveryViewTankSelectWrap .delivery-tank-select-row select{
+  font-size:15px !important;
+}
+#deliveryViewModal .modal-actions button{
+  font-size:17px !important;
 }
 </style>
 <style id="weekly-print-button-height-fix">
@@ -972,7 +1017,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
  </div>
 </section>
 
-<section id="weeklyPage" class="hidden"><div class="card"><input id="weeklyDate" type="date" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:19px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
+<section id="weeklyPage" class="hidden"><div class="card"><input id="weeklyDate" type="date" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
 <section id="deliveryHistoryPage" class="hidden">
  <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
  <div id="deliveryHistoryDetailView" class="hidden">
@@ -1031,7 +1076,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
   </div>
   <div id="dailyRunSecondaryBlock" class="daily-run-entry hidden">
-   <div class="daily-secondary-vehicle-label"><span>乗換後の車種</span><div style="display:flex;align-items:center;gap:8px"><strong id="dailySecondaryVehicle">10t</strong><button id="dailySecondaryDeleteBtn" type="button" class="red" style="min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:15px;line-height:1" onclick="window.deleteDailySecondaryVehicle()">削除</button></div></div>
+   <div class="daily-secondary-vehicle-label"><span>乗換後の車種</span><div style="display:flex;align-items:center;gap:8px"><strong id="dailySecondaryVehicle">10t</strong><button id="dailySecondaryDeleteBtn" type="button" class="red" style="min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:14px;line-height:1" onclick="window.deleteDailySecondaryVehicle()">削除</button></div></div>
    <div class="grid2">
     <div><input id="outOdometer2" type="number" inputmode="numeric" placeholder="出庫km" aria-label="乗換後 出庫km"></div>
     <div><input id="inOdometer2" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="乗換後 帰庫km" oninput="window.updateDailyDistanceImmediate&&window.updateDailyDistanceImmediate()"></div>
@@ -1053,7 +1098,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   </div>
  </div>
  <div class="card" id="dailyDeliverySection">
-  <h3 style="margin:0 0 14px">配達実績 <span style="float:right;display:flex;gap:14px;align-items:baseline;font-size:18px"><strong id="dailyDeliveryCount" class="daily-report-value" style="font-size:23px">0 回</strong><strong id="dailyDeliveryTotalKg" class="daily-report-value" style="font-size:23px">0 kg</strong></span></h3>
+  <h3 style="margin:0 0 14px">配達実績 <span style="float:right;display:flex;gap:14px;align-items:baseline;font-size:17px"><strong id="dailyDeliveryCount" class="daily-report-value" style="font-size:22px">0 回</strong><strong id="dailyDeliveryTotalKg" class="daily-report-value" style="font-size:22px">0 kg</strong></span></h3>
   <div id="dailyDeliveryCards"></div>
  </div>
  <div class="card" id="dailyCommissionSection">
@@ -1096,37 +1141,37 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
  </div></div>
  <div class="card">
   <label for="deliveryDate">納品日</label>
-  <input id="deliveryDate" type="date" style="margin-top:8px;font-size:19px;font-weight:bold">
+  <input id="deliveryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold">
  </div>
  <div class="card"><label>注文数量</label>
   <div style="display:flex;gap:10px;margin-top:8px">
    <div class="box" style="flex:1;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
-    <small style="font-size:17px;color:#666">重量</small><strong id="deliveryOrderKg" style="font-size:21px">—</strong>
+    <small style="font-size:16px;color:#666">重量</small><strong id="deliveryOrderKg" style="font-size:20px">—</strong>
    </div>
    <div class="box" style="flex:1;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
-    <small style="font-size:17px;color:#666">容量</small><strong id="deliveryOrderL" style="font-size:21px">—</strong>
+    <small style="font-size:16px;color:#666">容量</small><strong id="deliveryOrderL" style="font-size:20px">—</strong>
    </div>
   </div>
  </div>
  <div class="card">
   <div class="grid2" style="margin-top:4px">
    <div class="box">
-    <small style="font-size:14px;color:#666;font-weight:700">正味重量</small>
+    <small style="font-size:13px;color:#666;font-weight:700">正味重量</small>
     <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
      <input id="deliveryKg" type="number" inputmode="decimal" step="0.01" placeholder="—" style="margin-top:0;flex:1;min-width:0;box-sizing:border-box">
-     <span style="font-size:14px;font-weight:700;white-space:nowrap">kg</span>
+     <span style="font-size:13px;font-weight:700;white-space:nowrap">kg</span>
     </div>
    </div>
    <div class="box">
-    <small style="font-size:14px;color:#666;font-weight:700">納品容量</small>
+    <small style="font-size:13px;color:#666;font-weight:700">納品容量</small>
     <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
      <input id="deliveryL" type="text" readonly placeholder="—" style="margin-top:0;flex:1;min-width:0;box-sizing:border-box">
-     <span style="font-size:14px;font-weight:700;white-space:nowrap">L</span>
+     <span style="font-size:13px;font-weight:700;white-space:nowrap">L</span>
     </div>
    </div>
   </div>
-  <div id="deliveryWeightDiff" style="font-size:14px;margin-top:6px;color:#000">重量差：— kg</div>
-  <div id="deliveryCapacityDiff" style="font-size:14px;margin-top:4px;color:#000">容量差：— L</div>
+  <div id="deliveryWeightDiff" style="font-size:13px;margin-top:6px;color:#000">重量差：— kg</div>
+  <div id="deliveryCapacityDiff" style="font-size:13px;margin-top:4px;color:#000">容量差：— L</div>
  </div>
  <div class="card">
   <button id="deliverySaveBtn">納品を保存</button><button id="deliveryCancelBtn" class="gray">キャンセル</button>
@@ -1254,7 +1299,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   <div class="note" style="margin-top:5px">取引先名から読みを自動生成します。必要なら修正できます。</div>
   <label style="margin-top:12px">部署名</label>
   <textarea id="modalCustomerDepartment" rows="3" placeholder="部署名を入力（複数ある場合は1行ずつ）" style="display:block;width:100%;box-sizing:border-box;"></textarea>
-  <div style="font-size:13px;color:#777;margin-top:5px">複数の部署がある場合は、1行に1つずつ入力できます。</div>
+  <div style="font-size:12px;color:#777;margin-top:5px">複数の部署がある場合は、1行に1つずつ入力できます。</div>
   <div class="modal-actions">
    <button id="modalCancelCustomer" class="gray">キャンセル</button>
    <button id="modalSaveCustomer">保存</button>
@@ -1302,7 +1347,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   <div style="font-weight:700;margin:16px 0 8px">回数歩合（車種共通）</div>
   <div class="detail" style="line-height:1.8">
    <div>1回目　0円</div><div>2回目　600円</div><div>3回目　1,200円</div><div>4回目　2,100円</div>
-   <div style="margin-top:6px;color:#666;font-size:14px">5回目以降は「調整歩合」として日報入力時に金額を入力します。</div>
+   <div style="margin-top:6px;color:#666;font-size:13px">5回目以降は「調整歩合」として日報入力時に金額を入力します。</div>
   </div>
   <div class="rate-note">距離歩合を変更すると、以後の日報計算に反映されます。回数歩合の1～4回目は固定額で計算します。</div>
   <div class="modal-actions"><button id="commissionSaveBtn" type="button" onclick="window.saveCommissionRates()">保存</button><button id="commissionCancelBtn" type="button" class="gray" onclick="window.closeCommissionModal()">キャンセル</button></div>
@@ -1326,7 +1371,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 <div id="historyModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
   <h3>履歴をどうしますか？</h3>
-  <div style="color:#666;font-size:15px;margin-bottom:14px">この配達記録を計算画面に読み込みますか？</div>
+  <div style="color:#666;font-size:14px;margin-bottom:14px">この配達記録を計算画面に読み込みますか？</div>
   <div class="modal-actions">
    <button id="historyLoadBtn">計算画面に反映</button>
    <button id="historyDeleteBtn" class="red">削除</button>
@@ -1417,8 +1462,8 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   <input id="deliveryEditKg" type="number" inputmode="decimal" step="0.01">
   <label style="margin-top:12px;color:#000">実納品容量（L）</label>
   <input id="deliveryEditL" type="text" readonly>
-  <div id="deliveryEditCapacityDiff" style="font-size:15px;margin-top:6px;color:#000">容量差：— L</div>
-  <div id="deliveryEditWeightDiff" style="font-size:15px;margin-top:3px;color:#000">重量差：— kg</div>
+  <div id="deliveryEditCapacityDiff" style="font-size:14px;margin-top:6px;color:#000">容量差：— L</div>
+  <div id="deliveryEditWeightDiff" style="font-size:14px;margin-top:3px;color:#000">重量差：— kg</div>
   <div class="modal-actions">
    <button id="deliveryEditDeleteBtn" class="red">削除</button>
    <button id="deliveryEditSaveBtn">保存</button>
@@ -2279,13 +2324,13 @@ function renderDeliveryHistory(){
       : "—";
 
     div.innerHTML=
-      "<div style='font-size:17px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
-      (x.department?"<div style='font-size:17px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
-      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
-      "<div style='color:#000;font-size:17px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
-      "<div style='color:#000;font-size:17px;margin-top:3px;font-weight:400'>注文重量："+formatQuantity(x.orderKg)+" kg</div>"+
-      "<div style='color:#000;font-size:17px;margin-top:3px;font-weight:400'>納品重量："+formatQuantity(x.deliveryKg)+" kg <span style='font-size:15px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
-      "<div style='color:#000;font-size:17px;margin-top:3px;font-weight:700'>納品容量："+formatQuantity(deliveryL)+" L <span style='font-size:15px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>";
+      "<div style='font-size:16px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
+      (x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
+      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:16px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
+      "<div style='color:#000;font-size:16px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>注文重量："+formatQuantity(x.orderKg)+" kg</div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>納品重量："+formatQuantity(x.deliveryKg)+" kg <span style='font-size:14px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:700'>納品容量："+formatQuantity(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>";
     div.addEventListener("click",()=>openDeliveryEdit(i));
     box.appendChild(div);
   });
@@ -2435,12 +2480,12 @@ function openDeliveryView(i){
     return t>0?"+"+t.toFixed(2):t.toFixed(2);
   };
   $("deliveryViewInfo").innerHTML=
-    "<div style='font-size:18px;font-weight:400;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
-    "<div style='font-size:17px'>取引先："+esc(x.customer||"")+(x.department?" "+esc(x.department):"")+"</div>"+
-    "<div style='font-size:18px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
+    "<div style='font-size:17px;font-weight:400;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
+    "<div style='font-size:16px'>取引先："+esc(x.customer||"")+(x.department?" "+esc(x.department):"")+"</div>"+
+    "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
     "<div style='margin-top:3px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit||"")+(x.orderUnit!=="kg"&&Number.isFinite(orderKg)?"／注文重量："+formatQuantity(orderKg)+" kg":"")+"</div>"+
-    "<div style='margin-top:3px'>納品重量："+(Number.isFinite(deliveryKg)?formatQuantity(deliveryKg):"—")+" kg <span style='font-size:15px'>／重量差："+signed(weightDiff)+" kg</span></div>"+
-    "<div style='margin-top:3px;font-weight:700'>納品容量："+(Number.isFinite(deliveryL)?formatQuantity(deliveryL):"—")+" L <span style='font-size:15px;font-weight:400'>／容量差："+signedCapacity(capacityDiff)+" L</span></div>";
+    "<div style='margin-top:3px'>納品重量："+(Number.isFinite(deliveryKg)?formatQuantity(deliveryKg):"—")+" kg <span style='font-size:14px'>／重量差："+signed(weightDiff)+" kg</span></div>"+
+    "<div style='margin-top:3px;font-weight:700'>納品容量："+(Number.isFinite(deliveryL)?formatQuantity(deliveryL):"—")+" L <span style='font-size:14px;font-weight:400'>／容量差："+signedCapacity(capacityDiff)+" L</span></div>";
   // 保存済みの納品前タンク確認データがあれば復元。無ければ今回の納品容量だけ初期表示。
   const savedTank=x.tankCheck&&typeof x.tankCheck==="object"?x.tankCheck:{};
   $("deliveryViewTankCapacity").value=savedTank.capacity??"";
@@ -2638,7 +2683,7 @@ function openDeliveryEdit(i){
   deliveryEditSaved=false;
   const orderUnit=String(x.orderUnit||"");
   $("deliveryEditInfo").innerHTML=
-    "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:18px;font-weight:700'>薬品名："+esc(x.chemical||"")+"</span>"+
+    "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px;font-weight:700'>薬品名："+esc(x.chemical||"")+"</span>"+
     "<br>注文数量："+formatQuantity(x.orderAmount)+" "+esc(orderUnit)+
     (orderUnit==="kg"?"":"<br>注文重量："+formatQuantity(x.orderKg)+" kg");
   $("deliveryEditDate").value=x.date||isoToday();
@@ -2705,8 +2750,8 @@ function openDeliveryRegistration(x){
   // 取引先名は警告対象でも常に通常色。薬品名だけ警告時に赤字で表示する。
   $("deliveryCustomer").style.cssText="color:#1c1c1e;font-weight:700";
   $("deliveryChemical").style.cssText=x.warning
-    ? "color:#ff3b30;font-weight:700;font-size:21px;line-height:1.35"
-    : "color:#1c1c1e;font-weight:700;font-size:21px;line-height:1.35";
+    ? "color:#ff3b30;font-weight:700;font-size:20px;line-height:1.35"
+    : "color:#1c1c1e;font-weight:700;font-size:20px;line-height:1.35";
   const warningNotice=$("deliveryWarningNotice");
   if(warningNotice){
     warningNotice.textContent=x.warning?"※譲受書必須※":"";
@@ -2850,7 +2895,7 @@ function renderHistory(){
    const div=document.createElement("div");div.className="item";div.onclick=()=>showCalcResultDialog(x,true);
    const isDelivered=!!findLinkedDelivery(x);
    const chemStyle=x.warning?"color:#ff3b30;font-weight:bold":"font-weight:bold";
-   const chemStyleWithSize=chemStyle+";font-size:21px;font-weight:700;line-height:1.35";
+   const chemStyleWithSize=chemStyle+";font-size:20px;font-weight:700;line-height:1.35";
    const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
    const orderLabel=orderUnit==="m3"?"m³":orderUnit;
    const histL=formatQuantity(trunc2(x.L!=null?x.L:Number(x.m3||0)*1000));
@@ -2860,14 +2905,14 @@ function renderHistory(){
      : orderUnit==="L"
        ? formatQuantity(trunc2(x.kg))+" kg　/　"+histM3+" m³"
        : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
-   div.innerHTML=(x.time?"<div style='font-size:15px;font-weight:400'>"+esc(x.time)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:15px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
-    +"<div style='font-size:17px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
-    +(x.department?"<div style='font-size:17px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
-    +(x.plannedTime?"<div style='font-size:17px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
-     +"<div style='font-size:14px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
-    +"<div style='margin-top:5px;font-size:17px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
-    +"<div style='font-size:14px;margin-top:3px'>"+histSecondary+"</div>"
-    +(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='font-size:14px;margin-top:3px'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"");
+   div.innerHTML=(x.time?"<div style='font-size:14px;font-weight:400'>"+esc(x.time)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
+    +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
+    +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
+    +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
+     +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
+    +"<div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
+    +"<div style='font-size:13px;margin-top:3px'>"+histSecondary+"</div>"
+    +(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='font-size:13px;margin-top:3px'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"");
    box.appendChild(div);
  });
 }
@@ -5051,12 +5096,12 @@ restoreLastVehicleType();
   box-sizing:border-box;
 }
 #historyCustomCalendar .hcc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-#historyCustomCalendar .hcc-head button{border:0;background:#f2f2f7;border-radius:9px;width:36px;height:36px;font-size:21px;line-height:1;cursor:pointer}
-#historyCustomCalendar .hcc-title{font-weight:700;font-size:18px}
+#historyCustomCalendar .hcc-head button{border:0;background:#f2f2f7;border-radius:9px;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer}
+#historyCustomCalendar .hcc-title{font-weight:700;font-size:17px}
 #historyCustomCalendar .hcc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
-#historyCustomCalendar .hcc-week div{text-align:center;font-size:13px;color:#666;padding:4px 0}
+#historyCustomCalendar .hcc-week div{text-align:center;font-size:12px;color:#666;padding:4px 0}
 #historyCustomCalendar .hcc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-#historyCustomCalendar .hcc-day{width:100%;height:38px;min-height:38px;margin:0 !important;padding:0 !important;border:0;background:#fff;color:#1c1c1e !important;border-radius:9px;font-size:16px;line-height:38px;font-weight:400;cursor:pointer;box-sizing:border-box;display:block}
+#historyCustomCalendar .hcc-day{width:100%;height:38px;min-height:38px;margin:0 !important;padding:0 !important;border:0;background:#fff;color:#1c1c1e !important;border-radius:9px;font-size:15px;line-height:38px;font-weight:400;cursor:pointer;box-sizing:border-box;display:block}
 #historyCustomCalendar .hcc-day:hover{background:#f2f2f7;color:#1c1c1e !important}
 #historyCustomCalendar .hcc-day.other{color:#aaa}
 #historyCustomCalendar .hcc-day.today{font-weight:700;box-shadow:inset 0 0 0 1.5px #007aff}
@@ -5151,7 +5196,7 @@ restoreLastVehicleType();
 #dailyReportDateLabel{
   display:inline !important;
   color:#1c1c1e !important;
-  font-size:20px !important;
+  font-size:19px !important;
   font-weight:700 !important;
 }
 </style>
