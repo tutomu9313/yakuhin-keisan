@@ -1251,7 +1251,7 @@ nav button{height:45px !important;}
 }
 #calcPage .planned-time-row{
   display:grid !important;
-  grid-template-columns:45px minmax(0,1fr) 90px;
+  grid-template-columns:45px minmax(0,1fr) 72px;
   gap:6px !important;
   align-items:center;
 }
@@ -1259,10 +1259,33 @@ nav button{height:45px !important;}
   margin:0 !important;
   white-space:nowrap;
 }
-#calcPage .planned-time-row input,
+#calcPage .planned-time-row input{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  display:block !important;
+}
 #calcPage .planned-time-row select{
   width:100% !important;
-  min-width:0;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+@media (max-width:420px){
+  #calcPage .planned-time-row{
+    grid-template-columns:45px minmax(0,1fr) 68px;
+    gap:5px !important;
+  }
+  #calcPage .planned-time-row input[type="time"]{
+    min-width:0 !important;
+    width:100% !important;
+    max-width:100% !important;
+    padding-left:8px !important;
+    padding-right:8px !important;
+    -webkit-appearance:none !important;
+    appearance:none !important;
+  }
 }
 #calcPage .chemical-input-row{
   display:grid;
@@ -6386,3 +6409,4 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
   #dailyWorkTimeSection .detail > .grid2:first-child{gap:6px !important;}
 }
 </style>
+<!-- planned-time-row iPhone overlap fix: 2026-09-28 -->
