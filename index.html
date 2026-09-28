@@ -65,7 +65,11 @@ header{font-size:24px;font-weight:800;letter-spacing:-.4px;padding:18px 18px 16p
 .card{background:#fff;margin:0 12px 12px;padding:17px;border-radius:18px;box-shadow:0 1px 3px #00000010}
 label{color:#6e6e73;font-size:13px;font-weight:600;margin-bottom:7px}
 input,select{height:48px;border:1px solid #d1d1d6;border-radius:12px;padding:0 13px;font-size:17px;background:#fff}
-.planned-time-row{margin-top:12px;display:flex;align-items:center;gap:10px}.planned-time-row label{margin:0;white-space:nowrap}.planned-time-row input{width:140px;box-sizing:border-box}.planned-time-row select{width:112px;box-sizing:border-box}
+/* 予定時間・車種：元の幅を維持し、入力欄のはみ出しだけ防止 */
+.planned-time-row{margin-top:12px;display:flex;align-items:center;gap:10px;min-width:0}
+.planned-time-row label{margin:0;white-space:nowrap;flex:0 0 auto}
+.planned-time-row input{width:140px;min-width:0;max-width:140px;flex:0 0 140px;box-sizing:border-box}
+.planned-time-row select{width:112px;min-width:0;max-width:112px;flex:0 0 112px;box-sizing:border-box}
 #dateDisplay,#historyDate,#deliveryHistoryDate,#deliveryDate{width:calc(100% - 25px)!important;max-width:100%;min-width:0;box-sizing:border-box}\n#historyDate,#deliveryHistoryDate{position:absolute!important;opacity:0!important;pointer-events:auto!important;width:calc(100% - 112px)!important;height:46px!important;padding:0!important;margin:0!important;border:0!important;left:56px;top:0;z-index:5;}
 .history-date-nav{position:relative;}
 input:focus,select:focus{outline:2px solid #007aff30;border-color:#007aff}
@@ -1436,6 +1440,12 @@ nav button{height:45px !important;}
 }
 </style>
 
+<style id="planned-time-no-overlap-final">
+/* 予定時間と4t/10tの重なり防止：幅は元の140px/112pxから変更しない */
+.planned-time-row{min-width:0;overflow:visible;}
+.planned-time-row input[type="time"]{min-width:0 !important;width:140px !important;max-width:140px !important;flex:0 0 140px !important;box-sizing:border-box !important;}
+.planned-time-row select{min-width:0 !important;width:112px !important;max-width:112px !important;flex:0 0 112px !important;box-sizing:border-box !important;}
+</style>
 </head>
 <body>
 <div id="authGate">
