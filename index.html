@@ -1143,7 +1143,6 @@ nav button{height:45px !important;}
   margin:6px 12px !important;
   padding:11px !important;
 }
-<!-- planned-time iPhone success-size fix: 105px time / 64px vehicle -->
 </style>
 
 <style id="prototype-quantity-only-layout">
@@ -1264,25 +1263,6 @@ nav button{height:45px !important;}
 #calcPage .planned-time-row select{
   width:100% !important;
   min-width:0;
-}
-@media (max-width:420px){
-  /* iPhone調整：予定時間95px・車種50px */
-  #calcPage .planned-time-row{
-    grid-template-columns:45px 95px 50px;
-    gap:6px !important;
-  }
-  #calcPage .planned-time-row input{
-    width:95px !important;
-    min-width:95px !important;
-    max-width:95px !important;
-    box-sizing:border-box !important;
-  }
-  #calcPage .planned-time-row select{
-    width:50px !important;
-    min-width:50px !important;
-    max-width:50px !important;
-    box-sizing:border-box !important;
-  }
 }
 #calcPage .chemical-input-row{
   display:grid;
