@@ -2863,7 +2863,7 @@ async function saveDelivery(){
    }
  }
  showCalcResultDialog(rec);clearDraft();resetDeliveryForm();
- if($("historyDate"))$("historyDate").value=rec.date;
+ if($("historyDate"))$("historyDate").value=rec.deliveryDate||rec.date;
  refreshAllHistoryDisplays();
  } finally {
    saveDeliveryInProgress=false;
@@ -3562,7 +3562,16 @@ function shiftDeliveryHistoryDate(delta){
 function renderHistory(){
  const selected=($("historyDate").value)||isoToday();
  $("historyDate").value=selected;
- const rows=history.filter(x=>(x.date||"")===selected).sort((a,b)=>(b.created||0)-(a.created||0));
+ const rows=history.filter(x=>(x.deliveryDate||x.date||"")===selected).sort((a,b)=>{
+   const ad=String(a.deliveryDate||a.date||"");
+   const bd=String(b.deliveryDate||b.date||"");
+   if(ad!==bd)return ad.localeCompare(bd);
+   const at=String(a.plannedTime||"").trim(),bt=String(b.plannedTime||"").trim();
+   if(at&&bt){const tc=at.localeCompare(bt);if(tc)return tc;}
+   else if(at&&!bt)return -1;
+   else if(!at&&bt)return 1;
+   return (b.created||0)-(a.created||0);
+ });
  $("count").textContent=rows.length;
  $("totalKg").textContent=formatQuantity(Number(rows.reduce((s,x)=>s+Number(x.kg||0),0).toFixed(2)));
  const box=$("historyList");box.innerHTML="";
@@ -3581,10 +3590,12 @@ function renderHistory(){
      : orderUnit==="L"
        ? formatQuantity(trunc2(x.kg))+" kg　/　"+histM3+" m³"
        : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
-   div.innerHTML=(x.time?"<div style='font-size:14px;font-weight:400'>"+esc(x.time)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
+   const displayDeliveryDate=x.deliveryDate||x.date||"";
+   const displayDeliveryDateText=displayDeliveryDate?displayDeliveryDate.replace(/-/g,"/"):"";
+   div.innerHTML=(displayDeliveryDateText?"<div style='font-size:14px;font-weight:400'>納品日："+esc(displayDeliveryDateText)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
+    +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
     +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
     +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
-    +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
      +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
     +"<div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
     +"<div style='font-size:13px;margin-top:3px'>"+histSecondary+"</div>"
@@ -4778,8 +4789,13 @@ function renderHistoryWeeklyList(){
  const fd=localDateFromISO(range.from),td=localDateFromISO(range.to);
  const wd=["日","月","火","水","木","金","土"];
  period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日（"+wd[fd.getDay()]+"）～"+(td.getMonth()+1)+"月"+td.getDate()+"日（"+wd[td.getDay()]+"）";
- const rows=history.filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>{
-   const dateCmp=String(a.date).localeCompare(String(b.date));
+ const rows=history.filter(x=>{
+   const d=x.deliveryDate||x.date||"";
+   return x&&d>=range.from&&d<=range.to;
+ }).sort((a,b)=>{
+   const ad=String(a.deliveryDate||a.date||"");
+   const bd=String(b.deliveryDate||b.date||"");
+   const dateCmp=ad.localeCompare(bd);
    if(dateCmp)return dateCmp;
    // 同じ日では「予定時間（納品時間）」の早い順に上から表示
    const at=String(a.plannedTime||"").trim(),bt=String(b.plannedTime||"").trim();
@@ -4801,9 +4817,10 @@ function renderHistoryWeeklyList(){
  let lastDate="";
  rows.forEach((x,i)=>{
    const tr=document.createElement("tr"); tr.dataset.orderIndex=String(history.indexOf(x)); tr.title="タップして入力計算結果を表示";
-   const d=localDateFromISO(x.date);
-   const dateText=x.date===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
-   lastDate=x.date;
+   const rowDate=x.deliveryDate||x.date||"";
+   const d=localDateFromISO(rowDate);
+   const dateText=rowDate===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   lastDate=rowDate;
    const delivered=!!findLinkedDelivery(x);
    const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
    tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><span style='font-weight:700'>"+esc(x.chemical||"")+"</span>"+status+"</td>";
@@ -6277,6 +6294,34 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 </script>
 
 
+
+
+<style id="iphone-planned-time-no-overlap">
+/* iPhone：予定時間と車種の入力欄が重ならないよう3列で固定配置 */
+.planned-time-row{
+  display:grid !important;
+  grid-template-columns:80px minmax(0,1fr) 86px !important;
+  gap:8px !important;
+  align-items:center !important;
+}
+.planned-time-row label{
+  margin:0 !important;
+  white-space:nowrap !important;
+}
+.planned-time-row input,
+.planned-time-row select{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+@media(max-width:420px){
+  .planned-time-row{
+    grid-template-columns:80px minmax(0,1fr) 86px !important;
+    gap:6px !important;
+  }
+}
+</style>
 
 </body>
 
