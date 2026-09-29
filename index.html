@@ -1480,6 +1480,7 @@ nav button{height:45px !important;}
 <div class="planned-time-row">
 <label for="plannedTime">予定時間</label>
 <input id="plannedTime" type="time">
+<label for="vehicleType" class="planned-vehicle-label">車種</label>
 <select id="vehicleType" aria-label="車種"><option value="4t">4t</option><option value="10t">10t</option></select>
 </div>
 <datalist id="departmentList"></datalist>
@@ -6297,11 +6298,10 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 
 
 <style id="iphone-planned-time-no-overlap">
-/* iPhone/PC：予定時間の左位置を部署名と揃え、入力欄と車種欄を均等に収める。
-   #calcPage 側の既存指定より優先させるため、同等以上の詳細度で指定。 */
+/* iPhone/PC：予定時間は現在の位置・幅を維持し、車種ラベル＋車種欄を右側へ整列 */
 #calcPage .planned-time-row{
   display:grid !important;
-  grid-template-columns:45px 125px 86px !important;
+  grid-template-columns:45px 125px minmax(0,1fr) 86px !important;
   gap:6px !important;
   align-items:center !important;
   justify-content:start !important;
@@ -6317,6 +6317,11 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
   max-width:125px !important;
   box-sizing:border-box !important;
 }
+#calcPage .planned-time-row .planned-vehicle-label{
+  justify-self:end !important;
+  width:auto !important;
+  font-weight:600 !important;
+}
 #calcPage .planned-time-row select{
   display:block !important;
   width:86px !important;
@@ -6326,7 +6331,7 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 }
 @media(max-width:420px){
   #calcPage .planned-time-row{
-    grid-template-columns:45px 125px 86px !important;
+    grid-template-columns:45px 125px minmax(0,1fr) 86px !important;
     gap:6px !important;
     justify-content:start !important;
   }
