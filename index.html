@@ -6321,8 +6321,6 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
   justify-self:end !important;
   width:auto !important;
   font-weight:600 !important;
-  position:relative !important;
-  left:-8px !important;
 }
 #calcPage .planned-time-row select{
   display:block !important;
@@ -6446,5 +6444,148 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 }
 @media (max-width:420px){
   #dailyWorkTimeSection .detail > .grid2:first-child{gap:6px !important;}
+}
+</style>
+
+
+<style id="daily-screen-balance-final">
+/* 運転日報：入力欄のサイズ感を基準に、文字・ボックス・間隔を統一 */
+#dailyPage .card{
+  padding:12px !important;
+  margin-bottom:10px !important;
+}
+#dailyPage .daily-view-tabs{
+  padding:12px !important;
+  margin-bottom:10px !important;
+  gap:5px !important;
+}
+#dailyPage .daily-view-tabs button{
+  height:40px !important;
+  margin:0 !important;
+  font-size:15px !important;
+}
+#dailyPage h3{
+  font-size:17px !important;
+  line-height:1.25 !important;
+}
+#dailyPage .daily-run-header{
+  margin:0 0 8px !important;
+  gap:8px !important;
+}
+#dailyPage .daily-run-vehicle{
+  gap:6px !important;
+}
+#dailyPage .daily-run-vehicle label{
+  font-size:13px !important;
+}
+#dailyPage .daily-run-vehicle select,
+#dailyPage .daily-change-vehicle-btn{
+  height:40px !important;
+  margin:0 !important;
+}
+#dailyPage .daily-run-vehicle select{
+  width:92px !important;
+  font-size:14px !important;
+}
+#dailyPage .daily-change-vehicle-btn{
+  min-width:64px !important;
+  font-size:14px !important;
+}
+#dailyPage .grid2{
+  gap:8px !important;
+}
+#dailyPage input[type="number"],
+#dailyPage input[type="time"],
+#dailyPage select{
+  height:40px !important;
+  font-size:15px !important;
+  box-sizing:border-box !important;
+}
+#dailyPage .detail{
+  margin-top:8px !important;
+  padding:8px 10px !important;
+  border-radius:11px !important;
+  font-size:14px !important;
+}
+#dailyPage .daily-report-value{
+  font-size:18px !important;
+  line-height:1.2 !important;
+}
+#dailyWorkTimeSection .box{
+  min-height:54px !important;
+  padding:7px 9px !important;
+  border-radius:11px !important;
+}
+#dailyWorkTimeSection .box small{
+  font-size:12px !important;
+}
+#dailyWorkTimeSection .box strong{
+  font-size:17px !important;
+  margin-top:2px !important;
+}
+#dailyDeliverySection > h3,
+#dailyCommissionSection > h3{
+  margin:0 0 8px !important;
+}
+#dailyDeliverySection > h3 span{
+  gap:8px !important;
+  font-size:15px !important;
+}
+#dailyDeliverySection > h3 strong{
+  font-size:18px !important;
+}
+#dailyDeliverySection .daily-delivery-card{
+  margin-bottom:6px !important;
+  padding:9px 10px !important;
+}
+#dailyDeliverySection .daily-delivery-card-customer{
+  font-size:14px !important;
+}
+#dailyDeliverySection .daily-delivery-card-chemical{
+  font-size:12px !important;
+}
+#dailyDeliverySection .daily-delivery-card-meta{
+  font-size:13px !important;
+}
+#dailyCommissionSection .commission-line{
+  gap:8px !important;
+  font-size:14px !important;
+}
+#dailyCommissionSection .commission-line + .commission-line{
+  margin-top:8px !important;
+}
+#dailyCommissionSection .commission-adjustment-line{
+  gap:8px !important;
+  margin-top:10px !important;
+  padding-top:10px !important;
+}
+#dailyCommissionSection .commission-total-line{
+  gap:8px !important;
+  margin-top:10px !important;
+  padding-top:10px !important;
+  font-size:14px !important;
+}
+#dailyCommissionSection #dailyCountAdjustment{
+  height:40px !important;
+  font-size:15px !important;
+}
+#dailyPage .daily-report-date-nav button{
+  height:42px !important;
+  font-size:18px !important;
+}
+#dailyPage .daily-report-date{
+  font-size:18px !important;
+}
+@media(max-width:420px){
+  #dailyPage .card{
+    padding:12px !important;
+    margin-bottom:10px !important;
+  }
+  #dailyPage .grid2{
+    gap:6px !important;
+  }
+  #dailyPage .detail{
+    padding:8px !important;
+  }
 }
 </style>
