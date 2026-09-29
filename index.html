@@ -6297,11 +6297,11 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 
 
 <style id="iphone-planned-time-no-overlap">
-/* iPhone：予定時間と車種の入力欄が重ならないよう3列で固定配置 */
+/* iPhone：予定時間の入力欄を部署名の入力欄と同じ位置に揃え、車種欄との重なりを防止 */
 .planned-time-row{
   display:grid !important;
-  grid-template-columns:80px minmax(0,1fr) 86px !important;
-  gap:8px !important;
+  grid-template-columns:45px minmax(0,1fr) 90px !important;
+  gap:6px !important;
   align-items:center !important;
 }
 .planned-time-row label{
@@ -6317,7 +6317,7 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 }
 @media(max-width:420px){
   .planned-time-row{
-    grid-template-columns:80px minmax(0,1fr) 86px !important;
+    grid-template-columns:45px minmax(0,1fr) 90px !important;
     gap:6px !important;
   }
 }
