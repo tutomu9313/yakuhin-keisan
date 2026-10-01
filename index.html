@@ -266,12 +266,31 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 </style>
 
 
+<style id="daily-delivery-card-vehicle-display">
+.daily-delivery-card-meta span:first-child{white-space:nowrap;}
+</style>
 <style id="daily-delivery-header-17px">
 #dailyDeliverySection > h3{font-size:17px !important;}
 #dailyDeliveryCount{font-size:17px !important;}
 #dailyCommissionSection > h3{font-size:17px !important;}
 </style>
 
+<style id="daily-inline-distance-actions-style">
+#dailyInlineDistanceActions,
+#dailyInlineDistanceActions2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  margin-top:8px;
+}
+#dailyInlineDistanceActions.hidden,
+#dailyInlineDistanceActions2.hidden{display:none !important;}
+#dailyInlineDistanceActions button,
+#dailyInlineDistanceActions2 button{
+  height:40px !important;
+  margin:0 !important;
+}
+</style>
 <style id="daily-compact-run-worktime">
 /* 日報：運行情報・勤務時間カードをコンパクト化（機能変更なし） */
 #dailyRunSection, #dailyWorkTimeSection{
@@ -1608,18 +1627,26 @@ nav button{height:45px !important;}
   </div>
   <div id="dailyRunPrimaryBlock" class="daily-run-entry">
    <div class="grid2">
-    <div><input id="outOdometer" type="number" inputmode="numeric" placeholder="出庫km" aria-label="出庫km"></div>
-    <div><input id="inOdometer" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="帰庫km" oninput="window.updateDailyDistanceImmediate&&window.updateDailyDistanceImmediate()"></div>
+    <div><input id="outOdometer" type="number" inputmode="numeric" placeholder="出庫km" aria-label="出庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
+    <div><input id="inOdometer" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="帰庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
    </div>
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
+   <div id="dailyInlineDistanceActions" class="daily-inline-distance-actions hidden" aria-hidden="true">
+    <button id="dailyInlineDistanceCancelBtn" type="button" class="gray" onclick="if(window.cancelDailyInlineDistanceEdits)window.cancelDailyInlineDistanceEdits();return false;">キャンセル</button>
+    <button id="dailyInlineDistanceRegisterBtn" type="button" onclick="if(window.registerDailyInlineDistanceEdits)window.registerDailyInlineDistanceEdits('primary');return false;">登録</button>
+   </div>
   </div>
   <div id="dailyRunSecondaryBlock" class="daily-run-entry hidden">
-   <div class="daily-secondary-vehicle-label"><span>乗換後の車種</span><div style="display:flex;align-items:center;gap:8px"><strong id="dailySecondaryVehicle">10t</strong><button id="dailySecondaryDeleteBtn" type="button" class="red" style="min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:14px;line-height:1" onclick="window.deleteDailySecondaryVehicle()">削除</button></div></div>
+   <div class="daily-secondary-vehicle-label"><span>乗換後の車種</span><div style="display:flex;align-items:center;gap:8px"><select id="dailySecondaryVehicleSelect" aria-label="乗換後の車種" style="width:92px;height:40px;margin:0;font-size:14px"><option value="4t">4t</option><option value="10t">10t</option></select><button id="dailySecondaryDeleteBtn" type="button" class="red" style="min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:14px;line-height:1" onclick="window.deleteDailySecondaryVehicle()">削除</button></div></div>
    <div class="grid2">
-    <div><input id="outOdometer2" type="number" inputmode="numeric" placeholder="出庫km" aria-label="乗換後 出庫km"></div>
-    <div><input id="inOdometer2" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="乗換後 帰庫km" oninput="window.updateDailyDistanceImmediate&&window.updateDailyDistanceImmediate()"></div>
+    <div><input id="outOdometer2" type="number" inputmode="numeric" placeholder="出庫km" aria-label="乗換後 出庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
+    <div><input id="inOdometer2" type="number" inputmode="numeric" placeholder="乗換後 帰庫km" aria-label="乗換後 帰庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
    </div>
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance2" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
+   <div id="dailyInlineDistanceActions2" class="daily-inline-distance-actions hidden" aria-hidden="true">
+    <button id="dailyInlineDistanceCancelBtn2" type="button" class="gray" onclick="if(window.cancelDailyInlineDistanceEdits)window.cancelDailyInlineDistanceEdits();return false;">キャンセル</button>
+    <button id="dailyInlineDistanceRegisterBtn2" type="button" onclick="if(window.registerDailyInlineDistanceEdits)window.registerDailyInlineDistanceEdits('secondary');return false;">登録</button>
+   </div>
   </div>
  </div>
  <div class="card" id="dailyWorkTimeSection">
@@ -2605,6 +2632,49 @@ function getDailyReportState(){
 }
 function markDailyReportSnapshot(){dailyReportSnapshot=getDailyReportState();}
 function isDailyReportDirty(){return !!dailyReportSnapshot && getDailyReportState()!==dailyReportSnapshot;}
+function updateDailyInlineDistanceActions(){
+  const primaryBox=$("dailyInlineDistanceActions");
+  const secondaryBox=$("dailyInlineDistanceActions2");
+  const primaryIds=["outOdometer","inOdometer"];
+  const secondaryIds=["outOdometer2","inOdometer2"];
+  const hasPrimary=primaryIds.some(id=>{const el=$(id);return !!el && String(el.value||"").trim()!=="";});
+  const hasSecondary=secondaryIds.some(id=>{const el=$(id);return !!el && String(el.value||"").trim()!=="";});
+  const secondaryActive=dailyRunHasSecondary&&dailyRunHasSecondary();
+  const showPrimary=!!dailyDistanceInputTouched && hasPrimary && !secondaryActive;
+  const showSecondary=!!dailyDistanceInputTouched && hasSecondary && secondaryActive;
+  if(primaryBox){
+    primaryBox.classList.toggle("hidden",!showPrimary);
+    primaryBox.setAttribute("aria-hidden",showPrimary?"false":"true");
+  }
+  if(secondaryBox){
+    secondaryBox.classList.toggle("hidden",!showSecondary);
+    secondaryBox.setAttribute("aria-hidden",showSecondary?"false":"true");
+  }
+}
+function resetDailyInlineDistanceActions(){
+  dailyDistanceInputTouched=false;
+  updateDailyInlineDistanceActions();
+}
+function dailyDistanceInputChanged(){
+  dailyDistanceInputTouched=true;
+  updateDailyInlineDistanceActions();
+  updateDailyDistanceImmediate();
+}
+window.dailyDistanceInputChanged=dailyDistanceInputChanged;
+function cancelDailyInlineDistanceEdits(){
+  resetDailyInlineDistanceActions();
+  renderDailyReport();
+  try{updateDailyCalc();}catch(e){}
+  window.scrollTo({top:0,left:0,behavior:"auto"});
+}
+function registerDailyInlineDistanceEdits(target){
+  saveDailyReport(target==="secondary"?"secondary":target==="primary"?"primary":"");
+}
+window.updateDailyInlineDistanceActions=updateDailyInlineDistanceActions;
+window.resetDailyInlineDistanceActions=resetDailyInlineDistanceActions;
+window.dailyDistanceInputChanged=dailyDistanceInputChanged;
+window.cancelDailyInlineDistanceEdits=cancelDailyInlineDistanceEdits;
+window.registerDailyInlineDistanceEdits=registerDailyInlineDistanceEdits;
 
 function getTankSettingState(){
   return JSON.stringify({customer:String($("tankSettingCustomer")?.value||""),department:String($("tankSettingDepartment")?.value||""),chemical:String($("tankSettingChemical")?.value||""),name:String($("tankSettingName")?.value||""),capacity:String($("tankSettingCapacity")?.value||""),unit:String($("tankSettingCapacityUnit")?.value||"")});
@@ -2635,6 +2705,9 @@ function resetDeliveryForm(){
  clearDraft();
  editingHistoryRecord=null;
  editingHistoryIndex=-1;
+ window.__editingOrderOriginalVehicle="";
+ const vehicleEl=$("vehicleType");
+ if(vehicleEl){delete vehicleEl.dataset.directVehicleOriginal;delete vehicleEl.dataset.vehicleIntegrityOriginal;}
  $("saveBtn").textContent="計算登録";
  if($("inputCancelCard")) $("inputCancelCard").classList.remove("hidden");
  updateInputCancelVisibility();
@@ -3463,6 +3536,7 @@ let deliveryEditSaved=false;
 let calcFormSnapshot="";
 let deliveryRegistrationSnapshot="";
 let dailyReportSnapshot="";
+let dailyDistanceInputTouched=false;
 let tankSettingSnapshot="";
 /* ===== 履歴操作 ===== */
 function openHistoryModal(x){
@@ -3503,6 +3577,14 @@ function loadHistoryRecord(x){
  editingHistoryRecord=x;
  editingHistoryIndex=history.indexOf(x);
  if(editingHistoryIndex<0 && x.created!=null) editingHistoryIndex=history.findIndex(r=>r.created===x.created);
+ if(x&& (x.vehicleType==="4t"||x.vehicleType==="10t")){
+   const v=String(x.vehicleType);
+   const vehicleEl=$("vehicleType");
+   if(vehicleEl){vehicleEl.dataset.directVehicleOriginal=v;vehicleEl.dataset.vehicleIntegrityOriginal=v;}
+   window.__editingOrderOriginalVehicle=v;
+ } else {
+   window.__editingOrderOriginalVehicle="";
+ }
  $("dateDisplay").dataset.iso=x.date||isoToday();
  $("dateDisplay").value=$("dateDisplay").dataset.iso;
  updateInputDateText();
@@ -3512,6 +3594,7 @@ function loadHistoryRecord(x){
  $("department").value=x.department||"";
   $("plannedTime").value=x.plannedTime||"";
  $("vehicleType").value=(x.vehicleType==="4t"||x.vehicleType==="10t")?x.vehicleType:(localStorage.getItem("yakuhin_last_vehicle_type")||"10t");
+ $("vehicleType").dataset.vehicleIntegrityOriginal=$("vehicleType").value;
  setCalcEnabled(true);
  const idx=chemicals.findIndex(c=>c.name===x.chemical);
  $("chemical").value=idx>=0?String(idx):"";
@@ -4105,30 +4188,99 @@ function dailyDistanceValue(){
  return Number.isFinite(out)&&Number.isFinite(inn)&&inn>=out?inn-out:0;
 }
 function dailySecondaryVehicle(vehicle){return vehicle==="10t"?"4t":"10t";}
+function getDailyDeliveryVehicleTypes(iso){
+  const types=new Set();
+  dailyDeliveriesForDate(iso||isoToday()).forEach(x=>{
+    const v=String(x&&x.vehicleType||"").trim();
+    if(v==="4t"||v==="10t")types.add(v);
+  });
+  return types;
+}
+function getDailyVehicleMismatchInfo(vehicle,roleLabel,iso){
+  const v=(vehicle==="4t"||vehicle==="10t")?vehicle:"";
+  if(!v)return null;
+  const types=getDailyDeliveryVehicleTypes(iso||$("dailyReportDate")?.value||isoToday());
+  if(!types.size||types.has(v))return null;
+  return {
+    role:roleLabel||"車種",
+    selected:v,
+    actual:Array.from(types).join("・")
+  };
+}
+function alertDailyVehicleMismatch(vehicle,roleLabel){
+  const info=getDailyVehicleMismatchInfo(vehicle,roleLabel,$("dailyReportDate")?.value||isoToday());
+  if(!info)return false;
+  alert(
+    "車種確認\n\n"+
+    info.role+"で「"+info.selected+"」が選択されています。\n"+
+    "この日の配達実績は「"+info.actual+"」です。\n\n"+
+    "配達実績の車種と一致していません。\n"+
+    "注文登録時の車種が正しいか確認してください。"
+  );
+  return true;
+}
+window.alertDailyVehicleMismatch=alertDailyVehicleMismatch;
+function syncDailyVehicleConstraint(){
+  const calcVehicle=$("vehicleType")?.value;
+  const dailySel=$("dailyVehicleType");
+  if(!dailySel)return;
+  if(calcVehicle!=="4t"&&calcVehicle!=="10t"){
+    dailySel.disabled=false;
+    return;
+  }
+  const saved=getDailyReportRecord($("dailyReportDate")?.value||isoToday());
+  // 保存済みの日報は既存データを尊重する。未保存時は入力画面の車種を初期値にするが、
+  // 日報側では4t/10tを自由に選択できるようにする（不一致時は警告で知らせる）。
+  if(!saved)dailySel.value=calcVehicle;
+  dailySel.disabled=false;
+}
+function getDailySecondaryVehicleType(primaryVehicle){
+  const sel=$("dailySecondaryVehicleSelect");
+  const value=sel?.value;
+  if(value==="4t"||value==="10t")return value;
+  return dailySecondaryVehicle(primaryVehicle||$("dailyVehicleType")?.value||"4t");
+}
+function getDailySecondaryEntry(iso,primaryVehicle){
+  const r=getDailyReportRecord(iso);
+  if(!r)return null;
+  if(r.secondaryVehicle&&typeof r.secondaryVehicle==="object"&&!Array.isArray(r.secondaryVehicle))return r.secondaryVehicle;
+  const secondary=dailySecondaryVehicle(primaryVehicle||r.primaryVehicle||$("dailyVehicleType")?.value||"4t");
+  return r.vehicles&&r.vehicles[secondary]?r.vehicles[secondary]:null;
+}
 function dailyRunHasSecondary(){const b=$("dailyRunSecondaryBlock");return !!(b&&!b.classList.contains("hidden"));}
-function setDailySecondaryVisible(showIt,primaryVehicle){
-  const block=$("dailyRunSecondaryBlock"),btn=$("dailyChangeVehicleBtn"),label=$("dailySecondaryVehicle");
+function setDailySecondaryVisible(showIt,primaryVehicle,secondaryVehicle){
+  const block=$("dailyRunSecondaryBlock"),btn=$("dailyChangeVehicleBtn"),sel=$("dailySecondaryVehicleSelect");
   if(!block)return;
-  const secondary=dailySecondaryVehicle(primaryVehicle||$("dailyVehicleType")?.value||"4t");
-  if(label)label.textContent=secondary;
+  const secondary=(secondaryVehicle==="4t"||secondaryVehicle==="10t")?secondaryVehicle:dailySecondaryVehicle(primaryVehicle||$("dailyVehicleType")?.value||"4t");
+  if(sel)sel.value=secondary;
   block.classList.toggle("hidden",!showIt);
   if(btn){btn.disabled=false;btn.textContent=showIt?"乗換済み":"乗換";}
-  const sel=$("dailyVehicleType"); if(sel)sel.disabled=!!showIt;
+  const primarySel=$("dailyVehicleType"); if(primarySel)primarySel.disabled=!!showIt;
+  if(showIt){
+    // 乗換中は一次車種を変更できない。
+    primarySel.disabled=true;
+  } else {
+    syncDailyVehicleConstraint();
+  }
 }
 function dailySwitchVehicle(){
  const primary=$("dailyVehicleType")?.value||"4t";
- setDailySecondaryVisible(true,primary);
+ const currentSel=$("dailySecondaryVehicleSelect")?.value;
+ const secondary=(currentSel==="4t"||currentSel==="10t")?currentSel:dailySecondaryVehicle(primary);
+ setDailySecondaryVisible(true,primary,secondary);
+ alertDailyVehicleMismatch(secondary,"乗換後の車種");
  const secondOut=$("outOdometer2"); if(secondOut)secondOut.focus();
  updateDailyDistanceImmediate();
 }
 window.handleDailyVehicleSwitch=dailySwitchVehicle;
 function deleteDailySecondaryVehicle(){
- const primary=$("dailyVehicleType")?.value||"4t",secondary=dailySecondaryVehicle(primary);
+ const primary=$("dailyVehicleType")?.value||"4t",secondary=getDailySecondaryVehicleType(primary);
  if(!confirm("乗換後の"+secondary+"を削除しますか？"))return;
  const iso=$("dailyReportDate")?.value||isoToday();
  const record=getDailyReportRecord(iso);
- if(record&&record.vehicles&&typeof record.vehicles==="object"&&record.vehicles[secondary]){
-   delete record.vehicles[secondary];
+ if(record){
+   delete record.secondaryVehicle;
+   if(secondary!==primary && record.vehicles&&typeof record.vehicles==="object")delete record.vehicles[secondary];
    record.savedAt=new Date().toISOString();
    record.version=2;
    record.primaryVehicle=primary;
@@ -4142,7 +4294,6 @@ function deleteDailySecondaryVehicle(){
  setDailySecondaryVisible(false,primary);
  updateDailyDistanceImmediate();
  renderDailyReport();
- // 乗換後の車両を削除したら、日報画面を上端へ戻す
  window.scrollTo(0,0);
 }
 window.deleteDailySecondaryVehicle=deleteDailySecondaryVehicle;
@@ -4199,19 +4350,38 @@ function getDailyReportRecord(iso){
 function getDailyVehicleEntry(iso,vehicle){
  const r=getDailyReportRecord(iso);
  if(!r)return null;
+ if(r.primaryVehicle===vehicle&&r.vehicles&&r.vehicles[vehicle])return r.vehicles[vehicle];
+ if(r.secondaryVehicle&&r.secondaryVehicle.vehicleType===vehicle)return r.secondaryVehicle;
  return r.vehicles&&r.vehicles[vehicle]?r.vehicles[vehicle]:null;
 }
 function getDailyReportVehicles(iso){
  const r=getDailyReportRecord(iso);
- return r&&r.vehicles&&typeof r.vehicles==="object"?r.vehicles:{};
+ if(!r)return {};
+ const out={};
+ if(r.primaryVehicle&&r.vehicles&&r.vehicles[r.primaryVehicle])out[r.primaryVehicle]=r.vehicles[r.primaryVehicle];
+ if(r.secondaryVehicle&&typeof r.secondaryVehicle==="object")out[(r.secondaryVehicle.vehicleType||"10t")+"#2"]=r.secondaryVehicle;
+ else if(r.primaryVehicle){
+   const legacySecondary=dailySecondaryVehicle(r.primaryVehicle);
+   if(r.vehicles&&r.vehicles[legacySecondary])out[legacySecondary+"#2"]=r.vehicles[legacySecondary];
+ }
+ if(!r.primaryVehicle&&r.vehicles&&typeof r.vehicles==="object")return r.vehicles;
+ return out;
 }
 function getDailyCombinedStats(iso){
  const r=getDailyReportRecord(iso);
- const vehicles=getDailyReportVehicles(iso);
+ if(!r)return {distance:0,distanceCommission:0,count:dailyDeliveriesForDate(iso).length,countCommission:baseCountCommission(dailyDeliveriesForDate(iso).length),totalCommission:baseCountCommission(dailyDeliveriesForDate(iso).length),adjustment:0,hasCompleted:false};
+ const primaryVehicle=(r.primaryVehicle==="4t"||r.primaryVehicle==="10t")?r.primaryVehicle:(r.vehicles&&r.vehicles["4t"]?"4t":"10t");
+ const entries=[];
+ const primary=r.vehicles&&r.vehicles[primaryVehicle]?r.vehicles[primaryVehicle]:null;
+ if(primary)entries.push(primary);
+ if(r.secondaryVehicle&&typeof r.secondaryVehicle==="object")entries.push(r.secondaryVehicle);
+ else{
+   const legacySecondary=dailySecondaryVehicle(primaryVehicle);
+   if(r.vehicles&&r.vehicles[legacySecondary])entries.push(r.vehicles[legacySecondary]);
+ }
  let distance=0,distanceCommission=0,hasCompleted=false;
- ["4t","10t"].forEach(vehicle=>{
-   const x=vehicles[vehicle];
-   if(!x)return;
+ entries.forEach(x=>{
+   const vehicle=(x.vehicleType==="10t"||x.vehicleType==="4t")?x.vehicleType:primaryVehicle;
    const out=Number(x.outOdometer),inn=Number(x.inOdometer);
    const d=Number.isFinite(Number(x.distance))?Number(x.distance):(Number.isFinite(out)&&Number.isFinite(inn)&&inn>=out?inn-out:0);
    const rate=Number.isFinite(Number(x.distanceRate))?Number(x.distanceRate):Number((commissionRates[vehicle]||defaultCommissionRates()[vehicle]).distance);
@@ -4228,7 +4398,7 @@ function getDailyCombinedStats(iso){
 function updateDailyCalc(){
   const iso=$("dailyReportDate")?.value||isoToday();
   const vehicle=$("dailyVehicleType")?.value||"4t";
-  const secondary=dailySecondaryVehicle(vehicle);
+  const secondary=getDailySecondaryVehicleType(vehicle);
   const dist= dailyDistanceFromInputs("outOdometer","inOdometer");
   const dist2=dailyDistanceFromInputs("outOdometer2","inOdometer2");
   const distEl=$("dailyDistance"),distEl2=$("dailyDistance2");
@@ -4303,7 +4473,11 @@ function renderDailyList(){
    const stats=getDailyCombinedStats(iso);
    const r=getDailyReportRecord(iso);
    const vehicleLabels=[];
-   ["4t","10t"].forEach(v=>{if(r&&r.vehicles&&r.vehicles[v])vehicleLabels.push(v);});
+   const primaryForList=(r&&r.primaryVehicle==="4t"||r&&r.primaryVehicle==="10t")?r.primaryVehicle:"";
+   if(primaryForList)vehicleLabels.push(primaryForList);
+   if(r&&r.secondaryVehicle&&((r.secondaryVehicle.vehicleType==="4t")||(r.secondaryVehicle.vehicleType==="10t"))) vehicleLabels.push(r.secondaryVehicle.vehicleType);
+   else if(primaryForList){const legacySecondary=dailySecondaryVehicle(primaryForList);if(r&&r.vehicles&&r.vehicles[legacySecondary])vehicleLabels.push(legacySecondary);}
+   if(!vehicleLabels.length&&r&&r.vehicles){["4t","10t"].forEach(v=>{if(r.vehicles[v])vehicleLabels.push(v);});}
    const vehicleText=vehicleLabels.join(" / ")||"—";
    const work=r&&r.startTime&&r.endTime?calcDailyWorkDurationText(r.startTime,r.endTime):"—";
    const ot=r&&r.overtimeHours==null?"—":Number(r&&r.overtimeHours).toLocaleString("ja-JP")+"h";
@@ -4356,15 +4530,23 @@ function renderDailyReport(){
   const fallback=(currentVehicle==="4t"||currentVehicle==="10t")?currentVehicle:((lastVehicle==="4t"||lastVehicle==="10t")?lastVehicle:"4t");
   const existingPrimary=savedPrimary||((saved&&saved.vehicles&&saved.vehicles[fallback])?fallback:((saved&&saved.vehicles&&saved.vehicles["4t"])?"4t":"10t"));
   $("dailyVehicleType").value=existingPrimary;
+  if(saved){
+    $("dailyVehicleType").disabled=false;
+  }else{
+    syncDailyVehicleConstraint();
+  }
   const defaultStartTime="06:00",defaultEndTime="15:00";
-  const primarySaved=getDailyVehicleEntry(iso,existingPrimary),secondary=dailySecondaryVehicle(existingPrimary),secondarySaved=getDailyVehicleEntry(iso,secondary);
+  const primarySaved=getDailyVehicleEntry(iso,existingPrimary);
+  const savedSecondary=getDailySecondaryEntry(iso,existingPrimary);
+  const secondary=savedSecondary&&((savedSecondary.vehicleType==="4t")||(savedSecondary.vehicleType==="10t"))?savedSecondary.vehicleType:dailySecondaryVehicle(existingPrimary);
+  const secondarySaved=savedSecondary;
   $("dailyStartTime").value=(saved&&saved.startTime)||defaultStartTime;
   $("dailyEndTime").value=(saved&&saved.endTime)||defaultEndTime;
   $("dailyOvertime").value=(saved&&saved.overtimeHours!=null)?saved.overtimeHours:"";
   $("outOdometer").value=primarySaved&&primarySaved.outOdometer!=null?primarySaved.outOdometer:"";
   $("inOdometer").value=primarySaved&&primarySaved.inOdometer!=null?primarySaved.inOdometer:"";
   const showSecondary=!!secondarySaved;
-  setDailySecondaryVisible(showSecondary,existingPrimary);
+  setDailySecondaryVisible(showSecondary,existingPrimary,secondary);
   $("outOdometer2").value=secondarySaved&&secondarySaved.outOdometer!=null?secondarySaved.outOdometer:"";
   $("inOdometer2").value=secondarySaved&&secondarySaved.inOdometer!=null?secondarySaved.inOdometer:"";
   updateDailyWorkDuration();
@@ -4378,6 +4560,7 @@ function renderDailyReport(){
   $("dailyCommissionTotal").textContent=stats.totalCommission.toLocaleString("ja-JP")+"円";
   updateDailyReturnDependentSections();
   markDailyReportSnapshot();
+  resetDailyInlineDistanceActions();
 }
 function refreshDailyReportForDateChange(){
  const i=$("dailyReportDate");
@@ -4410,11 +4593,12 @@ function renderDailyDeliveryCards(rows){
    card.className="daily-delivery-card";
    const kg=Number(x.deliveryKg);
    const kgText=Number.isFinite(kg)?formatQuantity(kg)+" kg":"—";
+   const vehicleText=(x.vehicleType==="4t"||x.vehicleType==="10t")?x.vehicleType:"—";
    card.innerHTML="<div class='daily-delivery-card-main'>"+
      "<div class='daily-delivery-card-customer'>"+esc(x.customer||"")+"</div>"+
      "<div class='daily-delivery-card-chemical'>"+esc(x.chemical||"")+"</div>"+
      "</div>"+
-     "<div class='daily-delivery-card-meta'><span>"+kgText+"</span><span class='daily-delivery-chevron' aria-hidden='true'>›</span></div>";
+     "<div class='daily-delivery-card-meta'><span>"+esc(vehicleText)+"　"+kgText+"</span><span class='daily-delivery-chevron' aria-hidden='true'>›</span></div>";
    card.addEventListener("click",()=>openDailyDeliveryDetail(i));
    wrap.appendChild(card);
  });
@@ -4485,8 +4669,18 @@ window.deleteDailyReport=deleteDailyReport;
 ["dailyStartTime","dailyEndTime"].forEach(id=>{const el=$(id);if(el){el.addEventListener("input",updateDailyWorkDuration);el.addEventListener("change",updateDailyWorkDuration);}});
 if($("dailyOvertime")){$("dailyOvertime").addEventListener("change",()=>{const el=$("dailyOvertime");if(el.value!==""){let v=Number(el.value);if(!Number.isFinite(v))v=0;v=Math.round(v*2)/2;v=Math.max(0,Math.min(24,v));el.value=String(v);}});}
 if($("dailyCountAdjustment")){$("dailyCountAdjustment").addEventListener("input",updateCountAdjustmentInput);$("dailyCountAdjustment").addEventListener("change",updateCountAdjustmentInput);}
-function saveDailyReport(){
-  const iso=$("dailyReportDate").value||isoToday(),vehicle=$("dailyVehicleType").value||"4t",secondary=dailySecondaryVehicle(vehicle);
+function saveDailyReport(saveTarget){
+  const iso=$("dailyReportDate").value||isoToday(),vehicle=$("dailyVehicleType").value||"4t",secondary=getDailySecondaryVehicleType(vehicle);
+  const vehicleWarnings=[];
+  const primaryMismatch=getDailyVehicleMismatchInfo(vehicle,"車種",iso);
+  if(primaryMismatch)vehicleWarnings.push("車種「"+primaryMismatch.selected+"」は、この日の配達実績（"+primaryMismatch.actual+"）と一致していません。");
+  if(dailyRunHasSecondary()){
+    const secondaryMismatch=getDailyVehicleMismatchInfo(secondary,"乗換後の車種",iso);
+    if(secondaryMismatch)vehicleWarnings.push("乗換後の車種「"+secondaryMismatch.selected+"」は、この日の配達実績（"+secondaryMismatch.actual+"）と一致していません。");
+  }
+  if(vehicleWarnings.length){
+    alert("車種確認\n\n"+vehicleWarnings.join("\n")+"\n\n注文登録時の車種が正しいか確認してください。\n\nこのまま日報を保存することはできます。");
+  }
   const primaryOutRaw=String($("outOdometer").value||"").trim(),primaryInRaw=String($("inOdometer").value||"").trim();
   const primaryOut=primaryOutRaw===""?NaN:Number(primaryOutRaw),primaryIn=primaryInRaw===""?NaN:Number(primaryInRaw);
   if(!Number.isFinite(primaryOut)||primaryOut<0){alert("出庫kmを入力してください。");$("outOdometer").focus();return;}
@@ -4504,13 +4698,15 @@ function saveDailyReport(){
   const count=dailyDeliveriesForDate(iso).length;
   let record=getDailyReportRecord(iso);
   if(!record)record={date:iso,vehicles:{},startTime:"",endTime:"",overtimeHours:null,countAdjustment:0,savedAt:null,version:2};
-  const vehicles=record.vehicles&&typeof record.vehicles==="object"&&!Array.isArray(record.vehicles)?record.vehicles:{};
   const rate=commissionRates[vehicle]||defaultCommissionRates()[vehicle];
   const primaryComplete=Number.isFinite(primaryIn),primaryDist=primaryComplete?primaryIn-primaryOut:null;
-  vehicles[vehicle]={vehicleType:vehicle,outOdometer:primaryOut,inOdometer:primaryComplete?primaryIn:null,distance:primaryDist,distanceRate:Number(rate.distance),distanceCommission:primaryComplete?primaryDist*Number(rate.distance):0,savedAt:new Date().toISOString()};
+  const primaryEntry={vehicleType:vehicle,outOdometer:primaryOut,inOdometer:primaryComplete?primaryIn:null,distance:primaryDist,distanceRate:Number(rate.distance),distanceCommission:primaryComplete?primaryDist*Number(rate.distance):0,savedAt:new Date().toISOString()};
+  const vehicles={};
+  vehicles[vehicle]=primaryEntry;
+  record.secondaryVehicle=null;
   if(secondShown){
     const rate2=commissionRates[secondary]||defaultCommissionRates()[secondary],secondComplete=Number.isFinite(secondIn),secondDist=secondComplete?secondIn-secondOut:null;
-    vehicles[secondary]={vehicleType:secondary,outOdometer:secondOut,inOdometer:secondComplete?secondIn:null,distance:secondDist,distanceRate:Number(rate2.distance),distanceCommission:secondComplete?secondDist*Number(rate2.distance):0,savedAt:new Date().toISOString()};
+    record.secondaryVehicle={vehicleType:secondary,outOdometer:secondOut,inOdometer:secondComplete?secondIn:null,distance:secondDist,distanceRate:Number(rate2.distance),distanceCommission:secondComplete?secondDist*Number(rate2.distance):0,savedAt:new Date().toISOString()};
   }
   record.date=iso; record.version=2; record.vehicles=vehicles; record.primaryVehicle=vehicle;
   record.startTime=$("dailyStartTime").value||""; record.endTime=$("dailyEndTime").value||"";
@@ -4519,13 +4715,14 @@ function saveDailyReport(){
   record.savedAt=new Date().toISOString(); dailyReports[iso]=record; localStorage.setItem(KEY_DR,JSON.stringify(dailyReports));
   try{scheduleCloudSync();}catch(e){console.warn("日報のクラウド同期予約に失敗しました",e);}
   localStorage.setItem("yakuhin_last_vehicle_type",vehicle);
+  resetDailyInlineDistanceActions();
   if(primaryComplete || (secondShown&&Number.isFinite(secondIn))){
     // 保存後も入力データはそのまま残し、走行距離表示を最新の入力値へ更新してから画面位置だけ最上部へ戻す
     updateDailyDistanceImmediate();
     window.scrollTo({top:0,left:0,behavior:"auto"});
-    alert(secondShown?"4t・10tの日報を保存しました。":vehicle+"の日報を保存しました。");
+    alert(secondShown?(vehicle+" → "+secondary+" の日報を保存しました。"):(vehicle+"の日報を保存しました。"));
   }else{
-    alert(vehicle+"の出庫kmを保存しました。終了後帰庫kmを入力してください。");
+    alert((saveTarget==="secondary"?secondary:vehicle)+"の出庫kmを保存しました。終了後帰庫kmを入力してください。");
   }
 }
 function shiftWeeklyDate(delta){
@@ -4667,9 +4864,10 @@ function buildWeeklyPrintArea(){
          countCommissionText="回数歩合　"+Number(stats.countCommission||0).toLocaleString("ja-JP")+"円";
          const vehicleParts=[];
          const vehicles=typeof getDailyReportVehicles==="function" ? getDailyReportVehicles(date) : {};
-         ["4t","10t"].forEach(v=>{
-           const x=vehicles&&vehicles[v];
+         Object.keys(vehicles||{}).forEach(key=>{
+           const x=vehicles[key];
            if(!x)return;
+           const v=(x.vehicleType==="4t"||x.vehicleType==="10t")?x.vehicleType:String(key).replace(/#2$/,'');
            const rateBase=(typeof defaultCommissionRates==="function"?defaultCommissionRates():{})[v]||{distance:0};
            const savedRate=typeof commissionRates!=="undefined" ? commissionRates[v] : null;
            const rate=Number.isFinite(Number(x.distanceRate))?Number(x.distanceRate):Number((savedRate||rateBase).distance||0);
@@ -5320,7 +5518,93 @@ $("customer").oninput=()=>{
 };
 $("department").onfocus=updateDepartmentSuggestions;
 $("plannedTime").addEventListener("input",saveDraft);
-$("vehicleType").addEventListener("change",saveDraft);
+$("vehicleType").addEventListener("change",function(){
+  const el=this;
+  const validVehicle=v=>v==="4t"||v==="10t";
+  const idx=(typeof editingHistoryIndex!=="undefined")?Number(editingHistoryIndex):-1;
+  const originalVehicle=(validVehicle(window.__editingOrderOriginalVehicle)?window.__editingOrderOriginalVehicle:"");
+  const old=(typeof editingHistoryRecord!=="undefined"&&editingHistoryRecord)
+    ?editingHistoryRecord
+    :((idx>=0&&typeof history!=="undefined")?history[idx]:null);
+  const editingByButton=$("saveBtn")?.textContent==="修正";
+  const effectiveOldVehicle=validVehicle(originalVehicle)
+    ?originalVehicle
+    :(old&&validVehicle(old.vehicleType)?old.vehicleType:"");
+
+  // 新規入力では警告せず、そのまま下書きを保存する。
+  if(!editingByButton && !old && !effectiveOldVehicle){
+    saveDraft();
+    return;
+  }
+
+  const selected=String(el.value||"");
+  if(!validVehicle(selected)){
+    saveDraft();
+    return;
+  }
+  const previous=validVehicle(el.dataset.directVehicleOriginal)
+    ?el.dataset.directVehicleOriginal
+    :effectiveOldVehicle;
+  if(selected===previous){
+    saveDraft();
+    return;
+  }
+
+  const dateEl=$("inputDeliveryDate");
+  const dateDisplay=$("dateDisplay");
+  const dateValue=String(dateEl?.value||"");
+  const iso=/^\d{4}-\d{2}-\d{2}$/.test(dateValue)
+    ?dateValue
+    :String(dateDisplay?.dataset?.iso||dateDisplay?.value||"");
+
+  let dailyVehicles=new Set();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(iso)){
+    try{
+      const key=(typeof KEY_DR!=="undefined")?KEY_DR:"yakuhin_clean_daily_reports";
+      const raw=JSON.parse(localStorage.getItem(key)||"{}");
+      let rec=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw[iso]:null;
+      if(!rec&&raw&&typeof raw==="object"){
+        for(const k of Object.keys(raw)){
+          const candidate=raw[k];
+          if(candidate&&typeof candidate==="object"&&!Array.isArray(candidate)&&candidate.date===iso){rec=candidate;break;}
+        }
+      }
+      if(rec&&typeof rec==="object"){
+        if(validVehicle(rec.primaryVehicle))dailyVehicles.add(rec.primaryVehicle);
+        if(validVehicle(rec.vehicleType))dailyVehicles.add(rec.vehicleType);
+        if(rec.secondaryVehicle&&typeof rec.secondaryVehicle==="object"&&validVehicle(rec.secondaryVehicle.vehicleType))dailyVehicles.add(rec.secondaryVehicle.vehicleType);
+        if(rec.vehicles&&typeof rec.vehicles==="object"&&!Array.isArray(rec.vehicles)){
+          Object.keys(rec.vehicles).forEach(v=>{if(validVehicle(v))dailyVehicles.add(v);});
+          Object.values(rec.vehicles).forEach(v=>{if(v&&typeof v==="object"&&validVehicle(v.vehicleType))dailyVehicles.add(v.vehicleType);});
+        }
+      }
+    }catch(e){console.warn("注文車種変更時の日報確認に失敗しました",e);}
+  }
+
+  if(dailyVehicles.size&&!dailyVehicles.has(selected)){
+    const actual=Array.from(dailyVehicles).sort().join("・");
+    const ok=confirm(
+      "⚠ 車種変更の確認\n\n"+
+      "この納品日の運転日報は「"+actual+"」で登録されています。\n"+
+      "注文車種を「"+selected+"」へ変更すると、日報と車種が一致しなくなります。\n\n"+
+      "注文車種を「"+selected+"」へ変更しますか？"
+    );
+    if(!ok){
+      el.value=previous;
+      el.dataset.directVehicleOriginal=previous;
+      el.dataset.vehicleIntegrityOriginal=previous;
+      window.__editingOrderOriginalVehicle=previous;
+      saveDraft();
+      return;
+    }
+  }
+
+  el.dataset.directVehicleOriginal=selected;
+  el.dataset.vehicleIntegrityOriginal=selected;
+  if(editingByButton||old)window.__editingOrderOriginalVehicle=selected;
+  saveDraft();
+});
+window.__directOrderVehicleIntegrityGuard=true;
 $("department").oninput=()=>{
  const name=$("customer").value.trim();
  const q=$("department").value.trim().toLowerCase();
@@ -5763,8 +6047,27 @@ document.addEventListener("DOMContentLoaded",function(){
       if(typeof window.refreshDailyReportForDateChange==="function") window.refreshDailyReportForDateChange();
     });
   }
-  document.getElementById("dailyVehicleType").addEventListener("change",function(){ localStorage.setItem("yakuhin_last_vehicle_type",this.value); renderDailyReport(); });
-  ["outOdometer","inOdometer","outOdometer2","inOdometer2"].forEach(function(id){var el=document.getElementById(id);if(el){el.addEventListener("input",updateDailyDistanceImmediate);el.addEventListener("change",updateDailyDistanceImmediate);el.addEventListener("blur",updateDailyDistanceImmediate);}});
+  const dailyVehicleTypeSelect=document.getElementById("dailyVehicleType");
+  if(dailyVehicleTypeSelect){
+    // 車種変更の保存・再計算だけを担当。警告は下の捕捉リスナーで一元処理する。
+    dailyVehicleTypeSelect.onchange=function(){
+      localStorage.setItem("yakuhin_last_vehicle_type",this.value);
+      updateDailyCalc();
+    };
+  }
+  const dailySecondaryVehicleSelect=document.getElementById("dailySecondaryVehicleSelect");
+  if(dailySecondaryVehicleSelect){
+    // 乗換後車種の再計算だけを担当。警告は下の捕捉リスナーで一元処理する。
+    dailySecondaryVehicleSelect.onchange=function(){
+      updateDailyCalc();
+    };
+  }
+  ["outOdometer","inOdometer","outOdometer2","inOdometer2"].forEach(function(id){var el=document.getElementById(id);if(el){el.addEventListener("input",function(){if(window.dailyDistanceInputChanged)window.dailyDistanceInputChanged();});el.addEventListener("change",function(){if(window.dailyDistanceInputChanged)window.dailyDistanceInputChanged();});el.addEventListener("blur",function(){if(window.updateDailyDistanceImmediate)window.updateDailyDistanceImmediate();if(window.updateDailyInlineDistanceActions)window.updateDailyInlineDistanceActions();});}});
+  const dailyInlineDistanceCancelBtn=document.getElementById("dailyInlineDistanceCancelBtn");
+  const dailyInlineDistanceRegisterBtn=document.getElementById("dailyInlineDistanceRegisterBtn");
+  if(dailyInlineDistanceCancelBtn)dailyInlineDistanceCancelBtn.onclick=function(){if(window.cancelDailyInlineDistanceEdits)window.cancelDailyInlineDistanceEdits();};
+  if(dailyInlineDistanceRegisterBtn)dailyInlineDistanceRegisterBtn.onclick=function(){if(window.registerDailyInlineDistanceEdits)window.registerDailyInlineDistanceEdits();};
+  if(window.updateDailyInlineDistanceActions)window.updateDailyInlineDistanceActions();
   document.getElementById("dailyChangeVehicleBtn").addEventListener("click",function(){
     if(typeof window.handleDailyVehicleSwitch==="function") window.handleDailyVehicleSwitch();
   });
@@ -5774,6 +6077,119 @@ document.addEventListener("DOMContentLoaded",function(){
   document.getElementById("commissionModal").addEventListener("click",function(e){if(e.target===document.getElementById("commissionModal"))closeCommissionModal();});
   document.getElementById("dailyDeliveryDetailModal").addEventListener("click",function(e){if(e.target===document.getElementById("dailyDeliveryDetailModal"))closeDailyDeliveryDetail();});
 });
+
+// 注文修正時：保存済み運転日報との車種不一致を、車種変更時点で確認する。
+// 新規入力の車種選択には干渉せず、既存注文の修正時だけ確認する。
+function getOrderVehicleDailyTypes(iso){
+  const out=new Set();
+  if(!iso)return out;
+  try{
+    // 注文修正時の整合性確認は「保存済みの運転日報」を基準にする。
+    // 配達履歴は注文車種そのものなので、ここへ混ぜると
+    // 注文を誤って変更した結果まで「実績あり」と判定してしまうため参照しない。
+    const raw=JSON.parse(localStorage.getItem(KEY_DR)||"{}");
+    const r=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw[iso]:null;
+    if(r&&typeof r==="object"&&!Array.isArray(r)){
+      if(r.primaryVehicle==="4t"||r.primaryVehicle==="10t")out.add(r.primaryVehicle);
+      if(r.vehicleType==="4t"||r.vehicleType==="10t")out.add(r.vehicleType);
+      if(r.secondaryVehicle&&typeof r.secondaryVehicle==="object"&&
+         (r.secondaryVehicle.vehicleType==="4t"||r.secondaryVehicle.vehicleType==="10t")){
+        out.add(r.secondaryVehicle.vehicleType);
+      }
+      if(r.vehicles&&typeof r.vehicles==="object"&&!Array.isArray(r.vehicles)){
+        Object.keys(r.vehicles).forEach(v=>{if(v==="4t"||v==="10t")out.add(v);});
+        Object.values(r.vehicles).forEach(v=>{
+          if(v&&typeof v==="object"&&(v.vehicleType==="4t"||v.vehicleType==="10t"))out.add(v.vehicleType);
+        });
+      }
+    }
+    // 保存済み日報が古い形式の場合も、その日報だけから取得する。
+    if(!out.size && typeof dailyReports!=="undefined"&&dailyReports[iso]){
+      const r2=dailyReports[iso];
+      if(r2&&typeof r2==="object"){
+        if(r2.vehicleType==="4t"||r2.vehicleType==="10t")out.add(r2.vehicleType);
+        if(r2.primaryVehicle==="4t"||r2.primaryVehicle==="10t")out.add(r2.primaryVehicle);
+        if(r2.secondaryVehicle&&typeof r2.secondaryVehicle==="object"&&
+           (r2.secondaryVehicle.vehicleType==="4t"||r2.secondaryVehicle.vehicleType==="10t"))out.add(r2.secondaryVehicle.vehicleType);
+        if(r2.vehicles&&typeof r2.vehicles==="object")Object.keys(r2.vehicles).forEach(v=>{if(v==="4t"||v==="10t")out.add(v);});
+      }
+    }
+  }catch(e){console.warn("注文車種整合性確認用の日報取得に失敗しました",e);}
+  return out;
+}
+function getOrderVehicleCheckDate(){
+  const deliveryDate=$("inputDeliveryDate")?.value||"";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate))return deliveryDate;
+  const dateDisplay=$("dateDisplay");
+  const v=dateDisplay?.dataset?.iso||dateDisplay?.value||"";
+  return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:(typeof isoToday==="function"?isoToday():"");
+}
+function handleOrderVehicleChangeForIntegrity(el){
+  if(!el||el.id!=="vehicleType")return true;
+  const idx=(typeof editingHistoryIndex!=="undefined")?Number(editingHistoryIndex):-1;
+  const old=(typeof editingHistoryRecord!=="undefined"&&editingHistoryRecord)
+    ?editingHistoryRecord
+    :((idx>=0&&typeof history!=="undefined")?history[idx]:null);
+  if(!old)return true; // 新規入力時は対象外
+  const oldVehicle=(old.vehicleType==="4t"||old.vehicleType==="10t")?old.vehicleType:"";
+  if(!oldVehicle)return true;
+  const selected=String(el.value||"");
+  if(selected!=="4t"&&selected!=="10t")return true;
+  const previous=(el.dataset.vehicleIntegrityOriginal==="4t"||el.dataset.vehicleIntegrityOriginal==="10t")
+    ?el.dataset.vehicleIntegrityOriginal:oldVehicle;
+  if(selected===previous)return true;
+
+  const iso=getOrderVehicleCheckDate();
+  const types=getOrderVehicleDailyTypes(iso);
+  if(types.size&&!types.has(selected)){
+    const actual=Array.from(types).sort().join("・");
+    const ok=window.confirm(
+      "車種変更の確認\n\n"+
+      "この納品日の運転日報は「"+actual+"」で登録されています。\n"+
+      "注文車種を「"+selected+"」へ変更すると、運転日報と車種が一致しなくなります。\n\n"+
+      "車種を「"+selected+"」へ変更しますか？"
+    );
+    if(!ok){
+      el.value=previous;
+      try{saveDraft();}catch(e){}
+      return false;
+    }
+  }
+  el.dataset.vehicleIntegrityOriginal=selected;
+  return true;
+}
+function initOrderVehicleIntegrityGuard(){
+  if(window.__directOrderVehicleIntegrityGuard)return;
+  const el=$("vehicleType");
+  if(!el)return;
+  const handler=function(e){
+    if(!handleOrderVehicleChangeForIntegrity(el)){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  };
+  // selectの変更時は要素自身のハンドラで確実に確認する。
+  // 既存のsaveDraft等のイベントとは独立して動作させる。
+  el.onchange=handler;
+  el.oninput=handler;
+  if(editingHistoryRecord&&
+     (editingHistoryRecord.vehicleType==="4t"||editingHistoryRecord.vehicleType==="10t")){
+    el.dataset.vehicleIntegrityOriginal=editingHistoryRecord.vehicleType;
+  }else if(el.value==="4t"||el.value==="10t"){
+    delete el.dataset.vehicleIntegrityOriginal;
+  }
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initOrderVehicleIntegrityGuard);
+else initOrderVehicleIntegrityGuard();
+
+// 車種選択時の警告を捕捉フェーズで監視する。
+// 個別要素のイベント処理に影響されず、4t/10tの選択直後に必ず照合する。
+document.addEventListener("change",function(e){
+  const t=e.target;
+  if(!t||t.id!=="dailyVehicleType"&&t.id!=="dailySecondaryVehicleSelect")return;
+  const role=t.id==="dailySecondaryVehicleSelect"?"乗換後の車種":"車種";
+  try{alertDailyVehicleMismatch(t.value,role);}catch(err){console.warn("車種警告の表示に失敗しました",err);}
+},true);
 
 
 
@@ -5785,6 +6201,7 @@ function restoreLastVehicleType(){
 }
 $("vehicleType").addEventListener("change",()=>{
   localStorage.setItem("yakuhin_last_vehicle_type",$("vehicleType").value);
+  try{syncDailyVehicleConstraint();}catch(e){}
 });
 restoreLastVehicleType();
 </script>
@@ -6637,3 +7054,159 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
   }
 }
 </style>
+
+<script id="order-vehicle-integrity-guard-runtime">
+(function(){
+  "use strict";
+  if(window.__orderVehicleIntegrityRuntimeGuard)return;
+  window.__orderVehicleIntegrityRuntimeGuard=true;
+
+  function validVehicle(v){return v==="4t"||v==="10t";}
+
+  function getCheckDate(){
+    const d=document.getElementById("inputDeliveryDate");
+    const dv=d&&String(d.value||"");
+    if(/^\d{4}-\d{2}-\d{2}$/.test(dv))return dv;
+    const dd=document.getElementById("dateDisplay");
+    const v=dd&&String(dd.dataset.iso||dd.value||"");
+    return /^\d{4}-\d{2}-\d{2}$/.test(v)?v:"";
+  }
+
+  function getSavedDailyVehicles(iso){
+    const out=new Set();
+    if(!iso)return out;
+    try{
+      let raw=null;
+      const key=(typeof KEY_DR!=="undefined")?KEY_DR:"yakuhin_clean_daily_reports";
+      raw=JSON.parse(localStorage.getItem(key)||"{}");
+      if(!raw||typeof raw!=="object"||Array.isArray(raw))raw={};
+
+      const candidates=[];
+      if(raw[iso])candidates.push(raw[iso]);
+      Object.keys(raw).forEach(k=>{
+        const r=raw[k];
+        if(r&&typeof r==="object"&&!Array.isArray(r)&&r.date===iso&&r!==raw[iso])candidates.push(r);
+      });
+
+      candidates.forEach(r=>{
+        if(validVehicle(r.primaryVehicle))out.add(r.primaryVehicle);
+        if(validVehicle(r.vehicleType))out.add(r.vehicleType);
+        if(r.secondaryVehicle&&typeof r.secondaryVehicle==="object"&&validVehicle(r.secondaryVehicle.vehicleType))out.add(r.secondaryVehicle.vehicleType);
+        if(r.vehicles&&typeof r.vehicles==="object"&&!Array.isArray(r.vehicles)){
+          Object.keys(r.vehicles).forEach(v=>{if(validVehicle(v))out.add(v);});
+          Object.values(r.vehicles).forEach(v=>{if(v&&typeof v==="object"&&validVehicle(v.vehicleType))out.add(v.vehicleType);});
+        }
+      });
+    }catch(e){console.warn("注文車種整合性チェック（日報取得）に失敗しました",e);}
+    return out;
+  }
+
+  function getOriginalOrderVehicle(){
+    try{
+      if(typeof editingHistoryRecord!=="undefined"&&editingHistoryRecord&&validVehicle(editingHistoryRecord.vehicleType))return editingHistoryRecord.vehicleType;
+      if(typeof editingHistoryIndex!=="undefined"&&Number(editingHistoryIndex)>=0&&typeof history!=="undefined"){
+        const h=history[Number(editingHistoryIndex)];
+        if(h&&validVehicle(h.vehicleType))return h.vehicleType;
+      }
+    }catch(e){}
+    return "";
+  }
+
+  function isEditingExistingOrder(){
+    try{return typeof editingHistoryIndex!=="undefined"&&Number(editingHistoryIndex)>=0&&!!(typeof editingHistoryRecord!=="undefined"&&editingHistoryRecord);}catch(e){return false;}
+  }
+
+  function checkVehicleChange(el){
+    if(!el||el.id!=="vehicleType"||!isEditingExistingOrder())return true;
+    const selected=String(el.value||"");
+    if(!validVehicle(selected))return true;
+
+    const previous=(el.dataset.integrityOriginalVehicle==="4t"||el.dataset.integrityOriginalVehicle==="10t")
+      ?el.dataset.integrityOriginalVehicle:getOriginalOrderVehicle();
+    if(!validVehicle(previous) || selected===previous)return true;
+
+    const iso=getCheckDate();
+    const dailyVehicles=getSavedDailyVehicles(iso);
+    if(!dailyVehicles.size || dailyVehicles.has(selected)){
+      el.dataset.integrityOriginalVehicle=selected;
+      return true;
+    }
+
+    const actual=Array.from(dailyVehicles).sort().join("・");
+    const ok=window.confirm(
+      "⚠ 車種変更の確認\n\n"+
+      "この納品日の運転日報は「"+actual+"」で登録されています。\n"+
+      "注文の車種を「"+selected+"」へ変更すると、日報と車種が一致しなくなります。\n\n"+
+      "注文の車種を「"+selected+"」へ変更しますか？"
+    );
+    if(!ok){
+      el.value=previous;
+      el.dataset.integrityOriginalVehicle=previous;
+      try{if(typeof saveDraft==="function")saveDraft();}catch(e){}
+      return false;
+    }
+
+    el.dataset.integrityOriginalVehicle=selected;
+    return true;
+  }
+
+  function syncOriginalFromCurrentOrder(){
+    const el=document.getElementById("vehicleType");
+    const v=getOriginalOrderVehicle();
+    if(el&&validVehicle(v))el.dataset.integrityOriginalVehicle=v;
+  }
+
+  document.addEventListener("change",function(e){
+    const el=e.target;
+    if(!el||el.id!=="vehicleType")return;
+    checkVehicleChange(el);
+  },true);
+
+  document.addEventListener("input",function(e){
+    const el=e.target;
+    if(!el||el.id!=="vehicleType")return;
+    checkVehicleChange(el);
+  },true);
+
+  function watchEditState(){
+    const el=document.getElementById("vehicleType");
+    if(!el)return;
+    syncOriginalFromCurrentOrder();
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",watchEditState);
+  else watchEditState();
+
+  window.orderVehicleIntegrityCheck=checkVehicleChange;
+})();
+</script>
+
+
+<script id="daily-inline-distance-final-click-bind">
+(function(){
+  function bind(){
+    var pairs=[
+      ["dailyInlineDistanceCancelBtn","dailyInlineDistanceRegisterBtn"],
+      ["dailyInlineDistanceCancelBtn2","dailyInlineDistanceRegisterBtn2"]
+    ];
+    pairs.forEach(function(ids){
+      var cancel=document.getElementById(ids[0]);
+      var register=document.getElementById(ids[1]);
+      if(cancel){
+        cancel.onclick=function(){
+          if(typeof window.cancelDailyInlineDistanceEdits==="function") window.cancelDailyInlineDistanceEdits();
+          return false;
+        };
+      }
+      if(register){
+        register.onclick=function(){
+          if(typeof window.registerDailyInlineDistanceEdits==="function") window.registerDailyInlineDistanceEdits(ids[0].endsWith("2")?"secondary":"primary");
+          else if(typeof window.saveDailyReport==="function") window.saveDailyReport();
+          return false;
+        };
+      }
+    });
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind);else bind();
+})();
+</script>
