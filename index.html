@@ -6395,6 +6395,54 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 /* 試作：納品データの「タンク」を「タンク容量」と同じ13pxに合わせる */
 #deliveryViewTankSelectWrap label{font-size:13px !important;}
 </style>
+
+
+<script id="daily-date-change-final-refresh-fix">
+/* 運転日報：一覧から開いた後も、左右ボタン・カレンダーの日付変更を確実に画面へ反映 */
+(function(){
+  function refreshDailyReportScreen(){
+    const input=document.getElementById("dailyReportDate");
+    if(!input)return;
+    const iso=/^\d{4}-\d{2}-\d{2}$/.test(input.value)?input.value:(typeof isoToday==="function"?isoToday():"");
+    if(!iso)return;
+    input.value=iso;
+    try{if(typeof showDailyDetailView==="function")showDailyDetailView();}catch(e){}
+    try{if(typeof renderDailyReport==="function")renderDailyReport();}catch(e){}
+    try{if(typeof updateDailyCalc==="function")updateDailyCalc();}catch(e){}
+    try{if(typeof updateDailyReturnDependentSections==="function")updateDailyReturnDependentSections();}catch(e){}
+    try{if(typeof window.syncDailyReportDateLabel==="function")window.syncDailyReportDateLabel();}catch(e){}
+    window.scrollTo({top:0,left:0,behavior:"auto"});
+  }
+
+  /* 左右ボタン：日付変更→日報全体を再描画 */
+  window.goDailyDate=function(delta){
+    const input=document.getElementById("dailyReportDate");
+    if(!input)return;
+    const base=/^\d{4}-\d{2}-\d{2}$/.test(input.value)?input.value:(typeof isoToday==="function"?isoToday():"");
+    if(!base)return;
+    const next=typeof dailyDateShift==="function"?dailyDateShift(base,Number(delta)||0):base;
+    input.value=next;
+    refreshDailyReportScreen();
+  };
+
+  /* カレンダー選択：既存処理に加えて、イベント完了後にも再描画を確実に行う */
+  window.refreshDailyReportForDateChange=function(){
+    refreshDailyReportScreen();
+  };
+
+  document.addEventListener("change",function(e){
+    if(e.target&&e.target.id==="dailyReportDate"){
+      setTimeout(refreshDailyReportScreen,0);
+    }
+  },true);
+
+  window.addEventListener("load",function(){
+    if(document.getElementById("dailyPage")&&!document.getElementById("dailyPage").classList.contains("hidden")){
+      refreshDailyReportScreen();
+    }
+  });
+})();
+</script>
 </html>
 
 <style id="daily-worktime-spacing-background">
