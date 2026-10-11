@@ -1490,6 +1490,35 @@ nav button{height:45px !important;}
 }
 </style>
 
+
+<style id="result-warning-inline-after-chemical">
+/* 入力画面：譲受書必須の注意を薬品名の後ろに、薬品名より4px小さい文字で表示 */
+#resultMain #resultName,
+#resultMain #resultWarning{
+  display:inline !important;
+  vertical-align:baseline !important;
+}
+#resultMain #resultName{
+  margin-top:0 !important;
+}
+#resultMain #resultWarning{
+  margin:0 0 0 5px !important;
+  font-size:20px !important;
+  line-height:1.25 !important;
+}
+</style>
+<style id="temporary-hide-result-warning">
+/* 確認用：入力画面の結果カードだけ「※譲受書必須」を一時的に非表示 */
+#resultMain #resultWarning{display:none !important;}
+</style>
+<style id="center-result-chemical-name">
+/* 入力画面：結果カードの薬品名を中央揃えにする（計算・警告表示には影響させない） */
+#resultMain #resultName{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -1562,7 +1591,7 @@ nav button{height:45px !important;}
 </div>
 
 <div id="resultCard" class="card" style="display:none">
-<div id="resultMain" class="resultmain"><small>入力計算結果</small><strong id="resultName" style="display:block;font-weight:700">—</strong><strong id="resultWarning" style="display:block;margin-top:4px;font-weight:700"></strong></div>
+<div id="resultMain" class="resultmain"><strong id="resultName" style="display:block;font-weight:700">—</strong><strong id="resultWarning" style="display:block;margin-top:4px;font-weight:700"></strong></div>
 <div class="results">
 <div class="box"><small>重量</small><strong id="kg">0.00 kg</strong></div>
 <div class="box"><small>容量</small><strong id="liters">0.00 L</strong></div>
