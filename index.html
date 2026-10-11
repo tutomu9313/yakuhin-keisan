@@ -767,7 +767,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   #weeklyPrintArea td.center{text-align:center !important}
   /* 祝日名は日付の次の行に重ねて表示し、行の高さを変えない */
   #weeklyPrintArea td.weekly-print-date{white-space:normal !important;line-height:1.08 !important;position:relative !important}
-  #weeklyPrintArea .weekly-print-holiday-name{position:absolute !important;left:0 !important;right:0 !important;top:50% !important;transform:translateY(-50%) !important;display:block !important;font-size:6pt !important;font-weight:700 !important;line-height:1 !important;margin:0 !important;white-space:normal !important}
+  #weeklyPrintArea .weekly-print-holiday-name{position:absolute !important;left:0 !important;right:0 !important;top:50% !important;transform:translateY(-50%) !important;display:block !important;font-size:8pt !important;font-weight:700 !important;color:#111 !important;line-height:1 !important;margin:0 !important;white-space:normal !important}
   #weeklyPrintArea td.weekly-print-distance{font-size:7.5pt !important;line-height:1.08 !important;white-space:nowrap !important;text-align:left !important;vertical-align:middle !important}
   #weeklyPrintArea .weekly-print-distance-line{display:grid !important;grid-template-columns:2.2em minmax(0,1fr) !important;align-items:baseline !important;height:1em !important}
   #weeklyPrintArea .weekly-print-distance-vehicle{display:block !important;width:2.2em !important}
@@ -5225,14 +5225,20 @@ function getWeeklyReportRange(){
 }
 function getWeeklyReportRows(){
  const {from,to}=getWeeklyReportRange();
- const orderRows=(history||[]).filter(x=>x&&x.date>=from&&x.date<=to).map(order=>({
+ // 納品済みは実際の納品日、未納品の注文は注文時に指定した納品日を基準に週内抽出する。
+ // 入力日（order.date）を使うと、一覧と印刷で日付がずれるため使用しない。
+ const orderRows=(history||[]).filter(x=>!!x).map(order=>({
    order,
    delivery:findLinkedDelivery(order)
- }));
+ })).filter(r=>{
+   const reportDate=r.delivery?.date||r.order?.deliveryDate||r.order?.date||"";
+   return reportDate>=from&&reportDate<=to;
+ });
  const linked=new Set(orderRows.map(r=>r.delivery).filter(Boolean));
  const deliveryOnly=(deliveryHistory||[]).filter(x=>x&&x.date>=from&&x.date<=to&&!linked.has(x)).map(delivery=>({order:null,delivery}));
  return orderRows.concat(deliveryOnly).sort((a,b)=>{
-   const ad=a.delivery?.date||a.order?.date||"",bd=b.delivery?.date||b.order?.date||"";
+   const ad=a.delivery?.date||a.order?.deliveryDate||a.order?.date||"";
+   const bd=b.delivery?.date||b.order?.deliveryDate||b.order?.date||"";
    if(ad!==bd)return String(ad).localeCompare(String(bd));
    const at=a.order?.plannedTime||a.order?.time||a.delivery?.plannedTime||a.delivery?.time||"99:99";
    const bt=b.order?.plannedTime||b.order?.time||b.delivery?.plannedTime||b.delivery?.time||"99:99";
@@ -5458,7 +5464,8 @@ function buildWeeklyPrintArea(){
  // 日付ごとに「注文・納品データ」と「運転日報」を独立して5行枠へ配置する。
  const grouped=new Map();
  rows.forEach(r=>{
-   const date=r.delivery?.date||r.order?.date||"";
+   // 印刷日付は画面一覧と同じく納品日を優先。未納品注文は注文の納品予定日を使う。
+   const date=r.delivery?.date||r.order?.deliveryDate||r.order?.date||"";
    if(!grouped.has(date))grouped.set(date,[]);
    grouped.get(date).push(r);
  });
@@ -5516,9 +5523,13 @@ function buildWeeklyPrintArea(){
        html+='<td class="weekly-print-distance">'+distanceCell+'</td>';
        html+='</tr>';
      }
-     // 祝日だけ／休暇だけの空欄5行ブロックには、勤務時間・日計の行を追加しない。
-     // 配達データがある日は、実データの表示・日計を従来どおり維持する。
-     if(dayRows.length===0&&(!dailyReport||isLeaveDay))return;
+     // 祝日だけ／休暇だけの日は、5行の空欄ブロックに続けて
+     // 「勤務時間・日計」相当の空欄行も表示し、1日あたり6行に揃える。
+     // 実際の配達データがある日は、実データの表示・日計を従来どおり維持する。
+     if(dayRows.length===0&&(!dailyReport||isLeaveDay)){
+       html+='<tr class="subtotal weekly-print-empty-subtotal"><td colspan="7" class="worktime"></td><td class="center"></td><td class="num"></td><td></td></tr>';
+       return;
+     }
      const startTime=dailyReport&&dailyReport.startTime?String(dailyReport.startTime):"";
      const endTime=dailyReport&&dailyReport.endTime?String(dailyReport.endTime):"";
      const workTimeText=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(startTime&&endTime?"勤務時間　"+startTime+" ～ "+endTime:"勤務時間　—");
