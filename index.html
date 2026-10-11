@@ -1519,6 +1519,58 @@ nav button{height:45px !important;}
   text-align:center !important;
 }
 </style>
+
+<style id="history-summary-card-compact-height">
+/* 配車履歴：集計カードの高さを文字サイズに合わせて、よりコンパクトに調整 */
+#historyPage .history-summary .box{
+  min-height:32px !important;
+  padding:2px 5px !important;
+  align-items:center !important;
+}
+#historyPage .history-summary-card{
+  padding-top:4px !important;
+  padding-bottom:4px !important;
+}
+#historyPage .history-summary{
+  gap:6px !important;
+}
+</style>
+
+<style id="history-date-card-compact-balance">
+/* 配車履歴：日付カードを集計カードに合う高さへ整える（表示のみ） */
+#historyPage #historyDetailView > .card:first-child{
+  padding:6px 10px !important;
+  margin-bottom:8px !important;
+}
+#historyPage .history-date-nav{
+  grid-template-columns:36px minmax(0,1fr) 36px !important;
+  gap:6px !important;
+  align-items:center !important;
+}
+#historyPage .history-date-nav > button:not(.date-display-button){
+  height:36px !important;
+  min-height:36px !important;
+  margin:0 !important;
+  font-size:18px !important;
+}
+#historyPage .history-date-nav > .date-display-button{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:0 !important;
+  font-size:17px !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+}
+#historyPage #historyDate{
+  left:42px !important;
+  width:calc(100% - 84px) !important;
+  height:36px !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -1621,8 +1673,8 @@ nav button{height:45px !important;}
    </div>
   </div>
   <div class="card history-summary-card"><div class="summary history-summary">
-  <div class="box"><small>注文件数</small><strong id="count">0</strong><small>件</small></div>
-  <div class="box"><small>合計注文重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
+  <div class="box"><small>件数</small><strong id="count">0</strong><small>件</small></div>
+  <div class="box"><small>合計重量</small><strong id="totalKg">0.00</strong><small>kg</small></div>
   </div></div>
   <div class="card" id="historyList"></div>
  </div>
@@ -2116,7 +2168,7 @@ nav button{height:45px !important;}
 </div>
 <nav>
 <button id="navCalc" type="button" onclick="window.show('calc')">入力</button>
-<button id="navHistory" type="button" onclick="window.show('history')">注文履歴</button>
+<button id="navHistory" type="button" onclick="window.show('history')">配車履歴</button>
 <button id="navDeliveryHistory" type="button" onclick="window.show('deliveryHistory')">納品履歴</button>
 <button id="navDaily" type="button" onclick="window.show('daily')">運転日報</button>
 <button id="navWeekly" type="button" onclick="window.show('weekly')">週間日報</button>
@@ -5109,7 +5161,7 @@ function renderHistoryWeeklyList(){
 function updateHistoryViewToggle(){
  const b=$("historyViewToggleBtn"); if(!b)return;
  const listHidden=$("historyWeeklyListView")?.classList.contains("hidden");
- b.textContent=listHidden?"一覧を見る":"注文履歴詳細";
+ b.textContent=listHidden?"一覧を見る":"配車履歴詳細";
 }
 function showHistoryDetailView(){
  const d=$("historyDetailView"),l=$("historyWeeklyListView"); if(d)d.classList.remove("hidden"); if(l)l.classList.add("hidden"); updateHistoryViewToggle(); renderHistory();
@@ -5232,7 +5284,7 @@ function show(page){
 
   const titles={
     calc:"薬品配達・容量計算",
-    history:"注文履歴",
+    history:"配車履歴",
     delivery:"納品登録",
     deliveryHistory:"納品履歴",
     daily:"運転日報",
