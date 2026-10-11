@@ -43,7 +43,7 @@ nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:1
 .history-weekly-table tr[data-order-index]{cursor:pointer}
 .history-weekly-table tr[data-order-index]:active{opacity:.65}
 .history-weekly-status{display:block;font-size:12px;font-weight:700;margin-top:4px}
-.history-weekly-status.delivered{color:#34c759}
+.history-weekly-status.delivered{color:#007aff}
 .history-weekly-status.undelivered{color:#ff3b30}
 .history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:20px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:700;}
 .daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:12px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
@@ -1455,6 +1455,41 @@ nav button{height:45px !important;}
 }
 </style>
 
+
+<style id="calc-result-dialog-button-colors">
+/* 入力計算結果：読込むボタンを紫色に変更。納品登録ボタンは通常時青色、登録済みなら従来どおり灰色。 */
+#calcResultActions #calcResultLoad{background:#5856D6 !important;color:#fff !important;}
+</style>
+
+
+<style id="density-inline-label-display">
+/* 入力画面：比重の数値の前に「比重」ラベルを表示（計算機能は変更しない） */
+#calcPage .chemical-input-row{
+  grid-template-columns:45px minmax(0,1fr) 90px !important;
+}
+#calcPage .chemical-input-row .density-input-group{
+  display:flex !important;
+  align-items:center !important;
+  gap:4px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#calcPage .chemical-input-row .density-inline-label{
+  flex:0 0 auto !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:#6e6e73 !important;
+  font-size:12px !important;
+  font-weight:600 !important;
+  white-space:nowrap !important;
+}
+#calcPage .chemical-input-row .density-input-group #density{
+  flex:1 1 0 !important;
+  width:auto !important;
+  min-width:0 !important;
+}
+</style>
+
 </head>
 <body>
 <div id="authGate">
@@ -1509,7 +1544,10 @@ nav button{height:45px !important;}
 <div class="chemical-input-row">
 <label for="chemical">薬品名</label>
 <select id="chemical"><option value="" selected>薬品を選択</option></select>
+<div class="density-input-group">
+<label for="density" class="density-inline-label">比重</label>
 <input id="density" type="text" aria-label="比重" placeholder="—" readonly>
+</div>
 </div>
 </div>
 
@@ -1949,7 +1987,7 @@ nav button{height:45px !important;}
  <div class="modal-card">
   <h3>入力計算結果</h3>
   <div id="calcResultDialog" style="line-height:1.8"></div>
-  <div id="calcResultActions" class="modal-actions"><button id="calcResultDelete" class="red">削除</button><button id="calcResultLoad">読込む</button><button id="deliveryRegisterBtn" type="button" class="green full" style="background:#34c759!important;color:#fff!important">納品登録</button><button id="calcResultClose" class="gray full">閉じる</button></div>
+  <div id="calcResultActions" class="modal-actions"><button id="calcResultDelete" class="red">削除</button><button id="calcResultLoad">読込む</button><button id="deliveryRegisterBtn" type="button" class="full">納品登録</button><button id="calcResultClose" class="gray full">閉じる</button></div>
  </div>
 </div>
 
@@ -2687,7 +2725,9 @@ function updateInputCancelVisibility(){
  const card=$("inputCancelCard");
  if(card) card.classList.toggle("hidden",isDeliveryDataCorrection);
  const capacityBtn=$("capacityCalcBtn");
- if(capacityBtn) capacityBtn.classList.toggle("hidden",isDeliveryDataCorrection);
+ const customerName=String($("customer")?.value||"").trim();
+ // 容量計算は取引先を入力する前に使うため、取引先入力後は非表示にする。
+ if(capacityBtn) capacityBtn.classList.toggle("hidden",isDeliveryDataCorrection || !!customerName);
 }
 function resetDeliveryForm(){
  deliveryDataCorrectionContext=null;
@@ -2809,7 +2849,7 @@ function showCalcResultDialog(rec,fromHistory=false,returnPage="history"){
  const linkedDelivery=fromHistory ? findLinkedDelivery(rec) : null;
  const alreadyDelivered=!!linkedDelivery;
  $("deliveryRegisterBtn").disabled=false;
- $("deliveryRegisterBtn").style.background=alreadyDelivered?"#8e8e93":"#34c759";
+ $("deliveryRegisterBtn").style.background=alreadyDelivered?"#8e8e93":"#007aff";
  $("deliveryRegisterBtn").textContent=alreadyDelivered?"納品履歴":"納品登録";
  $("calcResultActions").style.gridTemplateColumns=fromHistory?"1fr 1fr":"1fr";
  $("calcResultClose").style.gridColumn="1 / -1";
@@ -3676,7 +3716,7 @@ function renderHistory(){
        : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
    const displayDeliveryDate=x.deliveryDate||x.date||"";
    const displayDeliveryDateText=displayDeliveryDate?displayDeliveryDate.replace(/-/g,"/"):"";
-   div.innerHTML=(displayDeliveryDateText?"<div style='font-size:14px;font-weight:400'>納品日："+esc(displayDeliveryDateText)+(isDelivered?" <span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#34c759;font-weight:700\">＜納品登録あり＞</span></div>":""))
+   div.innerHTML=(displayDeliveryDateText?"<div style='font-size:14px;font-weight:400'>納品日："+esc(displayDeliveryDateText)+(isDelivered?" <span style=\"color:#007aff;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#007aff;font-weight:700\">＜納品登録あり＞</span></div>":""))
     +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
     +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
     +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
@@ -5504,6 +5544,8 @@ $("modalCustomerReading").addEventListener("input",()=>{
 });
 $("customer").oninput=()=>{
  const name=$("customer").value.trim();
+ // 取引先の入力開始と同時に容量計算ボタンを隠す。空欄に戻せば再表示する。
+ updateInputCancelVisibility();
  if(name){
    updateCustomerSuggest($("customer").value);
    setCalcEnabled(true);
@@ -5663,7 +5705,7 @@ $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
 $("unit").addEventListener("change",saveDraft);
-restoreDraft();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}updateInputDateText();markCalcFormSnapshot();markDeliveryRegistrationSnapshot();markTankSettingSnapshot();autoBackup();
+restoreDraft();updateInputCancelVisibility();if(!validISO($("dateDisplay").value)){$("dateDisplay").dataset.iso=isoToday();$("dateDisplay").value=isoToday();}updateInputDateText();markCalcFormSnapshot();markDeliveryRegistrationSnapshot();markTankSettingSnapshot();autoBackup();
 $("historyDate").value=$("historyDate").value||isoToday();
 $("deliveryHistoryDate").value=$("deliveryHistoryDate").value||isoToday();
 $("historyDate").addEventListener("change",()=>{updateHistoryDateLabel();renderHistory();if(!$("historyWeeklyListView")?.classList.contains("hidden"))renderHistoryWeeklyList();});
