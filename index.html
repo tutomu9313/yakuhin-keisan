@@ -769,6 +769,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   #weeklyPrintArea td.weekly-print-date{white-space:normal !important;line-height:1.08 !important;position:relative !important}
   #weeklyPrintArea .weekly-print-holiday-name{position:absolute !important;left:0 !important;right:0 !important;top:50% !important;transform:translateY(-50%) !important;display:block !important;font-size:8pt !important;font-weight:700 !important;color:#111 !important;line-height:1 !important;margin:0 !important;white-space:normal !important}
   #weeklyPrintArea td.weekly-print-distance{font-size:7.5pt !important;line-height:1.08 !important;white-space:nowrap !important;text-align:left !important;vertical-align:middle !important}
+  #weeklyPrintArea td.weekly-print-distance-note{font-size:7pt !important;line-height:1.08 !important;white-space:nowrap !important;overflow:hidden !important;text-align:left !important;}
   #weeklyPrintArea .weekly-print-distance-line{display:grid !important;grid-template-columns:2.2em minmax(0,1fr) !important;align-items:baseline !important;height:1em !important}
   #weeklyPrintArea .weekly-print-distance-vehicle{display:block !important;width:2.2em !important}
   #weeklyPrintArea tr{page-break-inside:avoid}
@@ -1839,10 +1840,20 @@ nav button{height:45px !important;}
 <style id="daily-leave-prototype-style">
 #dailyLeaveSection{padding:12px !important;margin-bottom:10px !important;}
 #dailyLeaveSection h3{font-size:17px !important;margin:0 0 9px !important;}
-#dailyLeaveSection .daily-leave-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+#dailyLeaveSection .daily-leave-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
 #dailyLeaveSection .daily-leave-buttons button{height:40px !important;margin:0 !important;padding:0 5px !important;border-radius:10px !important;background:#e5e5ea !important;color:#1c1c1e !important;font-size:14px !important;white-space:nowrap;}
 #dailyLeaveSection .daily-leave-buttons button.active{background:#007aff !important;color:#fff !important;}
 #dailyLeaveSection .daily-leave-buttons button:focus-visible{outline:2px solid #007aff;outline-offset:2px;}
+#dailyOtherReasonWrap{margin-top:8px;}
+#dailyOtherReasonWrap input{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:14px !important;}
+#dailyDistancePrintNoteSection{margin-top:8px !important;}
+#dailyDistancePrintNoteSection label{display:block;margin-bottom:6px;font-size:14px;font-weight:700;}
+#dailyDistancePrintNote{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:14px !important;}
+#dailyOtherTimeModal .daily-other-time-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#dailyOtherTimeModal label{display:block;margin:0 0 5px;font-weight:600;color:#333;}
+#dailyOtherTimeModal input[type="time"]{width:100%;box-sizing:border-box;margin:0;height:42px;}
+#dailyOtherTimeModal .daily-other-time-note{font-size:13px;line-height:1.5;color:#666;margin:0 0 14px;}
+@media(max-width:420px){#dailyLeaveSection .daily-leave-buttons{gap:5px;}#dailyLeaveSection .daily-leave-buttons button{font-size:12px !important;padding:0 1px !important;} #dailyOtherReasonWrap input{font-size:13px !important;}}
 #dailyWorkTimeSection input:disabled{background:#f2f2f7 !important;color:#777 !important;opacity:.75 !important;-webkit-text-fill-color:#777 !important;}
 #dailyWorkTimeSection #dailyWorkDuration.leave-duration{color:#007aff !important;}
 @media(max-width:420px){#dailyLeaveSection .daily-leave-buttons{gap:5px;}#dailyLeaveSection .daily-leave-buttons button{font-size:13px !important;padding:0 2px !important;}}
@@ -2022,6 +2033,10 @@ nav button{height:45px !important;}
    <button id="dailyLeaveNormalBtn" type="button" class="active" aria-pressed="true" onclick="window.setDailyLeaveType('none')">通常勤務</button>
    <button id="dailyLeaveHalfBtn" type="button" aria-pressed="false" onclick="window.setDailyLeaveType('half')">半日休</button>
    <button id="dailyLeaveFullBtn" type="button" aria-pressed="false" onclick="window.setDailyLeaveType('full')">全日休</button>
+   <button id="dailyLeaveOtherBtn" type="button" aria-pressed="false" onclick="window.setDailyLeaveType('other')">その他</button>
+  </div>
+  <div id="dailyOtherReasonWrap" class="hidden">
+   <input id="dailyOtherText" type="text" maxlength="28" autocomplete="off" placeholder="内容を入力（例：健康診断・研修）" aria-label="その他の内容">
   </div>
  </div>
  <div class="card" id="dailyRunSection">
@@ -2065,6 +2080,10 @@ nav button{height:45px !important;}
     <div class="box"><small>残業時間</small><input id="dailyOvertime" type="number" min="0" max="24" step="0.5" inputmode="decimal" placeholder="0.0" aria-label="残業時間"></div>
    </div>
   </div>
+ </div>
+ <div class="card" id="dailyDistancePrintNoteSection">
+  <label for="dailyDistancePrintNote">特記事項</label>
+  <input id="dailyDistancePrintNote" type="text" maxlength="30" autocomplete="off" placeholder="例：車両点検・給油など" aria-label="特記事項">
  </div>
  <div class="card" id="dailyDeliverySection">
   <h3 style="margin:0 0 14px">配達実績 <span style="float:right;display:flex;gap:14px;align-items:baseline;font-size:17px"><strong id="dailyDeliveryCount" class="daily-report-value" style="font-size:22px">0 回</strong><strong id="dailyDeliveryTotalKg" class="daily-report-value" style="font-size:22px">0 kg</strong></span></h3>
@@ -2196,6 +2215,18 @@ nav button{height:45px !important;}
 <div class="card"><label>取引先</label><div id="customerList"></div><div id="customerDetail"></div></div>
 </section>
 
+
+<div id="dailyOtherTimeModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-card">
+  <h3>その他の勤務時間</h3>
+  <p class="daily-other-time-note">始業・終業時刻を設定してください。勤務時間は通常勤務と同じ計算（休憩1時間を差し引く方法）です。</p>
+  <div class="daily-other-time-grid">
+   <div><label for="dailyOtherModalStartTime">始業時間</label><input id="dailyOtherModalStartTime" type="time" value="06:00"></div>
+   <div><label for="dailyOtherModalEndTime">終業時間</label><input id="dailyOtherModalEndTime" type="time" value="15:00"></div>
+  </div>
+  <div class="modal-actions"><button id="dailyOtherTimeCancelBtn" type="button" class="gray">キャンセル</button><button id="dailyOtherTimeConfirmBtn" type="button">設定する</button></div>
+ </div>
+</div>
 
 <div id="dailyDeliveryDetailModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
@@ -3032,7 +3063,7 @@ function markDeliveryRegistrationSnapshot(){deliveryRegistrationSnapshot=getDeli
 function isDeliveryRegistrationDirty(){return !!deliverySourceOrder && !!deliveryRegistrationSnapshot && getDeliveryRegistrationState()!==deliveryRegistrationSnapshot;}
 
 function getDailyReportState(){
-  return JSON.stringify({date:String($("dailyReportDate")?.value||""),leaveType:String($("dailyLeaveType")?.value||"none"),vehicle:String($("dailyVehicleType")?.value||""),start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||""),out1:String($("outOdometer")?.value||""),in1:String($("inOdometer")?.value||""),out2:String($("outOdometer2")?.value||""),in2:String($("inOdometer2")?.value||""),adjustment:String($("dailyCountAdjustment")?.value||"")});
+  return JSON.stringify({date:String($("dailyReportDate")?.value||""),leaveType:String($("dailyLeaveType")?.value||"none"),otherText:String($("dailyOtherText")?.value||""),distancePrintNote:String($("dailyDistancePrintNote")?.value||""),vehicle:String($("dailyVehicleType")?.value||""),start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||""),out1:String($("outOdometer")?.value||""),in1:String($("inOdometer")?.value||""),out2:String($("outOdometer2")?.value||""),in2:String($("inOdometer2")?.value||""),adjustment:String($("dailyCountAdjustment")?.value||"")});
 }
 function markDailyReportSnapshot(){dailyReportSnapshot=getDailyReportState();}
 function isDailyReportDirty(){return !!dailyReportSnapshot && getDailyReportState()!==dailyReportSnapshot;}
@@ -4738,7 +4769,9 @@ function getDailyReportRecord(iso){
    startTime:r.startTime||"",
    endTime:r.endTime||"",
    overtimeHours:r.overtimeHours==null?null:r.overtimeHours,
-   leaveType:(r.leaveType==="half"||r.leaveType==="full")?r.leaveType:"none",
+   leaveType:(r.leaveType==="half"||r.leaveType==="full"||r.leaveType==="other")?r.leaveType:"none",
+   otherText:String(r.otherText||""),
+   distancePrintNote:String(r.distancePrintNote||""),
    countAdjustment:Number.isFinite(Number(r.countAdjustment))?Number(r.countAdjustment):0,
    savedAt:r.savedAt||new Date().toISOString(),
    version:2
@@ -4828,65 +4861,111 @@ function formatDailyMinutes(mins){
 let dailyLeaveStashedInputs=null;
 function getDailyLeaveType(){
  const value=String($("dailyLeaveType")?.value||"none");
- return value==="half"||value==="full"?value:"none";
+ return ["half","full","other"].includes(value)?value:"none";
 }
 function updateDailyLeaveControls(type){
- const value=(type==="half"||type==="full")?type:"none";
- const isHalf=value==="half", isFull=value==="full", leave=value!=="none";
+ const value=["half","full","other"].includes(type)?type:"none";
+ const isHalf=value==="half", isFull=value==="full", isOther=value==="other", isLeave=isHalf||isFull;
  const hidden=$("dailyLeaveType");if(hidden)hidden.value=value;
- const buttons=[["dailyLeaveNormalBtn","none"],["dailyLeaveHalfBtn","half"],["dailyLeaveFullBtn","full"]];
+ const buttons=[["dailyLeaveNormalBtn","none"],["dailyLeaveHalfBtn","half"],["dailyLeaveFullBtn","full"],["dailyLeaveOtherBtn","other"]];
  buttons.forEach(([id,key])=>{const b=$(id);if(!b)return;const active=key===value;b.classList.toggle("active",active);b.setAttribute("aria-pressed",active?"true":"false");});
  const st=$("dailyStartTime"),et=$("dailyEndTime"),ot=$("dailyOvertime");
- // 半日休は4時間勤務するため、始業・終業時刻を選択可能にする。
- // 全日休では時刻を無効にし、残業時間は両方の休暇区分で入力不可。
+ // 全日休のみ時刻を無効化。半日休・全日休では残業を入力不可。
+ // 「その他」は通常勤務と同じく時刻計算・残業入力を行う。
  if(st)st.disabled=isFull;
  if(et)et.disabled=isFull;
- if(ot)ot.disabled=leave;
- const note=$("dailyLeaveNote");
- if(note){
-   note.classList.toggle("leave-selected",leave);
-   note.textContent=isHalf
-     ?"半日休を選択中です。始業・終業時刻を選択してください。勤務時間は休憩控除なしで計算し、4時間が目安です。残業時間は入力できません。"
-     :(isFull?"全日休を選択中です。勤務時間は0時間00分になり、始業・終業時刻と残業時間は入力できません。":"通常勤務を選択中です。勤務時間・残業時間を通常どおり入力できます。");
- }
- const duration=$("dailyWorkDuration");if(duration)duration.classList.toggle("leave-duration",leave);
+ if(ot)ot.disabled=isLeave;
+ const reasonWrap=$("dailyOtherReasonWrap");
+ if(reasonWrap)reasonWrap.classList.toggle("hidden",!isOther);
+ const reasonInput=$("dailyOtherText");
+ if(reasonInput)reasonInput.required=isOther;
+ const duration=$("dailyWorkDuration");if(duration)duration.classList.toggle("leave-duration",isLeave);
  if(isFull){if(duration)duration.textContent="0時間00分";}
  else{updateDailyWorkDuration();}
 }
+function openDailyOtherTimeDialog(){
+ const modal=$("dailyOtherTimeModal");
+ const start=$("dailyOtherModalStartTime"),end=$("dailyOtherModalEndTime");
+ const currentType=getDailyLeaveType();
+ // 半日休・全日休から「その他」へ切り替える場合は、通常勤務の標準時刻を初期表示する。
+ const useCurrentTimes=currentType==="none"||currentType==="other";
+ const currentStart=useCurrentTimes?($("dailyStartTime")?.value||""):"";
+ const currentEnd=useCurrentTimes?($("dailyEndTime")?.value||""):"";
+ if(start)start.value=/^\d{2}:\d{2}$/.test(currentStart)?currentStart:"06:00";
+ if(end)end.value=/^\d{2}:\d{2}$/.test(currentEnd)?currentEnd:"15:00";
+ if(modal){modal.classList.remove("hidden");modal.setAttribute("aria-hidden","false");}
+}
+function closeDailyOtherTimeDialog(){
+ const modal=$("dailyOtherTimeModal");
+ if(modal){modal.classList.add("hidden");modal.setAttribute("aria-hidden","true");}
+}
 function setDailyLeaveType(type){
  const current=getDailyLeaveType();
+ if(type==="other"){
+   // その他を選ぶと、時刻を設定してから確定するダイアログを表示。
+   openDailyOtherTimeDialog();
+   return;
+ }
  const next=(type==="half"||type==="full")?type:"none";
  if(current===next)return;
  const iso=$("dailyReportDate")?.value||"";
- if(current==="none"&&next!=="none"){
+ if((current==="none"||current==="other")&&(next==="half"||next==="full")){
    dailyLeaveStashedInputs={date:iso,start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||"")};
  }
- const st=$("dailyStartTime"),et=$("dailyEndTime"),ot=$("dailyOvertime");
+ const st=$("dailyStartTime"),et=$("dailyEndTime"),ot=$("dailyOvertime"),otherText=$("dailyOtherText");
  if(next==="none"){
-   const prior=dailyLeaveStashedInputs&&dailyLeaveStashedInputs.date===iso?dailyLeaveStashedInputs:null;
-   if(st)st.value=prior?(prior.start||"06:00"):(st.value||"06:00");
-   if(et)et.value=prior?(prior.end||"15:00"):(et.value||"15:00");
-   if(ot)ot.value=prior?prior.overtime:(ot.value==="0"?"":"");
+   if(current==="half"||current==="full"){
+     const prior=dailyLeaveStashedInputs&&dailyLeaveStashedInputs.date===iso?dailyLeaveStashedInputs:null;
+     if(st)st.value=prior?(prior.start||"06:00"):(st.value||"06:00");
+     if(et)et.value=prior?(prior.end||"15:00"):(et.value||"15:00");
+     if(ot)ot.value=prior?prior.overtime:(ot.value==="0"?"":ot.value);
+   }else{
+     if(st)st.value=st.value||"06:00";
+     if(et)et.value=et.value||"15:00";
+     if(ot&&ot.value==="0")ot.value="";
+   }
+   if(otherText)otherText.value="";
    dailyLeaveStashedInputs=null;
  }else if(next==="half"){
-   // 半日休は4時間勤務を初期値として表示し、必要に応じて時刻を変更できる。
-   if(st && (current==="none"||!st.value))st.value="06:00";
-   if(et && (current==="none"||!et.value))et.value="10:00";
+   if(st)st.value="06:00";
+   if(et)et.value="10:00";
    if(ot)ot.value="0";
+   if(otherText)otherText.value="";
  }else{
    if(st)st.value="";
    if(et)et.value="";
    if(ot)ot.value="0";
+   if(otherText)otherText.value="";
  }
  updateDailyLeaveControls(next);
 }
 window.setDailyLeaveType=setDailyLeaveType;
+$("dailyOtherTimeConfirmBtn")?.addEventListener("click",()=>{
+ const start=String($("dailyOtherModalStartTime")?.value||"");
+ const end=String($("dailyOtherModalEndTime")?.value||"");
+ if(!/^\d{2}:\d{2}$/.test(start)||!/^\d{2}:\d{2}$/.test(end)){
+   alert("始業時間と終業時間を選択してください。");
+   return;
+ }
+ const previous=getDailyLeaveType();
+ const st=$("dailyStartTime"),et=$("dailyEndTime"),ot=$("dailyOvertime"),textInput=$("dailyOtherText");
+ if(st)st.value=start;
+ if(et)et.value=end;
+ if(previous!=="other"&&textInput)textInput.value="";
+ if((previous==="half"||previous==="full")&&ot&&ot.value==="0")ot.value="";
+ dailyLeaveStashedInputs=null;
+ updateDailyLeaveControls("other");
+ closeDailyOtherTimeDialog();
+ if(textInput)textInput.focus();
+});
+$("dailyOtherTimeCancelBtn")?.addEventListener("click",closeDailyOtherTimeDialog);
+$("dailyOtherTimeModal")?.addEventListener("click",e=>{if(e.target===$("dailyOtherTimeModal"))closeDailyOtherTimeDialog();});
 function updateDailyWorkDuration(){
  const st=$("dailyStartTime"), et=$("dailyEndTime"), out=$("dailyWorkDuration");
  if(!st||!et||!out)return;
  const leaveType=getDailyLeaveType();
  if(leaveType==="full"){out.textContent="0時間00分";out.classList.add("leave-duration");return;}
- out.classList.toggle("leave-duration",leaveType!=="none");
+ out.classList.toggle("leave-duration",leaveType==="half"||leaveType==="full");
  const sv=st.value, ev=et.value;
  if(!/^\d{2}:\d{2}$/.test(sv)||!/^\d{2}:\d{2}$/.test(ev)){out.textContent="0時間00分";return;}
  const [sh,sm]=sv.split(":").map(Number),[eh,em]=ev.split(":").map(Number);
@@ -4944,9 +5023,10 @@ function renderDailyList(){
    if(r&&r.secondaryVehicle&&((r.secondaryVehicle.vehicleType==="4t")||(r.secondaryVehicle.vehicleType==="10t"))) vehicleLabels.push(r.secondaryVehicle.vehicleType);
    else if(primaryForList){const legacySecondary=dailySecondaryVehicle(primaryForList);if(r&&r.vehicles&&r.vehicles[legacySecondary])vehicleLabels.push(legacySecondary);}
    if(!vehicleLabels.length&&r&&r.vehicles){["4t","10t"].forEach(v=>{if(r.vehicles[v])vehicleLabels.push(v);});}
-   const leaveType=r&&(r.leaveType==="half"||r.leaveType==="full")?r.leaveType:"none";
-   const isLeaveRecord=leaveType!=="none";
-   const vehicleText=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(vehicleLabels.join(" / ")||"—");
+   const leaveType=r&&(r.leaveType==="half"||r.leaveType==="full"||r.leaveType==="other")?r.leaveType:"none";
+   const isLeaveRecord=leaveType==="half"||leaveType==="full";
+   const isOtherRecord=leaveType==="other";
+   const vehicleText=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(isOtherRecord?"その他":(vehicleLabels.join(" / ")||"—"));
    const work=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(r&&r.startTime&&r.endTime?calcDailyWorkDurationText(r.startTime,r.endTime):"—");
    const ot=isLeaveRecord?"0h":(r&&r.overtimeHours==null?"—":Number(r&&r.overtimeHours).toLocaleString("ja-JP")+"h");
    const comm=(Number(stats.totalCommission)||0).toLocaleString("ja-JP")+"円";
@@ -5004,14 +5084,16 @@ function renderDailyReport(){
     syncDailyVehicleConstraint();
   }
   const defaultStartTime="06:00",defaultEndTime="15:00";
-  const leaveType=(saved&&(saved.leaveType==="half"||saved.leaveType==="full"))?saved.leaveType:"none";
+  const leaveType=(saved&&(saved.leaveType==="half"||saved.leaveType==="full"||saved.leaveType==="other"))?saved.leaveType:"none";
   const primarySaved=getDailyVehicleEntry(iso,existingPrimary);
   const savedSecondary=getDailySecondaryEntry(iso,existingPrimary);
   const secondary=savedSecondary&&((savedSecondary.vehicleType==="4t")||(savedSecondary.vehicleType==="10t"))?savedSecondary.vehicleType:dailySecondaryVehicle(existingPrimary);
   const secondarySaved=savedSecondary;
   $("dailyStartTime").value=leaveType==="full"?"":((saved&&saved.startTime)||(leaveType==="half"?"06:00":defaultStartTime));
   $("dailyEndTime").value=leaveType==="full"?"":((saved&&saved.endTime)||(leaveType==="half"?"10:00":defaultEndTime));
-  $("dailyOvertime").value=leaveType!=="none"?"0":((saved&&saved.overtimeHours!=null)?saved.overtimeHours:"");
+  $("dailyOvertime").value=(leaveType==="half"||leaveType==="full")?"0":((saved&&saved.overtimeHours!=null)?saved.overtimeHours:"");
+  $("dailyOtherText").value=leaveType==="other"?String(saved&&saved.otherText||""):"";
+  $("dailyDistancePrintNote").value=String(saved&&saved.distancePrintNote||"");
   updateDailyLeaveControls(leaveType);
   $("outOdometer").value=primarySaved&&primarySaved.outOdometer!=null?primarySaved.outOdometer:"";
   $("inOdometer").value=primarySaved&&primarySaved.inOdometer!=null?primarySaved.inOdometer:"";
@@ -5142,7 +5224,10 @@ if($("dailyCountAdjustment")){$("dailyCountAdjustment").addEventListener("input"
 function saveDailyReport(saveTarget){
   const iso=$("dailyReportDate").value||isoToday(),vehicle=$("dailyVehicleType").value||"4t",secondary=getDailySecondaryVehicleType(vehicle);
   const leaveType=getDailyLeaveType();
-  const isLeaveDay=leaveType!=="none";
+  const isLeaveDay=leaveType==="half"||leaveType==="full";
+  const isOtherDay=leaveType==="other";
+  const otherText=String($("dailyOtherText")?.value||"").trim();
+  if(isOtherDay&&!otherText){alert("その他の内容を入力してください。");$("dailyOtherText")?.focus();return;}
   const vehicleWarnings=[];
   const primaryMismatch=getDailyVehicleMismatchInfo(vehicle,"車種",iso);
   if(primaryMismatch)vehicleWarnings.push("車種「"+primaryMismatch.selected+"」は、この日の配達実績（"+primaryMismatch.actual+"）と一致していません。");
@@ -5155,18 +5240,20 @@ function saveDailyReport(saveTarget){
   }
   const primaryOutRaw=String($("outOdometer").value||"").trim(),primaryInRaw=String($("inOdometer").value||"").trim();
   const primaryOut=primaryOutRaw===""?NaN:Number(primaryOutRaw),primaryIn=primaryInRaw===""?NaN:Number(primaryInRaw);
-  if(!isLeaveDay&&(!Number.isFinite(primaryOut)||primaryOut<0)){alert("出庫kmを入力してください。");$("outOdometer").focus();return;}
+  if(!isLeaveDay&&!isOtherDay&&(!Number.isFinite(primaryOut)||primaryOut<0)){alert("出庫kmを入力してください。");$("outOdometer").focus();return;}
   if(primaryOutRaw!==""&&(!Number.isFinite(primaryOut)||primaryOut<0)){alert("出庫kmの数値を確認してください。");$("outOdometer").focus();return;}
   if(primaryInRaw!==""&&(!Number.isFinite(primaryIn)||primaryIn<0)){alert("帰庫kmの数値を確認してください。");$("inOdometer").focus();return;}
+  if(isOtherDay&&primaryInRaw!==""&&primaryOutRaw===""){alert("帰庫kmを入力する場合は、先に出庫kmを入力してください。");$("outOdometer").focus();return;}
   if(Number.isFinite(primaryIn)&&Number.isFinite(primaryOut)&&primaryIn<primaryOut){alert("帰庫kmは出庫km以上の数値を入力してください。");$("inOdometer").focus();return;}
   const secondShown=dailyRunHasSecondary();
   let secondOut=NaN,secondIn=NaN;
   if(secondShown){
     const rawOut=String($("outOdometer2").value||"").trim(),rawIn=String($("inOdometer2").value||"").trim();
     secondOut=rawOut===""?NaN:Number(rawOut); secondIn=rawIn===""?NaN:Number(rawIn);
-    if(!isLeaveDay&&(!Number.isFinite(secondOut)||secondOut<0)){alert(secondary+"の出庫kmを入力してください。");$("outOdometer2").focus();return;}
+    if(!isLeaveDay&&!isOtherDay&&(!Number.isFinite(secondOut)||secondOut<0)){alert(secondary+"の出庫kmを入力してください。");$("outOdometer2").focus();return;}
     if(rawOut!==""&&(!Number.isFinite(secondOut)||secondOut<0)){alert(secondary+"の出庫kmの数値を確認してください。");$("outOdometer2").focus();return;}
     if(rawIn!==""&&(!Number.isFinite(secondIn)||secondIn<0)){alert(secondary+"の帰庫kmの数値を確認してください。");$("inOdometer2").focus();return;}
+    if(isOtherDay&&rawIn!==""&&rawOut===""){alert(secondary+"の帰庫kmを入力する場合は、先に出庫kmを入力してください。");$("outOdometer2").focus();return;}
     if(Number.isFinite(secondIn)&&Number.isFinite(secondOut)&&secondIn<secondOut){alert(secondary+"の帰庫kmは出庫km以上の数値を入力してください。");$("inOdometer2").focus();return;}
   }
   const count=dailyDeliveriesForDate(iso).length;
@@ -5182,9 +5269,13 @@ function saveDailyReport(saveTarget){
     const rate2=commissionRates[secondary]||defaultCommissionRates()[secondary],secondComplete=Number.isFinite(secondIn),secondDist=secondComplete?secondIn-secondOut:null;
     record.secondaryVehicle={vehicleType:secondary,outOdometer:secondOut,inOdometer:secondComplete?secondIn:null,distance:secondDist,distanceRate:Number(rate2.distance),distanceCommission:secondComplete&&Number.isFinite(secondOut)?(secondIn-secondOut)*Number(rate2.distance):0,savedAt:new Date().toISOString()};
   }
-  record.date=iso; record.version=2; record.vehicles=vehicles; record.primaryVehicle=vehicle;
+  const preserveOtherDayVehicles=isOtherDay&&!Number.isFinite(primaryOut)&&!Number.isFinite(secondOut);
+  const priorVehicles=record.vehicles&&typeof record.vehicles==="object"?record.vehicles:{};
+  record.date=iso; record.version=2; record.vehicles=preserveOtherDayVehicles?priorVehicles:vehicles; record.primaryVehicle=vehicle;
   record.leaveType=leaveType;
-  // 半日休は始業・終業時刻を保存する。全日休は時刻を保存しない。
+  record.otherText=isOtherDay?otherText:"";
+  record.distancePrintNote=String($("dailyDistancePrintNote")?.value||"").trim();
+  // 半日休・その他は始業／終業時刻を保存し、全日休は時刻を保存しない。
   record.startTime=leaveType==="full"?"":($("dailyStartTime").value||"");
   record.endTime=leaveType==="full"?"":($("dailyEndTime").value||"");
   record.overtimeHours=isLeaveDay?0:($("dailyOvertime").value===""?null:Number($("dailyOvertime").value)); record.countAdjustment=Math.max(0,Number(record.countAdjustment)||0);
@@ -5198,6 +5289,12 @@ function saveDailyReport(saveTarget){
     markDailyReportSnapshot();
     window.scrollTo({top:0,left:0,behavior:"auto"});
     alert((leaveType==="half"?"半日休":"全日休")+"の日報を保存しました。");
+  }else if(isOtherDay&&primaryOutRaw===""&&primaryInRaw===""&&(!secondShown||(String($("outOdometer2")?.value||"").trim()===""&&String($("inOdometer2")?.value||"").trim()===""))){
+    updateDailyWorkDuration();
+    updateDailyDistanceImmediate();
+    markDailyReportSnapshot();
+    window.scrollTo({top:0,left:0,behavior:"auto"});
+    alert("その他の日報を保存しました。");
   }else if(primaryComplete || (secondShown&&Number.isFinite(secondIn))){
     // 保存後も入力データはそのまま残し、走行距離表示を最新の入力値へ更新してから画面位置だけ最上部へ戻す
     updateDailyDistanceImmediate();
@@ -5496,8 +5593,9 @@ function buildWeeklyPrintArea(){
      const distanceRows=getDistanceRows(date);
      const dailyReport=(typeof dailyReports!=="undefined"&&dailyReports)?dailyReports[date]:null;
      const isHoliday=isJapaneseNationalHolidayISO(date);
-     const leaveType=dailyReport&&(dailyReport.leaveType==="half"||dailyReport.leaveType==="full")?dailyReport.leaveType:"none";
-     const isLeaveDay=leaveType!=="none";
+     const leaveType=dailyReport&&(dailyReport.leaveType==="half"||dailyReport.leaveType==="full"||dailyReport.leaveType==="other")?dailyReport.leaveType:"none";
+     const isLeaveDay=leaveType==="half"||leaveType==="full";
+     const isOtherDay=leaveType==="other";
      const rowCount=Math.max(5,dayRows.length);
      let dayTotal=0;
      for(let rowIndex=0;rowIndex<rowCount;rowIndex++){
@@ -5508,7 +5606,7 @@ function buildWeeklyPrintArea(){
        const dateText=rowIndex===0?(dateObj.getMonth()+1)+"/"+dateObj.getDate()+"（"+wd[dateObj.getDay()]+"）":"";
        // 祝日名または休暇区分は日付の次の行に重ねて表示。行の高さは変わらない。
        const dayStatusName=rowIndex===1?(isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isHoliday?getJapaneseNationalHolidayNameISO(date):"")):"";
-       const blankHolidayRow=(isHoliday||isLeaveDay)&&!o&&!d;
+       const blankHolidayRow=(isHoliday||isLeaveDay||isOtherDay)&&!o&&!d;
        html+='<tr'+(rowIndex>=dayRows.length?' class="weekly-print-blank"':'')+'>';
        html+='<td class="center weekly-print-date">'+(dateText?esc(dateText):'')+(dayStatusName?'<span class="weekly-print-holiday-name">'+esc(dayStatusName)+'</span>':'')+'</td>';
        html+='<td>'+esc(o?.customer||d?.customer||"")+'</td>';
@@ -5526,13 +5624,20 @@ function buildWeeklyPrintArea(){
      // 祝日だけ／休暇だけの日は、5行の空欄ブロックに続けて
      // 「勤務時間・日計」相当の空欄行も表示し、1日あたり6行に揃える。
      // 実際の配達データがある日は、実データの表示・日計を従来どおり維持する。
-     if(dayRows.length===0&&(!dailyReport||isLeaveDay)){
-       html+='<tr class="subtotal weekly-print-empty-subtotal"><td colspan="7" class="worktime"></td><td class="center"></td><td class="num"></td><td></td></tr>';
-       return;
-     }
      const startTime=dailyReport&&dailyReport.startTime?String(dailyReport.startTime):"";
      const endTime=dailyReport&&dailyReport.endTime?String(dailyReport.endTime):"";
-     const workTimeText=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(startTime&&endTime?"勤務時間　"+startTime+" ～ "+endTime:"勤務時間　—");
+     if(dayRows.length===0&&(!dailyReport||isLeaveDay||(isOtherDay&&distanceRows.length===0))){
+       const emptyOtherText=[
+         isOtherDay?("その他："+String(dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間　"+startTime+" ～ "+endTime:"")):"",
+         isLeaveDay?(leaveType==="half"?"半日休":"全日休"):"",
+         isHoliday?getJapaneseNationalHolidayNameISO(date):""
+       ].filter(Boolean).join("　");
+       const printDistanceNote=String(dailyReport&&dailyReport.distancePrintNote||"").trim();
+       html+='<tr class="subtotal weekly-print-empty-subtotal"><td colspan="7" class="worktime"><span class="weekly-print-worktime-text">'+(emptyOtherText?esc(emptyOtherText):'&nbsp;')+'</span></td><td class="center">&nbsp;</td><td class="num">&nbsp;</td><td class="weekly-print-distance weekly-print-distance-note">'+(printDistanceNote?esc(printDistanceNote):'&nbsp;')+'</td></tr>';
+       return;
+     }
+     const workTimeDetail=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isOtherDay?("その他："+String(dailyReport&&dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間　"+startTime+" ～ "+endTime:"")):(startTime&&endTime?"勤務時間　"+startTime+" ～ "+endTime:"勤務時間　—"));
+     const workTimeText=[isHoliday?getJapaneseNationalHolidayNameISO(date):"",workTimeDetail].filter(Boolean).join("　");
      // 運転日報の歩合給を同じ行に表示
      let countCommissionText="回数歩合　0円";
      let distanceCommissionText="距離歩合　0円";
@@ -5561,7 +5666,8 @@ function buildWeeklyPrintArea(){
        console.warn("週間日報の歩合給表示をスキップしました", commissionError);
      }
      const commissionText=countCommissionText+"　"+distanceCommissionText+"　"+commissionTotalText;
-     html+='<tr class="subtotal"><td colspan="7" class="worktime"><span class="weekly-print-worktime-text">'+esc(workTimeText)+'</span><span class="weekly-print-commission-text">'+esc(commissionText)+'</span></td><td class="center">日計</td><td class="num">'+formatQuantity(dayTotal)+' kg</td><td></td></tr>';
+     const printDistanceNote=String(dailyReport&&dailyReport.distancePrintNote||"").trim();
+     html+='<tr class="subtotal"><td colspan="7" class="worktime"><span class="weekly-print-worktime-text">'+esc(workTimeText)+'</span><span class="weekly-print-commission-text">'+esc(commissionText)+'</span></td><td class="center">日計</td><td class="num">'+formatQuantity(dayTotal)+' kg</td><td class="weekly-print-distance weekly-print-distance-note">'+(printDistanceNote?esc(printDistanceNote):'&nbsp;')+'</td></tr>';
    });
  }
  html+='</tbody></table>';
@@ -5635,14 +5741,87 @@ function renderWeeklyReport(){
  const {from,to,mon,sun}=getWeeklyReportRange();
  const wd=["日","月","火","水","木","金","土"];
  $("weeklyPeriod").textContent=displayDate(from)+"（"+wd[mon.getDay()]+"）～"+displayDate(to)+"（"+wd[sun.getDay()]+"）";
- const rows=deliveryHistory.filter(x=>x&&x.date>=from&&x.date<=to).map(x=>{const src=x.orderId?history.find(h=>h&&h.orderId===x.orderId):(x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null);return {...x,plannedTime:x.plannedTime||src&&src.plannedTime||"",vehicleType:x.vehicleType||""};}).sort((a,b)=>String(a.date).localeCompare(String(b.date))||((a.plannedTime||"99:99").localeCompare(b.plannedTime||"99:99"))||String(a.time||"").localeCompare(String(b.time||"")));
- const tbody=$("weeklyList");tbody.innerHTML="";let lastDate="",total=0;
- if(!rows.length){tbody.innerHTML='<tr><td colspan="4" class="weekly-empty">この週の納品記録はありません。</td></tr>';$('weeklyTotal').textContent="週間合計：0 kg";return;}
- let dayTotal=0;
- rows.forEach((x,i)=>{const next=rows[i+1],tr=document.createElement("tr"),d=localDateFromISO(x.date),dateText=x.date===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）",kg=Number(x.deliveryKg||0);lastDate=x.date;dayTotal+=kg;total+=kg;tr.style.cursor="pointer";tr.title="タップして入力計算結果を表示";tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><div>"+esc(x.chemical||"")+"</div><div style='margin-top:3px'>"+formatQuantity(trunc2(kg))+" kg</div></td>";tr.addEventListener("click",()=>{const src=x.orderId?history.find(h=>h&&h.orderId===x.orderId):(x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null);const order=src||{date:x.date||isoToday(),time:x.time||"",customer:x.customer||"",department:x.department||"",plannedTime:x.plannedTime||"",vehicleType:x.vehicleType||"",chemical:x.chemical||"",warning:!!x.warning,amount:x.orderAmount,unit:(x.orderUnit==="m³"?"m3":x.orderUnit||"kg"),kg:Number(x.orderKg)||0,L:Number(x.orderL)||0,m3:0,density:Number(x.density)||0,loadingCm:x.loadingCm};if(!src&&order.unit==="m3")order.m3=Number(x.orderAmount)||0;showCalcResultDialog(order,true,"weekly");});tbody.appendChild(tr);if(!next||next.date!==x.date){const sub=document.createElement("tr");sub.innerHTML="<td></td><td></td><td style='font-weight:700;text-align:right'>日計</td><td style='font-weight:700'>"+formatQuantity(trunc2(dayTotal))+" kg</td>";tbody.appendChild(sub);dayTotal=0;}});
+ const deliveryRows=deliveryHistory.filter(x=>x&&x.date>=from&&x.date<=to).map(x=>{
+   const src=x.orderId?history.find(h=>h&&h.orderId===x.orderId):(x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null);
+   return {...x,plannedTime:x.plannedTime||src&&src.plannedTime||"",vehicleType:x.vehicleType||""};
+ }).sort((a,b)=>String(a.date).localeCompare(String(b.date))||((a.plannedTime||"99:99").localeCompare(b.plannedTime||"99:99"))||String(a.time||"").localeCompare(String(b.time||"")));
+ const rowsByDate=new Map();
+ deliveryRows.forEach(x=>{
+   const date=String(x.date||"");
+   if(!date)return;
+   if(!rowsByDate.has(date))rowsByDate.set(date,[]);
+   rowsByDate.get(date).push(x);
+ });
+ const statusByDate=new Map();
+ const addStatus=(date,label,kind)=>{
+   if(!label)return;
+   if(!statusByDate.has(date))statusByDate.set(date,[]);
+   const current=statusByDate.get(date);
+   if(!current.some(x=>x.label===label))current.push({label,kind});
+ };
+ // 保存済みの日報から休暇・その他の表示を作る。
+ Object.entries(dailyReports||{}).forEach(([key,record])=>{
+   if(!record)return;
+   const date=String(record.date||key||"");
+   if(date<from||date>to)return;
+   const leaveType=["half","full","other"].includes(record.leaveType)?record.leaveType:"none";
+   if(leaveType==="half")addStatus(date,"半日休","leave");
+   else if(leaveType==="full")addStatus(date,"全日休","leave");
+   else if(leaveType==="other")addStatus(date,"その他："+String(record.otherText||"その他"),"other");
+ });
+ // 平日の祝日は、配達の有無にかかわらず取引先欄に祝日名を表示する。
+ for(let d=localDateFromISO(from);d<=sun;d.setDate(d.getDate()+1)){
+   const date=isoFromLocalDate(d);
+   const weekday=d.getDay();
+   if(weekday>=1&&weekday<=5&&isJapaneseNationalHolidayISO(date)){
+     addStatus(date,getJapaneseNationalHolidayNameISO(date),"holiday");
+   }
+ }
+ const allDates=Array.from(new Set([...rowsByDate.keys(),...statusByDate.keys()])).filter(date=>date>=from&&date<=to).sort();
+ const tbody=$("weeklyList");tbody.innerHTML="";let total=0;
+ if(!allDates.length){tbody.innerHTML='<tr><td colspan="4" class="weekly-empty">この週の納品記録・休暇・祝日はありません。</td></tr>';$("weeklyTotal").textContent="週間合計：0 kg";return;}
+ allDates.forEach(date=>{
+   const items=rowsByDate.get(date)||[];
+   const statuses=statusByDate.get(date)||[];
+   const d=localDateFromISO(date);
+   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   let firstRow=true;
+   // 休暇・祝日は、一覧の「取引先」欄に専用行で表示。実際の配達データは別行で維持する。
+   if(statuses.length){
+     const tr=document.createElement("tr");
+     const label=statuses.map(x=>x.label).join("・");
+     const color=statuses.some(x=>x.kind==="holiday"||x.kind==="leave")?"#d93025":"#007AFF";
+     tr.className="weekly-status-row";
+     tr.innerHTML="<td>"+esc(dateText)+"</td><td><span style='font-weight:700;color:"+color+"'>"+esc(label)+"</span></td><td></td><td></td>";
+     tbody.appendChild(tr);
+     firstRow=false;
+   }
+   let dayTotal=0;
+   items.forEach((x,i)=>{
+     const kg=Number(x.deliveryKg||0);
+     dayTotal+=kg;total+=kg;
+     const tr=document.createElement("tr");
+     tr.style.cursor="pointer";
+     tr.title="タップして入力計算結果を表示";
+     tr.innerHTML="<td>"+(firstRow?esc(dateText):"")+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><div>"+esc(x.chemical||"")+"</div><div style='margin-top:3px'>"+formatQuantity(trunc2(kg))+" kg</div></td>";
+     tr.addEventListener("click",()=>{
+       const src=x.orderId?history.find(h=>h&&h.orderId===x.orderId):(x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null);
+       const order=src||{date:x.date||isoToday(),time:x.time||"",customer:x.customer||"",department:x.department||"",plannedTime:x.plannedTime||"",vehicleType:x.vehicleType||"",chemical:x.chemical||"",warning:!!x.warning,amount:x.orderAmount,unit:(x.orderUnit==="m³"?"m3":x.orderUnit||"kg"),kg:Number(x.orderKg)||0,L:Number(x.orderL)||0,m3:0,density:Number(x.density)||0,loadingCm:x.loadingCm};
+       if(!src&&order.unit==="m3")order.m3=Number(x.orderAmount)||0;
+       showCalcResultDialog(order,true,"weekly");
+     });
+     tbody.appendChild(tr);
+     firstRow=false;
+   });
+   // 納品実績がある日だけ従来どおり日計を表示する。
+   if(items.length){
+     const sub=document.createElement("tr");
+     sub.innerHTML="<td></td><td></td><td style='font-weight:700;text-align:right'>日計</td><td style='font-weight:700'>"+formatQuantity(trunc2(dayTotal))+" kg</td>";
+     tbody.appendChild(sub);
+   }
+ });
  $("weeklyTotal").textContent="週間合計："+formatQuantity(trunc2(total))+" kg";
 }
-
 /* ===== 注文履歴：1週間一覧 ===== */
 function historyWeeklyRangeFor(ref){
  const mon=mondayOf(ref||isoToday());
