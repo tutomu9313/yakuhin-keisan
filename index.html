@@ -1044,6 +1044,14 @@ nav button{height:45px !important;}
 #deliveryViewModal #deliveryDataEditBtn{background:#007aff !important;color:#fff !important;}
 #deliveryViewModal #deliveryDataEditBtn:disabled{background:#8e8e93 !important;color:#fff !important;opacity:.65 !important;cursor:not-allowed !important;}
 </style>
+<style id="delivery-unified-capacity-number-size">
+/* 納品データ：納品容量の数値を納品重量の入力文字と同じ大きさにする */
+#deliveryViewModal .unified-delivery-capacity-value{
+  font-size:20px !important;
+  font-weight:400 !important;
+  line-height:1.2 !important;
+}
+</style>
 <style id="prototype-unified-delivery-input-height-fix">
 /* 試作：実納品重量の入力欄をタンク確認の入力欄と同じ34pxに合わせる */
 #deliveryViewModal #deliveryUnifiedKg{height:34px !important;}
@@ -1571,6 +1579,57 @@ nav button{height:45px !important;}
   height:36px !important;
 }
 </style>
+<style id="delivery-view-highlighted-fields-bold">
+/* 納品データ：指定された納品重量ラベル・納品容量・重量差・容量差を、見て分かる太字にする（表示のみ） */
+#deliveryViewModal .unified-delivery-edit > label[for="deliveryUnifiedKg"],
+#deliveryViewModal #deliveryUnifiedL,
+#deliveryViewModal #deliveryUnifiedWeightDiff,
+#deliveryViewModal #deliveryUnifiedCapacityDiff{
+  font-weight:900 !important;
+  text-shadow:0.25px 0 currentColor, -0.25px 0 currentColor;
+}
+#deliveryViewModal #deliveryUnifiedL .unified-delivery-capacity-value{
+  font-weight:900 !important;
+  text-shadow:0.25px 0 currentColor, -0.25px 0 currentColor;
+}
+</style>
+<style id="delivery-weight-input-bold">
+/* 納品データ：納品重量の入力値も納品容量と同様に太字で表示（入力・保存機能は変更しない） */
+#deliveryViewModal #deliveryUnifiedKg{
+  font-weight:900 !important;
+  text-shadow:0.25px 0 currentColor, -0.25px 0 currentColor;
+}
+</style>
+
+<style id="delivery-weight-label-strong-bold-final">
+/* 納品データ：「納品重量（kg）」ラベルも、反転選択中でも明確に太字で表示する */
+#deliveryViewModal .unified-delivery-edit > label[for="deliveryUnifiedKg"] {
+  font-weight: 900 !important;
+  -webkit-text-stroke: 0.4px currentColor !important;
+  text-shadow: 0.45px 0 currentColor, -0.45px 0 currentColor !important;
+}
+</style>
+
+
+<style id="delivery-view-text-tone-match-tank">
+/* 納品重量・納品容量の強調文字を、タンク容量ラベルと同じ落ち着いた黒色・適度な太字に揃える */
+#deliveryViewModal .unified-delivery-edit > label[for="deliveryUnifiedKg"] {
+  color:#1c1c1e !important;
+  font-weight:700 !important;
+  -webkit-text-stroke:0 !important;
+  text-shadow:none !important;
+}
+#deliveryViewModal #deliveryUnifiedKg,
+#deliveryViewModal #deliveryUnifiedL,
+#deliveryViewModal #deliveryUnifiedWeightDiff,
+#deliveryViewModal #deliveryUnifiedCapacityDiff,
+#deliveryViewModal #deliveryUnifiedL .unified-delivery-capacity-value {
+  color:#1c1c1e !important;
+  font-weight:700 !important;
+  -webkit-text-stroke:0 !important;
+  text-shadow:none !important;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -2077,9 +2136,9 @@ nav button{height:45px !important;}
   <h3>納品データ</h3>
   <div id="deliveryViewInfo" style="line-height:1.8;margin-bottom:10px"></div>
   <div class="unified-delivery-edit">
-   <label for="deliveryUnifiedKg">実納品重量（kg）</label>
+   <label for="deliveryUnifiedKg">納品重量（kg）</label>
    <input id="deliveryUnifiedKg" type="text" inputmode="decimal" autocomplete="off">
-   <div id="deliveryUnifiedL" class="unified-delivery-diff">実納品容量（L）：—</div>
+   <div id="deliveryUnifiedL" class="unified-delivery-diff">納品容量（L）：—</div>
    <div id="deliveryUnifiedWeightDiff" class="unified-delivery-diff">重量差：— kg</div>
    <div id="deliveryUnifiedCapacityDiff" class="unified-delivery-diff">容量差：— L</div>
   </div>
@@ -2141,7 +2200,7 @@ nav button{height:45px !important;}
    <button id="deliveryDataEditBtn" type="button" class="full">データ修正</button>
    <button id="deliveryViewCloseBtn" class="gray full">閉じる</button>
   </div>
-  <div class="unified-delivery-note">※実納品重量・タンク確認をこの画面で保存します。納品日は「入力」画面で変更してください。</div>
+  <div class="unified-delivery-note">※納品重量・タンク確認をこの画面で保存します。納品日は「入力」画面で変更してください。</div>
  </div>
 </div>
 
@@ -3301,7 +3360,7 @@ function updateUnifiedDeliveryFields(){
   const signed=v=>Number.isFinite(v)?(v>0?"+"+formatQuantity(v):formatQuantity(v)):"—";
   const signedCapacity=v=>{if(!Number.isFinite(v))return "—";const t=Number(v);return t>0?"+"+formatFixedQuantity(t,1):formatFixedQuantity(t,1);};
   const l=$('deliveryUnifiedL'),wd=$('deliveryUnifiedWeightDiff'),cd=$('deliveryUnifiedCapacityDiff');
-  if(l)l.textContent="実納品容量（L）："+(Number.isFinite(deliveryL)?formatFixedQuantity(deliveryL,1):"—");
+  if(l)l.innerHTML="納品容量（L）：<span class=\"unified-delivery-capacity-value\">"+(Number.isFinite(deliveryL)?formatFixedQuantity(deliveryL,1):"—")+"</span>";
   // 「今回の納品量」は実納品重量から算出した容量と常に同期させる。
   // 以前に保存された古い値が残っていても、表示・再保存時に正しい値へ更新する。
   const tankDelivery=$('deliveryViewTankDelivery');
