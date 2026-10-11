@@ -1529,17 +1529,20 @@ nav button{height:45px !important;}
 </style>
 
 <style id="history-summary-card-compact-height">
-/* 配車履歴：集計カードの高さを文字サイズに合わせて、よりコンパクトに調整 */
-#historyPage .history-summary .box{
+/* 配車履歴・納品履歴：集計欄を同じコンパクトなデザインに統一（表示のみ） */
+#historyPage .history-summary .box,
+#deliveryHistoryPage .history-summary .box{
   min-height:32px !important;
   padding:2px 5px !important;
   align-items:center !important;
 }
-#historyPage .history-summary-card{
+#historyPage .history-summary-card,
+#deliveryHistoryPage .history-summary-card{
   padding-top:4px !important;
   padding-bottom:4px !important;
 }
-#historyPage .history-summary{
+#historyPage .history-summary,
+#deliveryHistoryPage .history-summary{
   gap:6px !important;
 }
 </style>
