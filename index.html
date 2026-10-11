@@ -3286,7 +3286,7 @@ function openDeliveryView(i){
   $("deliveryViewInfo").innerHTML=
     "<div style='font-size:17px;font-weight:400;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
     "<div style='font-size:16px'>取引先："+esc(x.customer||"")+(x.department?" "+esc(x.department):"")+"</div>"+
-    "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
+    "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+((x.warning || (chem&&chem.warning)) ? " <span style='color:#ff3b30;font-weight:700'>※譲受書必須</span>" : "")+"</div>"+
     "<div style='margin-top:3px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit||"")+(x.orderUnit!=="kg"&&Number.isFinite(orderKg)?"／注文重量："+formatQuantity(orderKg)+" kg":"")+"</div>";
   $("deliveryUnifiedKg").value=x.deliveryKg!=null?formatQuantity(x.deliveryKg):"";
   // 納品未登録時も削除・データ修正ボタンは同じ位置に表示し、誤操作防止のため無効にする。
