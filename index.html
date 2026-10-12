@@ -2308,7 +2308,7 @@ nav button{height:45px !important;}
 <div id="dailyOtherTimeModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
   <h3>その他の勤務時間</h3>
-  <p class="daily-other-time-note">始業・終業時刻を設定してください。勤務時間は通常勤務と同じ計算（休憩1時間を差し引く方法）です。</p>
+  <p class="daily-other-time-note">始業・終業時刻を設定してください。</p>
   <div class="daily-other-time-grid">
    <div><label for="dailyOtherModalStartTime">始業時間</label><input id="dailyOtherModalStartTime" type="time" value="06:00"></div>
    <div><label for="dailyOtherModalEndTime">終業時間</label><input id="dailyOtherModalEndTime" type="time" value="15:00"></div>
@@ -5117,7 +5117,7 @@ function renderDailyList(){
    const isOtherRecord=leaveType==="other";
    const vehicleText=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(isOtherRecord?"その他":(vehicleLabels.join(" / ")||"—"));
    const work=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(r&&r.startTime&&r.endTime?calcDailyWorkDurationText(r.startTime,r.endTime):"—");
-   const ot=isLeaveRecord?"0h":(r&&r.overtimeHours==null?"—":Number(r&&r.overtimeHours).toLocaleString("ja-JP")+"h");
+   const ot=isLeaveRecord?"—":(r&&r.overtimeHours==null?"—":Number(r&&r.overtimeHours).toLocaleString("ja-JP")+"h");
    const comm=(Number(stats.totalCommission)||0).toLocaleString("ja-JP")+"円";
    tr.innerHTML="<td>"+formatDailyListDate(iso)+"</td><td>"+esc(vehicleText)+"</td><td class='num'>"+(stats.distance==null?"—":formatQuantity(stats.distance)+"km")+"</td><td class='num'>"+stats.count+"回</td><td class='num'>"+work+"</td><td class='num'>"+ot+"</td><td class='num'>"+comm+"</td>";
    tr.onclick=()=>{$("dailyReportDate").value=iso;showDailyDetailView();renderDailyReport();};
