@@ -1859,6 +1859,67 @@ nav button{height:45px !important;}
 @media(max-width:420px){#dailyLeaveSection .daily-leave-buttons{gap:5px;}#dailyLeaveSection .daily-leave-buttons button{font-size:13px !important;padding:0 2px !important;}}
 </style>
 
+
+<style id="daily-other-time-modal-ios-layout-fix">
+/* iPhone等の狭い画面では時刻入力欄を縦並びにして、ネイティブ時刻コントロールの重なりを防ぐ */
+#dailyOtherTimeModal .modal-card{
+  box-sizing:border-box !important;
+  width:350px !important;
+  max-width:calc(100vw - 28px) !important;
+  max-height:calc(100vh - 24px) !important;
+  max-height:calc(100dvh - 24px) !important;
+  overflow-y:auto !important;
+}
+#dailyOtherTimeModal .daily-other-time-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+}
+#dailyOtherTimeModal .daily-other-time-grid > div{
+  min-width:0 !important;
+  width:100% !important;
+}
+#dailyOtherTimeModal input[type="time"]{
+  display:block !important;
+  min-width:0 !important;
+  max-width:100% !important;
+}
+@media (max-width:480px){
+  #dailyOtherTimeModal{
+    padding:12px !important;
+    box-sizing:border-box !important;
+  }
+  #dailyOtherTimeModal .modal-card{
+    width:100% !important;
+    max-width:420px !important;
+    padding:16px !important;
+    border-radius:20px !important;
+  }
+  #dailyOtherTimeModal .daily-other-time-grid{
+    grid-template-columns:minmax(0,1fr) !important;
+    gap:12px !important;
+  }
+  #dailyOtherTimeModal .daily-other-time-grid > div{
+    min-width:0 !important;
+  }
+  #dailyOtherTimeModal input[type="time"]{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:46px !important;
+    font-size:18px !important;
+    padding:8px 10px !important;
+  }
+  #dailyOtherTimeModal .modal-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+  }
+  #dailyOtherTimeModal .modal-actions button{
+    min-width:0 !important;
+    padding-left:6px !important;
+    padding-right:6px !important;
+    white-space:nowrap !important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="authGate">
