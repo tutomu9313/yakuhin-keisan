@@ -1916,13 +1916,16 @@ nav button{height:45px !important;}
     width:100% !important;
     min-width:0 !important;
     max-width:100% !important;
-    height:44px !important;
+    height:38px !important;
+    min-height:38px !important;
     box-sizing:border-box !important;
     -webkit-appearance:none !important;
     appearance:none !important;
     font-size:16px !important;
-    padding:6px 4px !important;
+    line-height:38px !important;
+    padding:0 4px !important;
     text-align:center !important;
+    vertical-align:middle !important;
   }
   #dailyOtherTimeModal .modal-actions{
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
@@ -1934,6 +1937,34 @@ nav button{height:45px !important;}
     padding-right:6px !important;
     white-space:nowrap !important;
   }
+}
+</style>
+
+<style id="daily-other-time-text-position-only">
+/* 「その他の勤務時間」ダイアログ：ボックス寸法は維持し、時刻文字の位置だけを通常の勤務時間欄に合わせる */
+#dailyOtherTimeModal input[type="time"]{
+  text-align:center !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+  line-height:38px !important;
+}
+#dailyOtherTimeModal input[type="time"]::-webkit-date-and-time-value{
+  text-align:center !important;
+  line-height:normal !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+#dailyOtherTimeModal input[type="time"]::-webkit-datetime-edit{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
+}
+#dailyOtherTimeModal input[type="time"]::-webkit-datetime-edit-fields-wrapper{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:0 !important;
 }
 </style>
 </head>
