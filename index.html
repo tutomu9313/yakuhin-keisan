@@ -1941,30 +1941,12 @@ nav button{height:45px !important;}
 </style>
 
 <style id="daily-other-time-text-position-only">
-/* 「その他の勤務時間」ダイアログ：ボックス寸法は維持し、時刻文字の位置だけを通常の勤務時間欄に合わせる */
+/* ダイアログ内の時刻文字位置だけを調整。ボックス寸法は変更しない。iOSのネイティブ時刻欄内部のdisplay/flex指定は使わず、通常の勤務時間欄に近い描画に戻す。 */
 #dailyOtherTimeModal input[type="time"]{
   text-align:center !important;
   padding-top:0 !important;
   padding-bottom:0 !important;
   line-height:38px !important;
-}
-#dailyOtherTimeModal input[type="time"]::-webkit-date-and-time-value{
-  text-align:center !important;
-  line-height:normal !important;
-  padding:0 !important;
-  margin:0 !important;
-}
-#dailyOtherTimeModal input[type="time"]::-webkit-datetime-edit{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:0 !important;
-}
-#dailyOtherTimeModal input[type="time"]::-webkit-datetime-edit-fields-wrapper{
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  padding:0 !important;
 }
 </style>
 </head>
