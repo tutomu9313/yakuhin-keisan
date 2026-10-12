@@ -1884,12 +1884,14 @@ nav button{height:45px !important;}
 }
 @media (max-width:480px){
   #dailyOtherTimeModal{
-    padding:12px !important;
+    padding:0 !important;
     box-sizing:border-box !important;
   }
   #dailyOtherTimeModal .modal-card{
-    width:100% !important;
-    max-width:420px !important;
+    /* 容量計算ダイアログと同じ外幅にし、内側の余白と部品配置は維持 */
+    width:350px !important;
+    max-width:calc(100% - 20px) !important;
+    box-sizing:border-box !important;
     padding:16px !important;
     border-radius:20px !important;
   }
