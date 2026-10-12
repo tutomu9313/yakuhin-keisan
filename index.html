@@ -1893,20 +1893,36 @@ nav button{height:45px !important;}
     padding:16px !important;
     border-radius:20px !important;
   }
+  /* iPhoneでも元の横並びを維持し、ネイティブ時刻欄のはみ出しを防ぐ */
   #dailyOtherTimeModal .daily-other-time-grid{
-    grid-template-columns:minmax(0,1fr) !important;
-    gap:12px !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
   }
   #dailyOtherTimeModal .daily-other-time-grid > div{
     min-width:0 !important;
+    max-width:100% !important;
+    width:100% !important;
+  }
+  #dailyOtherTimeModal .daily-other-time-grid label{
+    font-size:14px !important;
+    line-height:1.3 !important;
+    white-space:nowrap !important;
   }
   #dailyOtherTimeModal input[type="time"]{
+    display:block !important;
     width:100% !important;
     min-width:0 !important;
     max-width:100% !important;
-    height:46px !important;
-    font-size:18px !important;
-    padding:8px 10px !important;
+    height:44px !important;
+    box-sizing:border-box !important;
+    -webkit-appearance:none !important;
+    appearance:none !important;
+    font-size:16px !important;
+    padding:6px 4px !important;
+    text-align:center !important;
   }
   #dailyOtherTimeModal .modal-actions{
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
