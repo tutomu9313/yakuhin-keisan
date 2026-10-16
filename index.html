@@ -3485,13 +3485,21 @@ async function saveDelivery(){
 let deliverySourceOrder=null;
 let deliveryHistory=JSON.parse(localStorage.getItem("yakuhin_delivery_history")||"[]");
 deliveryHistory=deliveryHistory.map(d=>{
+  // 納品記録に車種がない旧データは、紐づく注文履歴から補完する（保存・計算内容は変更しない）。
+  let sourceOrder=null;
+  if(d.orderId) sourceOrder=history.find(h=>h && h.orderId && h.orderId===d.orderId)||null;
+  if(!sourceOrder && d.orderKey) sourceOrder=history.find(h=>h && deliveryOrderKey(h)===d.orderKey)||null;
+  if(!sourceOrder) sourceOrder=history.find(h=>h && h.customer===d.customer && h.chemical===d.chemical &&
+    (d.orderKey ? deliveryOrderKey(h)===d.orderKey : true))||null;
   let department=d.department||"";
   if(!department){
-    const src=history.find(h=>h && h.customer===d.customer && h.chemical===d.chemical &&
+    const src=sourceOrder || history.find(h=>h && h.customer===d.customer && h.chemical===d.chemical &&
       (d.orderKey ? deliveryOrderKey(h)===d.orderKey : true));
     if(src) department=src.department||"";
   }
-  return {...d,department,orderKey:d.orderKey||deliveryOrderKey(d)};
+  const validVehicle=v=>v==="4t"||v==="10t";
+  const vehicleType=validVehicle(d.vehicleType)?d.vehicleType:(validVehicle(sourceOrder?.vehicleType)?sourceOrder.vehicleType:"");
+  return {...d,department,vehicleType,orderKey:d.orderKey||deliveryOrderKey(d)};
 });
 
 function isDeliveryWarning(rec){
@@ -3557,6 +3565,7 @@ function renderDeliveryHistory(){
 
     div.innerHTML=
       "<div style='font-size:16px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
+      ((x.vehicleType==="4t"||x.vehicleType==="10t")?"<div style='font-size:14px;font-weight:400;margin-top:3px'>車種："+esc(x.vehicleType)+"</div>":"")+ 
       (x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
       "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:16px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
       "<div style='color:#000;font-size:16px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
