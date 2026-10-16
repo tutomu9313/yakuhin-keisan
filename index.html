@@ -7747,6 +7747,30 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 }
 </style>
 
+
+<style id="iphone-planned-time-vertical-center-fix">
+/* iPhone：入力画面の予定時間を入力欄の縦中央に配置（欄の幅・高さは維持） */
+@media (max-width:600px){
+  #calcPage #plannedTime{
+    line-height:36px !important;
+    padding-top:0 !important;
+    padding-bottom:0 !important;
+    text-align:center !important;
+    vertical-align:middle !important;
+    box-sizing:border-box !important;
+  }
+  #calcPage #plannedTime::-webkit-date-and-time-value{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    height:100% !important;
+    line-height:normal !important;
+    text-align:center !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+}
+</style>
 </body>
 
 <style id="daily-date-display-final-fix">
