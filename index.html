@@ -5630,20 +5630,24 @@ function buildWeeklyPrintArea(){
  };
  const getDistanceRows=(date)=>{
    const dr=(typeof dailyReports!=="undefined"&&dailyReports)?dailyReports[date]:null;
-   const vehicleMap=dr&&dr.vehicles&&typeof dr.vehicles==="object"?dr.vehicles:{};
+   // 乗換後の車両は secondaryVehicle に保存されるため、日報共通の取得処理で両方を取得する。
+   const vehicleMap=(typeof getDailyReportVehicles==="function")
+     ?getDailyReportVehicles(date)
+     :(dr&&dr.vehicles&&typeof dr.vehicles==="object"?dr.vehicles:{});
    const primaryVehicle=dr&&dr.primaryVehicle&&vehicleMap[dr.primaryVehicle]?dr.primaryVehicle:"";
    const vehicleKeys=Object.keys(vehicleMap);
    const orderedVehicles=[];
    if(primaryVehicle)orderedVehicles.push(primaryVehicle);
    vehicleKeys.forEach(v=>{if(!orderedVehicles.includes(v))orderedVehicles.push(v);});
    const out=[];
-   orderedVehicles.slice(0,2).forEach(v=>{
-     const rec=vehicleMap[v]||{};
+   orderedVehicles.slice(0,2).forEach(key=>{
+     const rec=vehicleMap[key]||{};
      const outOdo=Number(rec.outOdometer),inOdo=Number(rec.inOdometer),dist=Number(rec.distance);
      const outText=Number.isFinite(outOdo)?formatQuantity(outOdo)+"km":"—";
      const inText=Number.isFinite(inOdo)?formatQuantity(inOdo)+"km":"—";
      const distText=Number.isFinite(dist)?formatQuantity(dist)+"km":"—";
-     const vehicleLabel=esc(v);
+     const vehicleType=(rec.vehicleType==="4t"||rec.vehicleType==="10t")?rec.vehicleType:String(key).replace(/#2$/,'');
+     const vehicleLabel=esc(vehicleType);
      out.push('<div class="weekly-print-distance-line"><span class="weekly-print-distance-vehicle">'+vehicleLabel+'</span><span>出庫：'+esc(outText)+'</span></div>');
      out.push('<div class="weekly-print-distance-line"><span class="weekly-print-distance-vehicle"></span><span>帰庫：'+esc(inText)+'　走行'+esc(distText)+'</span></div>');
    });
