@@ -3499,7 +3499,8 @@ deliveryHistory=deliveryHistory.map(d=>{
   }
   const validVehicle=v=>v==="4t"||v==="10t";
   const vehicleType=validVehicle(d.vehicleType)?d.vehicleType:(validVehicle(sourceOrder?.vehicleType)?sourceOrder.vehicleType:"");
-  return {...d,department,vehicleType,orderKey:d.orderKey||deliveryOrderKey(d)};
+  const plannedTime=d.plannedTime||sourceOrder?.plannedTime||"";
+  return {...d,department,vehicleType,plannedTime,orderKey:d.orderKey||deliveryOrderKey(d)};
 });
 
 function isDeliveryWarning(rec){
@@ -3563,9 +3564,14 @@ function renderDeliveryHistory(){
       ? ((Math.trunc(capacityDifference*100)/100)>0 ? "+"+(Math.trunc(capacityDifference*100)/100).toFixed(2) : (Math.trunc(capacityDifference*100)/100).toFixed(2))
       : "—";
 
+    const vehicleLabel=(x.vehicleType==="4t"||x.vehicleType==="10t")?"車種："+esc(x.vehicleType):"";
+    const plannedTimeLabel=x.plannedTime?"予定時間："+esc(x.plannedTime):"";
+    const vehicleTimeLabel=(vehicleLabel||plannedTimeLabel)
+      ? "<div style='font-size:16px;font-weight:400;margin-top:3px'>"+plannedTimeLabel+(plannedTimeLabel&&vehicleLabel?"　　":"")+vehicleLabel+"</div>"
+      : "";
     div.innerHTML=
       "<div style='font-size:16px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
-      ((x.vehicleType==="4t"||x.vehicleType==="10t")?"<div style='font-size:14px;font-weight:400;margin-top:3px'>車種："+esc(x.vehicleType)+"</div>":"")+ 
+      vehicleTimeLabel+
       (x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
       "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:16px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
       "<div style='color:#000;font-size:16px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
