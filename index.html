@@ -5976,6 +5976,24 @@ function renderHistoryWeeklyList(){
    const delivered=!!findLinkedDelivery(x);
    const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
    tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><span style='font-weight:700'>"+esc(x.chemical||"")+"</span>"+status+"</td>";
+   // 日付セルだけを押した場合は、その日の配車履歴一覧へ移動する。
+   // 取引先・部署・薬品など、行のほかの部分を押した場合の既存動作は維持する。
+   const dateCell=tr.cells[0];
+   if(dateText&&dateCell){
+     dateCell.style.cursor="pointer";
+     dateCell.style.color="#007aff";
+     dateCell.style.textDecoration="underline";
+     dateCell.style.textUnderlineOffset="2px";
+     dateCell.title="この日の配車履歴を表示";
+     dateCell.addEventListener("click",ev=>{
+       ev.stopPropagation();
+       const dateInput=$("historyDate");
+       if(dateInput)dateInput.value=rowDate;
+       updateHistoryDateLabel();
+       showHistoryDetailView();
+       window.scrollTo(0,0);
+     });
+   }
    tr.addEventListener("click",()=>{
      const linkedDelivery=findLinkedDelivery(x);
      if(linkedDelivery){
@@ -6046,6 +6064,25 @@ function renderDeliveryHistoryWeeklyList(){
    const lText = Number.isFinite(deliveryL) ? Number(deliveryL).toFixed(1)+" L" : "— L";
    tr.innerHTML="<td>"+dateText+"</td><td><div>"+esc(x.customer||"")+"</div><div style='margin-top:3px;font-weight:700'>"+esc(x.chemical||"")+"</div></td><td>"+esc(x.department||"")+"</td><td><div>"+kgText+"</div><div style='margin-top:2px'>"+lText+"</div></td>";
    tr.title="タップして納品データを編集";
+   // 日付セルだけを押した場合は、その日の納品履歴詳細へ移動する。
+   // 取引先・部署・納品量など、行のほかの部分を押した場合は既存の編集表示を維持する。
+   const dateCell=tr.cells[0];
+   const rowDate=x.date||"";
+   if(dateText&&dateCell){
+     dateCell.style.cursor="pointer";
+     dateCell.style.color="#007aff";
+     dateCell.style.textDecoration="underline";
+     dateCell.style.textUnderlineOffset="2px";
+     dateCell.title="この日の納品履歴を表示";
+     dateCell.addEventListener("click",ev=>{
+       ev.stopPropagation();
+       const dateInput=$("deliveryHistoryDate");
+       if(dateInput)dateInput.value=rowDate;
+       updateDeliveryHistoryDateLabel();
+       showDeliveryHistoryDetailView();
+       window.scrollTo(0,0);
+     });
+   }
    tr.addEventListener("click",()=>{
      const deliveryIndex=deliveryHistory.indexOf(x);
      if(deliveryIndex>=0) openDeliveryView(deliveryIndex);
