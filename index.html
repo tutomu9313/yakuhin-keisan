@@ -2138,8 +2138,8 @@ nav button{height:45px !important;}
   </div>
   <div id="dailyRunPrimaryBlock" class="daily-run-entry">
    <div class="grid2">
-    <div><input id="outOdometer" type="number" inputmode="numeric" placeholder="出庫km" aria-label="出庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
-    <div><input id="inOdometer" type="number" inputmode="numeric" placeholder="帰庫km" aria-label="帰庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
+    <div><input id="outOdometer" type="text" inputmode="numeric" placeholder="出庫km" aria-label="出庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
+    <div><input id="inOdometer" type="text" inputmode="numeric" placeholder="帰庫km" aria-label="帰庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
    </div>
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
    <div id="dailyInlineDistanceActions" class="daily-inline-distance-actions hidden" aria-hidden="true">
@@ -2150,8 +2150,8 @@ nav button{height:45px !important;}
   <div id="dailyRunSecondaryBlock" class="daily-run-entry hidden">
    <div class="daily-secondary-vehicle-label"><span>乗換後の車種</span><div style="display:flex;align-items:center;gap:8px"><select id="dailySecondaryVehicleSelect" aria-label="乗換後の車種" style="width:92px;height:40px;margin:0;font-size:14px"><option value="4t">4t</option><option value="10t">10t</option></select><button id="dailySecondaryDeleteBtn" type="button" class="red" style="min-width:64px;height:40px;margin:0;padding:0 12px;border-radius:10px;font-size:14px;line-height:1" onclick="window.deleteDailySecondaryVehicle()">削除</button></div></div>
    <div class="grid2">
-    <div><input id="outOdometer2" type="number" inputmode="numeric" placeholder="出庫km" aria-label="乗換後 出庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
-    <div><input id="inOdometer2" type="number" inputmode="numeric" placeholder="乗換後 帰庫km" aria-label="乗換後 帰庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
+    <div><input id="outOdometer2" type="text" inputmode="numeric" placeholder="出庫km" aria-label="乗換後 出庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
+    <div><input id="inOdometer2" type="text" inputmode="numeric" placeholder="乗換後 帰庫km" aria-label="乗換後 帰庫km" oninput="window.dailyDistanceInputChanged&&window.dailyDistanceInputChanged()"></div>
    </div>
    <div class="detail" style="margin-top:12px"><span>走行距離</span><strong id="dailyDistance2" class="daily-report-value" style="float:right">0 km</strong><div style="clear:both"></div></div>
    <div id="dailyInlineDistanceActions2" class="daily-inline-distance-actions hidden" aria-hidden="true">
@@ -5161,7 +5161,7 @@ function updateCountAdjustmentInput(){
  const input=$( "dailyCountAdjustment"),adj=input&&String(input.value||"").trim()!==""?Number(input.value):getSavedAdjustment(iso);
  const safe=Number.isFinite(adj)&&adj>=0?adj:0;
  renderCountCommission(count,safe);
- const out=Number($("outOdometer")?.value),inn=Number($("inOdometer")?.value),dist=Number.isFinite(out)&&Number.isFinite(inn)&&inn>=out?inn-out:0;
+ const out=Number(String($("outOdometer")?.value||"").replace(/,/g,"")),inn=Number(String($("inOdometer")?.value||"").replace(/,/g,"")),dist=Number.isFinite(out)&&Number.isFinite(inn)&&inn>=out?inn-out:0;
  const vehicle=$("dailyVehicleType")?.value||"4t",rate=commissionRates[vehicle]||defaultCommissionRates()[vehicle];
  const currentDp=dist*Number(rate.distance);
  const total=stats.distanceCommission-currentDailySavedDistanceCommission(iso,vehicle)+currentDp+baseCountCommission(count)+(count>=5?safe:0);
@@ -5207,6 +5207,7 @@ function renderDailyReport(){
   setDailySecondaryVisible(showSecondary,existingPrimary,secondary);
   $("outOdometer2").value=secondarySaved&&secondarySaved.outOdometer!=null?secondarySaved.outOdometer:"";
   $("inOdometer2").value=secondarySaved&&secondarySaved.inOdometer!=null?secondarySaved.inOdometer:"";
+  ["outOdometer","inOdometer","outOdometer2","inOdometer2"].forEach(id=>{const el=$(id);if(el&&window.formatDailyOdometerDisplay)window.formatDailyOdometerDisplay(el);});
   updateDailyWorkDuration();
   const rows=dailyDeliveriesForDate(iso),stats=getDailyCombinedStats(iso);
   $("dailyDeliveryCount").textContent=stats.count+" 回";
@@ -5345,7 +5346,7 @@ function saveDailyReport(saveTarget){
     alert("車種確認\n\n"+vehicleWarnings.join("\n")+"\n\n注文登録時の車種が正しいか確認してください。\n\nこのまま日報を保存することはできます。");
   }
   const primaryOutRaw=String($("outOdometer").value||"").trim(),primaryInRaw=String($("inOdometer").value||"").trim();
-  const primaryOut=primaryOutRaw===""?NaN:Number(primaryOutRaw),primaryIn=primaryInRaw===""?NaN:Number(primaryInRaw);
+  const primaryOut=primaryOutRaw===""?NaN:Number(primaryOutRaw.replace(/,/g,"")),primaryIn=primaryInRaw===""?NaN:Number(primaryInRaw.replace(/,/g,""));
   if(!isLeaveDay&&!isOtherDay&&(!Number.isFinite(primaryOut)||primaryOut<0)){alert("出庫kmを入力してください。");$("outOdometer").focus();return;}
   if(primaryOutRaw!==""&&(!Number.isFinite(primaryOut)||primaryOut<0)){alert("出庫kmの数値を確認してください。");$("outOdometer").focus();return;}
   if(primaryInRaw!==""&&(!Number.isFinite(primaryIn)||primaryIn<0)){alert("帰庫kmの数値を確認してください。");$("inOdometer").focus();return;}
@@ -5355,7 +5356,7 @@ function saveDailyReport(saveTarget){
   let secondOut=NaN,secondIn=NaN;
   if(secondShown){
     const rawOut=String($("outOdometer2").value||"").trim(),rawIn=String($("inOdometer2").value||"").trim();
-    secondOut=rawOut===""?NaN:Number(rawOut); secondIn=rawIn===""?NaN:Number(rawIn);
+    secondOut=rawOut===""?NaN:Number(rawOut.replace(/,/g,"")); secondIn=rawIn===""?NaN:Number(rawIn.replace(/,/g,""));
     if(!isLeaveDay&&!isOtherDay&&(!Number.isFinite(secondOut)||secondOut<0)){alert(secondary+"の出庫kmを入力してください。");$("outOdometer2").focus();return;}
     if(rawOut!==""&&(!Number.isFinite(secondOut)||secondOut<0)){alert(secondary+"の出庫kmの数値を確認してください。");$("outOdometer2").focus();return;}
     if(rawIn!==""&&(!Number.isFinite(secondIn)||secondIn<0)){alert(secondary+"の帰庫kmの数値を確認してください。");$("inOdometer2").focus();return;}
@@ -7892,6 +7893,59 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 })();
 </script>
 
+
+
+<script id="daily-odometer-thousands-format">
+(function(){
+  "use strict";
+  var ids=["outOdometer","inOdometer","outOdometer2","inOdometer2"];
+
+  function formatValue(value){
+    var raw=String(value==null?"":value).trim().replace(/,/g,"");
+    if(!raw)return "";
+    var negative=raw.charAt(0)==="-";
+    raw=raw.replace(/-/g,"");
+    var parts=raw.split(".");
+    var integer=(parts.shift()||"").replace(/\D/g,"");
+    var decimal=parts.length?"."+parts.join("").replace(/\D/g,""):"";
+    integer=integer.replace(/\B(?=(\d{3})+(?!\d))/g,",");
+    return (negative?"-":"")+integer+decimal;
+  }
+
+  window.formatDailyOdometerDisplay=function(el){
+    if(!el)return;
+    el.value=formatValue(el.value);
+  };
+
+  function init(){
+    ids.forEach(function(id){
+      var el=document.getElementById(id);
+      if(!el||el.dataset.thousandsFormatBound==="1")return;
+      el.dataset.thousandsFormatBound="1";
+      el.type="text";
+      el.inputMode="numeric";
+      el.addEventListener("focus",function(){
+        var old=String(el.value||"");
+        var pos=typeof el.selectionStart==="number"?el.selectionStart:old.length;
+        var plainBefore=old.slice(0,pos).replace(/,/g,"");
+        var plain=old.replace(/,/g,"");
+        if(old!==plain){
+          el.value=plain;
+          try{el.setSelectionRange(plainBefore.length,plainBefore.length);}catch(e){}
+        }
+      });
+      el.addEventListener("blur",function(){
+        window.formatDailyOdometerDisplay(el);
+        if(window.updateDailyDistanceImmediate)window.updateDailyDistanceImmediate();
+      });
+      window.formatDailyOdometerDisplay(el);
+    });
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
 
 </html>
 
