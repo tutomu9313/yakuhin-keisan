@@ -1848,7 +1848,7 @@ nav button{height:45px !important;}
 #dailyOtherReasonWrap input{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:14px !important;}
 #dailyDistancePrintNoteSection{margin-top:8px !important;}
 #dailyDistancePrintNoteSection label{display:block;margin-bottom:6px;font-size:14px;font-weight:700;}
-#dailyDistancePrintNote{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:14px !important;}
+#dailyDistancePrintNote{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:17px !important;}
 #dailyOtherTimeModal .daily-other-time-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 #dailyOtherTimeModal label{display:block;margin:0 0 5px;font-weight:600;color:#333;}
 #dailyOtherTimeModal input[type="time"]{width:100%;box-sizing:border-box;margin:0;height:42px;}
@@ -4724,7 +4724,7 @@ function localDateFromISO(iso){const p=String(iso||isoToday()).split("-").map(Nu
 function isoFromLocalDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function mondayOf(iso){const d=localDateFromISO(iso),day=d.getDay();d.setDate(d.getDate()-(day===0?6:day-1));return d}
 function dailyDateShift(iso,days){const d=localDateFromISO(iso);d.setDate(d.getDate()+days);return isoFromLocalDate(d)}
-function dailyDeliveriesForDate(iso){return deliveryHistory.filter(x=>x&&x.date===iso)}
+function dailyDeliveriesForDate(iso){return deliveryHistory.filter(x=>x&&x.date===iso).sort((a,b)=>String(a.plannedTime||"99:99").localeCompare(String(b.plannedTime||"99:99"))||String(a.time||"99:99").localeCompare(String(b.time||"99:99")))}
 function dailyDistanceValue(){
  const out=parseFloat(String($("outOdometer").value||"").replace(/,/g,""));
  const inn=parseFloat(String($("inOdometer").value||"").replace(/,/g,""));
@@ -7983,7 +7983,7 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 }
 #dailyPage .daily-run-vehicle select{
   width:92px !important;
-  font-size:14px !important;
+  font-size:17px !important;
 }
 #dailyPage .daily-change-vehicle-btn{
   min-width:64px !important;
@@ -7996,7 +7996,7 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 #dailyPage input[type="time"],
 #dailyPage select{
   height:40px !important;
-  font-size:15px !important;
+  font-size:17px !important;
   box-sizing:border-box !important;
 }
 #dailyPage .detail{
