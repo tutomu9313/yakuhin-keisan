@@ -5092,7 +5092,7 @@ function dailyCutoffPeriodFor(refISO){
  const to=new Date(nextMonth.getFullYear(),nextMonth.getMonth(),nextEndDay);
  return {from:isoFromLocalDate(from),to:isoFromLocalDate(to)};
 }
-function formatDailyListDate(iso){const d=localDateFromISO(iso);return (d.getMonth()+1)+"/"+d.getDate()+"（"+["日","月","火","水","木","金","土"][d.getDay()]+"）";}
+function formatDailyListDate(iso){const d=localDateFromISO(iso);return (d.getMonth()+1)+"/"+d.getDate()+"("+["日","月","火","水","木","金","土"][d.getDay()]+")";}
 function shiftDailyListPeriod(delta){
  const input=$( "dailyReportDate");
  const ref=input?.value||isoToday();
