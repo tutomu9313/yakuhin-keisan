@@ -3594,7 +3594,7 @@ function formatDeliveryViewDate(iso){
   if(!validISO(iso)) return "—";
   const d=localDateFromISO(iso);
   const wd=["日","月","火","水","木","金","土"];
-  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${wd[d.getDay()]})`;
 }
 function normalizeTankMatchValue(v){
   return String(v??"")
@@ -4159,7 +4159,7 @@ function updateHistoryDateLabel(){
  const iso=$("historyDate")?.value||isoToday();
  const d=localDateFromISO(iso);
  const wd=["日","月","火","水","木","金","土"];
- if($("historyDateLabel")) $("historyDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+ if($("historyDateLabel")) $("historyDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${wd[d.getDay()]})`;
 }
 function shiftHistoryDate(delta){
  const input=$("historyDate");
@@ -4175,7 +4175,7 @@ function updateDeliveryHistoryDateLabel(){
  const iso=$("deliveryHistoryDate")?.value||isoToday();
  const d=localDateFromISO(iso);
  const wd=["日","月","火","水","木","金","土"];
- if($("deliveryHistoryDateLabel")) $("deliveryHistoryDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+ if($("deliveryHistoryDateLabel")) $("deliveryHistoryDateLabel").textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${wd[d.getDay()]})`;
 }
 function shiftDeliveryHistoryDate(delta){
  const input=$("deliveryHistoryDate");
@@ -5694,7 +5694,7 @@ function buildWeeklyPrintArea(){
  }
  const dates=Array.from(grouped.keys()).filter(Boolean).sort();
  let html='<div class="weekly-print-title">週間日報</div>';
- html+='<div class="weekly-print-period">'+displayDate(from)+'（'+wd[mon.getDay()]+'）～'+displayDate(to)+'（'+wd[sun.getDay()]+'）</div>';
+ html+='<div class="weekly-print-period">'+displayDate(from)+'('+wd[mon.getDay()]+')～'+displayDate(to)+'('+wd[sun.getDay()]+')</div>';
  html+='<table><thead><tr><th style="width:5%">納品日</th><th style="width:11.52%">取引先</th><th style="width:7.2%">部署</th><th style="width:6.4483125%">薬品名</th><th style="width:4.6075%">注文数量</th><th style="width:4.6075%">注文重量</th><th style="width:4.6075%">納品重量</th><th style="width:4.6075%">納品容量</th><th style="width:4.275%">重量差</th><th style="width:12.4129375%">走行距離</th></tr></thead><tbody>';
  if(!dates.length){
    html+='<tr><td colspan="10" class="center">この週の注文・納品データはありません。</td></tr>';
@@ -5714,7 +5714,7 @@ function buildWeeklyPrintArea(){
        const o=r?.order,d=r?.delivery;
        if(d) dayTotal+=Number(d.deliveryKg)||0;
        const dateObj=localDateFromISO(date);
-       const dateText=rowIndex===0?(dateObj.getMonth()+1)+"/"+dateObj.getDate()+"（"+wd[dateObj.getDay()]+"）":"";
+       const dateText=rowIndex===0?(dateObj.getMonth()+1)+"/"+dateObj.getDate()+"("+wd[dateObj.getDay()]+")":"";
        // 祝日名または休暇区分は日付の次の行に重ねて表示。行の高さは変わらない。
        const dayStatusName=rowIndex===1?(isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isHoliday?getJapaneseNationalHolidayNameISO(date):"")):"";
        const blankHolidayRow=(isHoliday||isLeaveDay||isOtherDay)&&!o&&!d;
@@ -5851,7 +5851,7 @@ function renderWeeklyReport(){
  input.value=selected;
  const {from,to,mon,sun}=getWeeklyReportRange();
  const wd=["日","月","火","水","木","金","土"];
- $("weeklyPeriod").textContent=displayDate(from)+"（"+wd[mon.getDay()]+"）～"+displayDate(to)+"（"+wd[sun.getDay()]+"）";
+ $("weeklyPeriod").textContent=displayDate(from)+"("+wd[mon.getDay()]+")～"+displayDate(to)+"("+wd[sun.getDay()]+")";
  const deliveryRows=deliveryHistory.filter(x=>x&&x.date>=from&&x.date<=to).map(x=>{
    const src=x.orderId?history.find(h=>h&&h.orderId===x.orderId):(x.orderKey?history.find(h=>h&&deliveryOrderKey(h)===x.orderKey):null);
    return {...x,plannedTime:x.plannedTime||src&&src.plannedTime||"",vehicleType:x.vehicleType||""};
@@ -5895,7 +5895,7 @@ function renderWeeklyReport(){
    const items=rowsByDate.get(date)||[];
    const statuses=statusByDate.get(date)||[];
    const d=localDateFromISO(date);
-   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   const dateText=(d.getMonth()+1)+"/"+d.getDate()+"("+wd[d.getDay()]+")";
    let firstRow=true;
    // 休暇・祝日は、一覧の「取引先」欄に専用行で表示。実際の配達データは別行で維持する。
    if(statuses.length){
@@ -5956,7 +5956,7 @@ function renderHistoryWeeklyList(){
  const range=historyWeeklyRangeFor(ref);
  const fd=localDateFromISO(range.from),td=localDateFromISO(range.to);
  const wd=["日","月","火","水","木","金","土"];
- period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日（"+wd[fd.getDay()]+"）～"+(td.getMonth()+1)+"月"+td.getDate()+"日（"+wd[td.getDay()]+"）";
+ period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日("+wd[fd.getDay()]+")～"+(td.getMonth()+1)+"月"+td.getDate()+"日("+wd[td.getDay()]+")";
  const rows=history.filter(x=>{
    const d=x.deliveryDate||x.date||"";
    return x&&d>=range.from&&d<=range.to;
@@ -5987,7 +5987,7 @@ function renderHistoryWeeklyList(){
    const tr=document.createElement("tr"); tr.dataset.orderIndex=String(history.indexOf(x)); tr.title="タップして入力計算結果を表示";
    const rowDate=x.deliveryDate||x.date||"";
    const d=localDateFromISO(rowDate);
-   const dateText=rowDate===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）";
+   const dateText=rowDate===lastDate?"":(d.getMonth()+1)+"/"+d.getDate()+"("+wd[d.getDay()]+")";
    lastDate=rowDate;
    const delivered=!!findLinkedDelivery(x);
    const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
@@ -6059,7 +6059,7 @@ function renderDeliveryHistoryWeeklyList(){
  const range=deliveryHistoryWeeklyRangeFor(ref);
  const fd=localDateFromISO(range.from),td=localDateFromISO(range.to);
  const wd=["日","月","火","水","木","金","土"];
- period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日（"+wd[fd.getDay()]+"）～"+(td.getMonth()+1)+"月"+td.getDate()+"日（"+wd[td.getDay()]+"）";
+ period.textContent=(fd.getMonth()+1)+"月"+fd.getDate()+"日("+wd[fd.getDay()]+")～"+(td.getMonth()+1)+"月"+td.getDate()+"日("+wd[td.getDay()]+")";
  const rows=deliveryHistory.filter(x=>x&&x.date>=range.from&&x.date<=range.to).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.plannedTime||"99:99").localeCompare(String(b.plannedTime||"99:99"))||String(a.time||"99:99").localeCompare(String(b.time||"99:99")));
  body.innerHTML="";
  if(!rows.length){body.innerHTML='<tr><td colspan="4" class="daily-list-empty">この週の納品記録はありません。</td></tr>';return;}
@@ -6068,7 +6068,7 @@ function renderDeliveryHistoryWeeklyList(){
    const tr=document.createElement("tr");
    tr.title="タップして入力計算結果を表示";
    const d=localDateFromISO(x.date);
-   const dateText=x.date===previousDate?"":((d.getMonth()+1)+"/"+d.getDate()+"（"+wd[d.getDay()]+"）");
+   const dateText=x.date===previousDate?"":((d.getMonth()+1)+"/"+d.getDate()+"("+wd[d.getDay()]+")");
    previousDate=x.date||"";
    const deliveryKg = Number(x.deliveryKg);
    let deliveryL = Number(x.deliveryL);
@@ -7237,7 +7237,7 @@ restoreLastVehicleType();
     const p=value.split("-").map(Number);
     const d=new Date(p[0],p[1]-1,p[2]);
     const wd=["日","月","火","水","木","金","土"];
-    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${wd[d.getDay()]})`;
   }
   function syncHistoryDateLabels(){
     const h=document.getElementById("historyDate");
@@ -7278,7 +7278,7 @@ restoreLastVehicleType();
     if(p.length!==3 || !p[0] || !p[1] || !p[2]) return "";
     const d=new Date(p[0],p[1]-1,p[2]);
     const wd=["日","月","火","水","木","金","土"];
-    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wd[d.getDay()]}）`;
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日(${wd[d.getDay()]})`;
   }
   function ensure(id,labelId){
     const input=document.getElementById(id), label=document.getElementById(labelId);
@@ -7647,7 +7647,7 @@ restoreLastVehicleType();
   let activeInput=null, viewYear=0, viewMonth=0;
   function isoParts(v){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
   function isoDate(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
-  function label(y,m,d){const dt=new Date(y,m,d); const wd=['日','月','火','水','木','金','土']; return `${y}年${m+1}月${d}日（${wd[dt.getDay()]}）`;}
+  function label(y,m,d){const dt=new Date(y,m,d); const wd=['日','月','火','水','木','金','土']; return `${y}年${m+1}月${d}日(${wd[dt.getDay()]})`;}
   function getToday(){const d=new Date(); return [d.getFullYear(),d.getMonth(),d.getDate()];}
   function ensureValue(input){let p=isoParts(input.value); if(!p){p=getToday(); input.value=isoDate(...p);} return p;}
   function build(){
@@ -7820,7 +7820,7 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
     if(p.length!==3)return;
     const d=new Date(p[0],p[1]-1,p[2]);
     const wd=['日','月','火','水','木','金','土'];
-    label.textContent=p[0]+'年'+p[1]+'月'+p[2]+'日（'+wd[d.getDay()]+'）';
+    label.textContent=p[0]+'年'+p[1]+'月'+p[2]+'日('+wd[d.getDay()]+')';
   }
   function init(){
     sync();
