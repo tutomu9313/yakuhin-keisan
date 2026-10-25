@@ -3509,15 +3509,24 @@ function isDeliveryWarning(rec){
   return !!(c&&c.warning);
 }
 function renderDeliveryHistory(){
+  // 納品履歴内の数値は小数点以下1桁まで表示（整数は小数部を省略）
+  const formatDeliveryHistoryNumber = value => {
+    const n = Number(value);
+    if(!Number.isFinite(n)) return "";
+    const rounded = Number(n.toFixed(1));
+    return (rounded === 0 ? 0 : rounded).toLocaleString("en-US", {useGrouping:true, maximumFractionDigits:1});
+  };
   const box=$("deliveryHistoryList");
   if(!box)return;
   const dateInput=$("deliveryHistoryDate");
   const selected=dateInput ? (dateInput.value||isoToday()) : isoToday();
   if(dateInput)dateInput.value=selected;
   updateDeliveryHistoryDateLabel();
+  // カード内の項目順は「薬品名 → 納品容量 → 納品重量 → 注文数量 → 注文容量」。
+  // カード自体は予定時間では並べ替えず、保存されている順序を維持する。
   const rows=deliveryHistory.filter(x=>(x.date||"")===selected);
   $("deliveryCount").textContent=rows.length;
-  $("deliveryTotalKg").textContent=formatQuantity(rows.reduce((s,x)=>s+Number(x.deliveryKg||0),0));
+  $("deliveryTotalKg").textContent=formatDeliveryHistoryNumber(rows.reduce((s,x)=>s+Number(x.deliveryKg||0),0));
   box.innerHTML="";
   if(!rows.length){
     box.innerHTML="<div class='card' style='text-align:center;color:#777'>この日の配達記録はありません。</div>";
@@ -3533,7 +3542,7 @@ function renderDeliveryHistory(){
     div.style.paddingLeft="3px";
     const weightDifference=Number(x.deliveryKg)-Number(x.orderKg);
     const weightDifferenceText=Number.isFinite(weightDifference)
-      ? (weightDifference>0 ? "+"+formatQuantity(weightDifference) : formatQuantity(weightDifference))
+      ? (weightDifference>0 ? "+"+formatDeliveryHistoryNumber(weightDifference) : formatDeliveryHistoryNumber(weightDifference))
       : "—";
 
     const orderUnit=x.orderUnit||"kg";
@@ -3558,10 +3567,10 @@ function renderDeliveryHistory(){
     const capacityDifference=Number.isFinite(orderL)&&Number.isFinite(deliveryL)
       ? deliveryL-orderL : NaN;
     const capacityDifferenceText=Number.isFinite(capacityDifference)
-      ? (Math.trunc(capacityDifference*100)/100).toFixed(2)
+      ? formatDeliveryHistoryNumber(capacityDifference)
       : "—";
     const signedCapacityDifferenceText=Number.isFinite(capacityDifference)
-      ? ((Math.trunc(capacityDifference*100)/100)>0 ? "+"+(Math.trunc(capacityDifference*100)/100).toFixed(2) : (Math.trunc(capacityDifference*100)/100).toFixed(2))
+      ? (capacityDifference>0 ? "+"+formatDeliveryHistoryNumber(capacityDifference) : formatDeliveryHistoryNumber(capacityDifference))
       : "—";
 
     const vehicleLabel=(x.vehicleType==="4t"||x.vehicleType==="10t")?"車種："+esc(x.vehicleType):"";
@@ -3571,13 +3580,13 @@ function renderDeliveryHistory(){
       : "";
     div.innerHTML=
       "<div style='font-size:16px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
-      vehicleTimeLabel+
       (x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
-      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:16px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
-      "<div style='color:#000;font-size:16px;font-weight:700;margin-top:6px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
-      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>注文重量："+formatQuantity(x.orderKg)+" kg</div>"+
-      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>納品重量："+formatQuantity(x.deliveryKg)+" kg <span style='font-size:14px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
-      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:700'>納品容量："+formatQuantity(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>";
+      vehicleTimeLabel+
+      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:21px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
+      "<div style='color:#000;font-size:21px;margin-top:3px;font-weight:700'>納品容量："+formatDeliveryHistoryNumber(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>納品重量："+formatDeliveryHistoryNumber(x.deliveryKg)+" kg <span style='font-size:14px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
+      "<div style='color:#000;font-size:16px;font-weight:400;margin-top:6px'>注文数量："+formatDeliveryHistoryNumber(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
+      "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>注文容量："+formatDeliveryHistoryNumber(orderL)+" L</div>";
     div.addEventListener("click",()=>openDeliveryView(i));
     box.appendChild(div);
   });
