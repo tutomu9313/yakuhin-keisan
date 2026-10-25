@@ -4232,7 +4232,7 @@ function renderHistory(){
     +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
     +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
     +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
-     +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+(x.warning?" ※譲受書必須":"")+"</span></div>"
+     +"<div style='font-size:13px;margin-top:4px'><span style='"+chemStyleWithSize+"'>薬品名："+esc(x.chemical)+"</span></div>"
     +"<div style='margin-top:5px;font-size:16px'>注文数量："+formatQuantity(orderAmount)+" "+orderLabel+"</div>"
     +"<div style='font-size:13px;margin-top:3px'>"+histSecondary+"</div>"
     +(x.loadingCm!=null&&Number(x.loadingCm)!==0?"<div style='font-size:13px;margin-top:3px'>積込cm "+Number(x.loadingCm).toFixed(2)+" cm</div>":"");
