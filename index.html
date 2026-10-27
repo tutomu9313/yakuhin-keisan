@@ -5834,11 +5834,13 @@ function printWeeklyReport(){
  }catch(e){}
  weeklyPrintOriginalTitle=document.title;
  document.title=filenameTitle;
- const openPrint=()=>window.print();
- if(typeof requestAnimationFrame==="function") {
-   requestAnimationFrame(()=>requestAnimationFrame(openPrint));
- } else {
-   setTimeout(openPrint,80);
+ // iPhoneのWebアプリ（standalone）では、印刷をユーザー操作の直後に実行する
+ // 必要がある場合があるため、requestAnimationFrame/setTimeoutを挟まず直接呼び出します。
+ try{
+   window.print();
+ }catch(e){
+   console.error("週間日報の印刷開始に失敗しました",e);
+   weeklyPrintInProgress=false;
  }
 }
 window.printWeeklyReport=printWeeklyReport;
