@@ -1841,6 +1841,10 @@ nav button{height:45px !important;}
   text-align: center !important;
   margin: 0 auto !important;
 }
+/* 週間日報：日付欄のカードは画面から外し、週表示の日付をカレンダーの起点にする */
+#weeklyPage > .weekly-date-picker-source { display:none !important; }
+#weeklyPage #weeklyPeriod { cursor:pointer !important; -webkit-tap-highlight-color:transparent; }
+#weeklyPage #weeklyPeriod:active { opacity:.7; }
 </style>
 
 <style id="daily-leave-prototype-style">
@@ -2079,7 +2083,7 @@ nav button{height:45px !important;}
  </div>
 </section>
 
-<section id="weeklyPage" class="hidden"><div class="card"><input id="weeklyDate" type="date" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
+<section id="weeklyPage" class="hidden"><div class="card weekly-date-picker-source" aria-hidden="true"><input id="weeklyDate" type="date" tabindex="-1" aria-label="週間日報の日付選択" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" role="button" tabindex="0" aria-label="日付を選択してカレンダーを開く" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
 <section id="deliveryHistoryPage" class="hidden">
  <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
  <div id="deliveryHistoryDetailView" class="hidden">
@@ -7657,7 +7661,8 @@ restoreLastVehicleType();
     inputDeliveryDate:{button:'inputDeliveryDate',label:null,render:null},
     historyDate:{button:'historyDateText',label:'historyDateLabel',render:()=>{try{window.renderHistory&&window.renderHistory();}catch(e){}}},
     deliveryHistoryDate:{button:'deliveryHistoryDateText',label:'deliveryHistoryDateLabel',render:()=>{try{window.renderDeliveryHistory&&window.renderDeliveryHistory();}catch(e){} try{if(!document.getElementById('deliveryHistoryWeeklyListView')?.classList.contains('hidden')) window.renderDeliveryHistoryWeeklyList&&window.renderDeliveryHistoryWeeklyList();}catch(e){}}},
-    dailyReportDate:{button:'dailyReportDateText',label:'dailyReportDateLabel',render:()=>{try{window.renderDailyReport&&window.renderDailyReport();}catch(e){}}}
+    dailyReportDate:{button:'dailyReportDateText',label:'dailyReportDateLabel',render:()=>{try{window.renderDailyReport&&window.renderDailyReport();}catch(e){}}},
+    weeklyDate:{button:'weeklyPeriod',label:null,render:null}
   };
   let activeInput=null, viewYear=0, viewMonth=0;
   function isoParts(v){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?[+m[1],+m[2]-1,+m[3]]:null;}
@@ -7675,7 +7680,7 @@ restoreLastVehicleType();
       const act=e.target.closest('[data-act]'); if(act){if(act.dataset.act==='prev') changeMonth(-1); else changeMonth(1); return;}
       const day=e.target.closest('.hcc-day'); if(day&&!day.disabled) choose(+day.dataset.y,+day.dataset.m,+day.dataset.d);
     });
-    document.addEventListener('click',e=>{if(cal.style.display==='none')return; if(e.target.closest('#historyCustomCalendar')||e.target.closest('#historyDateText')||e.target.closest('#deliveryHistoryDateText')||e.target.closest('#dailyReportDateText')||e.target.closest('#dateDisplay')||e.target.closest('#inputDeliveryDate'))return; close();},true);
+    document.addEventListener('click',e=>{if(cal.style.display==='none')return; if(e.target.closest('#historyCustomCalendar')||e.target.closest('#historyDateText')||e.target.closest('#deliveryHistoryDateText')||e.target.closest('#dailyReportDateText')||e.target.closest('#weeklyPeriod')||e.target.closest('#dateDisplay')||e.target.closest('#inputDeliveryDate'))return; close();},true);
     window.addEventListener('resize',position);
     window.addEventListener('scroll',position,true);
     return cal;
@@ -7725,7 +7730,13 @@ restoreLastVehicleType();
     btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();open(id);},true);
     input.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(id);}},true);
   }
-  function init(){build(); bind('dateDisplay'); bind('inputDeliveryDate'); bind('historyDate'); bind('deliveryHistoryDate'); bind('dailyReportDate');}
+  function init(){build(); bind('dateDisplay'); bind('inputDeliveryDate'); bind('historyDate'); bind('deliveryHistoryDate'); bind('dailyReportDate'); bind('weeklyDate');
+    const weeklyButton=document.getElementById('weeklyPeriod');
+    if(weeklyButton && !weeklyButton.dataset.weeklyCalendarKeyboardBound){
+      weeklyButton.dataset.weeklyCalendarKeyboardBound='1';
+      weeklyButton.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open('weeklyDate');}});
+    }
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
