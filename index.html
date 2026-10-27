@@ -1818,22 +1818,28 @@ nav button{height:45px !important;}
 
 
 <style id="weekly-date-card-size-match">
-/* 週間日報：最上部の日付入力欄を中央寄せでコンパクトにする。機能は変更しない。 */
+/* 週間日報：日付欄を適度な幅にし、日付文字を中央配置。高さも少し抑える。 */
 #weeklyPage > .card:first-child {
   padding: 6px 12px 8px !important;
   margin-top: 0 !important;
 }
 #weeklyPage > .card:first-child #weeklyDate {
   display: block !important;
-  width: 220px !important;
+  width: 280px !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  height: 48px !important;
-  min-height: 48px !important;
-  max-height: 48px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
   font-size: 18px !important;
+  text-align: center !important;
+  text-align-last: center !important;
+}
+#weeklyPage > .card:first-child #weeklyDate::-webkit-date-and-time-value {
+  text-align: center !important;
+  margin: 0 auto !important;
 }
 </style>
 
