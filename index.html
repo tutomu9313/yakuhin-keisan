@@ -1818,20 +1818,20 @@ nav button{height:45px !important;}
 
 
 <style id="weekly-date-card-size-match">
-/* 週間日報：最上部の日付入力カードを他のカードと同じ幅・高さのバランスにする。機能は変更しない。 */
+/* 週間日報：最上部の日付入力欄を中央寄せでコンパクトにする。機能は変更しない。 */
 #weeklyPage > .card:first-child {
   padding: 6px 12px 8px !important;
   margin-top: 0 !important;
 }
 #weeklyPage > .card:first-child #weeklyDate {
   display: block !important;
-  width: 100% !important;
+  width: 220px !important;
   min-width: 0 !important;
   max-width: 100% !important;
   height: 48px !important;
   min-height: 48px !important;
   max-height: 48px !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
   box-sizing: border-box !important;
   font-size: 18px !important;
 }
@@ -5834,13 +5834,11 @@ function printWeeklyReport(){
  }catch(e){}
  weeklyPrintOriginalTitle=document.title;
  document.title=filenameTitle;
- // iPhoneのWebアプリ（standalone）では、印刷をユーザー操作の直後に実行する
- // 必要がある場合があるため、requestAnimationFrame/setTimeoutを挟まず直接呼び出します。
- try{
-   window.print();
- }catch(e){
-   console.error("週間日報の印刷開始に失敗しました",e);
-   weeklyPrintInProgress=false;
+ const openPrint=()=>window.print();
+ if(typeof requestAnimationFrame==="function") {
+   requestAnimationFrame(()=>requestAnimationFrame(openPrint));
+ } else {
+   setTimeout(openPrint,80);
  }
 }
 window.printWeeklyReport=printWeeklyReport;
