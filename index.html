@@ -723,6 +723,32 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #dailyCommissionSection .commission-total-line{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid #e5e5ea}
 #dailyCommissionSection .commission-total-label{font-weight:700}
 #dailyCommissionSection #dailyCommissionTotal{font-weight:700;white-space:nowrap}
+/* 回数歩合は1行、距離歩合は日報に入力された車種だけ表示 */
+#dailyCommissionSection .daily-commission-vehicle-lines{display:flex;flex-direction:column;gap:9px}
+#dailyCommissionSection .commission-main-row{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:baseline;line-height:1.5}
+#dailyCommissionSection .commission-main-label{font-weight:700;white-space:nowrap}
+#dailyCommissionSection .commission-main-amount{text-align:right;min-width:0;white-space:nowrap;font-size:14px;font-variant-numeric:tabular-nums}
+#dailyCommissionSection .commission-distance-group{display:flex;flex-direction:column;gap:5px}
+#dailyCommissionSection .commission-distance-heading{font-weight:700;line-height:1.5}
+#dailyCommissionSection .commission-distance-row{display:grid;grid-template-columns:42px minmax(0,1fr);gap:5px;align-items:baseline;line-height:1.45;margin-left:12px}
+#dailyCommissionSection .commission-distance-vehicle{font-weight:700;white-space:nowrap}
+#dailyCommissionSection .commission-distance-amount{text-align:right;min-width:0;white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}
+@media(max-width:360px){#dailyCommissionSection .commission-distance-amount{font-size:12px}}
+</style>
+<style id="commission-count-schedule-editor-style">
+#commissionModal .modal-card{max-height:85vh;overflow-y:auto;box-sizing:border-box}
+#commissionModal .commission-vehicle-section{padding:12px;margin:0 0 12px;border:1px solid #e1e1e8;border-radius:14px;background:#f8f8fb}
+#commissionModal .commission-vehicle-section h4{font-size:18px;margin:0 0 8px}
+#commissionModal .commission-vehicle-section>input{margin-top:5px}
+#commissionModal .commission-schedule-title{font-weight:700;margin:14px 0 7px}
+#commissionModal .commission-count-rows{display:flex;flex-direction:column;gap:7px}
+#commissionModal .commission-count-row{display:grid;grid-template-columns:52px minmax(0,1fr) 18px 54px;gap:5px;align-items:center}
+#commissionModal .commission-count-round{font-weight:600;white-space:nowrap;font-size:14px}
+#commissionModal .commission-count-input{width:100%;min-width:0;height:36px;margin:0;padding:5px 8px;box-sizing:border-box;text-align:right}
+#commissionModal .commission-count-yen{font-size:14px;text-align:center}
+#commissionModal .commission-remove-count{height:36px;min-width:0;width:54px;margin:0;padding:0 4px;font-size:13px!important;border-radius:8px}
+#commissionModal .commission-add-count{width:100%;height:38px;margin:9px 0 0;font-size:14px!important}
+#commissionModal .rate-note{font-size:13px;line-height:1.5;margin-top:10px}
 </style>
 <style id="daily-vehicle-change-style">
 #dailyRunSection .daily-run-vehicle{display:flex;align-items:center;gap:6px;}
@@ -2193,8 +2219,9 @@ nav button{height:45px !important;}
  <div class="card" id="dailyCommissionSection">
   <h3 style="margin:0 0 14px">歩合給</h3>
   <div class="detail">
-   <div class="commission-line"><span class="commission-label">距離歩合</span><span id="dailyDistanceFormula" class="commission-value">0 km × 0円 = 0円</span></div>
-   <div class="commission-line"><span class="commission-label">回数歩合</span><span id="dailyCountFormula" class="commission-value">0回：0円</span></div>
+   <div id="dailyCommissionVehicleLines" class="daily-commission-vehicle-lines" aria-live="polite"></div>
+   <div class="commission-line" style="display:none"><span class="commission-label">距離歩合</span><span id="dailyDistanceFormula" class="commission-value">0 km × 0円 = 0円</span></div>
+   <div class="commission-line" style="display:none"><span class="commission-label">回数歩合</span><span id="dailyCountFormula" class="commission-value">0回：0円</span></div>
    <div id="dailyCountAdjustmentRow" class="commission-adjustment-line" style="display:none">
     <span class="commission-adjustment-label">調整歩合</span>
     <div style="display:flex;align-items:center;gap:5px"><input id="dailyCountAdjustment" type="number" min="0" step="1" inputmode="numeric" placeholder="金額を入力"> <span class="commission-yen">円</span></div>
@@ -2441,16 +2468,23 @@ nav button{height:45px !important;}
 <div id="commissionModal" class="modal hidden" aria-hidden="true">
  <div class="modal-card">
   <h3>歩合給設定</h3>
-  <div style="font-weight:700;margin-bottom:8px">4t</div>
-  <div><label>距離歩合（円/km）</label><input id="rate4tDistance" type="number" min="0" step="1" inputmode="numeric"></div>
-  <div style="font-weight:700;margin:16px 0 8px">10t</div>
-  <div><label>距離歩合（円/km）</label><input id="rate10tDistance" type="number" min="0" step="1" inputmode="numeric"></div>
-  <div style="font-weight:700;margin:16px 0 8px">回数歩合（車種共通）</div>
-  <div class="detail" style="line-height:1.8">
-   <div>1回目　0円</div><div>2回目　600円</div><div>3回目　1,200円</div><div>4回目　2,100円</div>
-   <div style="margin-top:6px;color:#666;font-size:13px">5回目以降は「調整歩合」として日報入力時に金額を入力します。</div>
-  </div>
-  <div class="rate-note">距離歩合を変更すると、以後の日報計算に反映されます。回数歩合の1～4回目は固定額で計算します。</div>
+  <section class="commission-vehicle-section">
+   <h4>4t</h4>
+   <label for="rate4tDistance">距離歩合（円/km）</label>
+   <input id="rate4tDistance" type="number" min="0" step="1" inputmode="numeric">
+   <div class="commission-schedule-title">回数歩合（1回ごとの金額）</div>
+   <div id="commissionCountRows4t" class="commission-count-rows"></div>
+   <button id="commissionAdd4t" class="gray commission-add-count" type="button" onclick="window.addCommissionCountRow('4t')">＋ 回数を追加</button>
+  </section>
+  <section class="commission-vehicle-section">
+   <h4>10t</h4>
+   <label for="rate10tDistance">距離歩合（円/km）</label>
+   <input id="rate10tDistance" type="number" min="0" step="1" inputmode="numeric">
+   <div class="commission-schedule-title">回数歩合（1回ごとの金額）</div>
+   <div id="commissionCountRows10t" class="commission-count-rows"></div>
+   <button id="commissionAdd10t" class="gray commission-add-count" type="button" onclick="window.addCommissionCountRow('10t')">＋ 回数を追加</button>
+  </section>
+  <div class="rate-note">上から1回目、2回目…の順で計算します。金額は自由に訂正できます。回数を追加・削除すると、下の回数は順番に詰めて計算します。設定していない回数がある日は、日報で調整歩合を入力できます。</div>
   <div class="modal-actions"><button id="commissionSaveBtn" type="button" onclick="window.saveCommissionRates()">保存</button><button id="commissionCancelBtn" type="button" class="gray" onclick="window.closeCommissionModal()">キャンセル</button></div>
  </div>
 </div>
@@ -2776,8 +2810,31 @@ let history=load(KEY_H,[]);
 ensureHistoryOrderIds();
 let departments=(()=>{try{const v=JSON.parse(localStorage.getItem(KEY_P)||"{}");return v&&typeof v==="object"&&!Array.isArray(v)?v:{};}catch(e){return {}}})();
 let selectedChem=-1, selectedCustomer=-1, currentResult={kg:0,L:0,m3:0};
-function defaultCommissionRates(){return {"4t":{distance:10},"10t":{distance:12},countSchedule:{1:0,2:600,3:1200,4:2100}}}
-function normalizeCommissionRates(v){const d=defaultCommissionRates();["4t","10t"].forEach(t=>{if(v&&v[t]){const a=Number(v[t].distance);if(Number.isFinite(a)&&a>=0)d[t].distance=a;}});return d}
+function defaultCommissionRates(){return {"4t":{distance:10,countSchedule:[0,600,1200,2100]},"10t":{distance:12,countSchedule:[0,600,1200,2100]}}}
+function normalizeCountCommissionSchedule(raw,fallback){
+ if(Array.isArray(raw))return raw.map(v=>{const n=Number(v);return Number.isFinite(n)&&n>=0?n:0;});
+ if(raw&&typeof raw==="object"){
+  const keys=Object.keys(raw).filter(k=>/^\d+$/.test(k)).map(Number).filter(n=>n>=1);
+  if(!keys.length)return [];
+  const max=Math.max(...keys);
+  return Array.from({length:max},(_,i)=>{const n=Number(raw[i+1]);return Number.isFinite(n)&&n>=0?n:0;});
+ }
+ return Array.isArray(fallback)?fallback.slice():[0,600,1200,2100];
+}
+function normalizeCommissionRates(v){
+ const defaults=defaultCommissionRates(),out={};
+ const sharedSchedule=v&&v.countSchedule!=null?v.countSchedule:null;
+ ["4t","10t"].forEach(t=>{
+  const raw=v&&v[t]&&typeof v[t]==="object"?v[t]:null;
+  const distance=Number(raw&&raw.distance);
+  const scheduleSource=raw&&Object.prototype.hasOwnProperty.call(raw,"countSchedule")?raw.countSchedule:sharedSchedule;
+  out[t]={
+   distance:Number.isFinite(distance)&&distance>=0?distance:defaults[t].distance,
+   countSchedule:normalizeCountCommissionSchedule(scheduleSource,defaults[t].countSchedule)
+  };
+ });
+ return out;
+}
 let dailyReports=(()=>{try{const v=JSON.parse(localStorage.getItem(KEY_DR)||"{}");return v&&typeof v==="object"&&!Array.isArray(v)?v:{};}catch(e){return {}}})();
 let dailyReportCutoffDay=(()=>{const n=parseInt(localStorage.getItem(KEY_DRCUTOFF)||"20",10);return Number.isFinite(n)?Math.min(31,Math.max(1,n)):20;})();
 let commissionRates=(()=>{try{return normalizeCommissionRates(JSON.parse(localStorage.getItem(KEY_CR)||"null")||defaultCommissionRates());}catch(e){return defaultCommissionRates()}})();
@@ -4934,7 +4991,10 @@ function getDailyReportVehicles(iso){
 }
 function getDailyCombinedStats(iso){
  const r=getDailyReportRecord(iso);
- if(!r)return {distance:0,distanceCommission:0,count:dailyDeliveriesForDate(iso).length,countCommission:baseCountCommission(dailyDeliveriesForDate(iso).length),totalCommission:baseCountCommission(dailyDeliveriesForDate(iso).length),adjustment:0,hasCompleted:false};
+ const count=dailyDeliveriesForDate(iso).length;
+ const savedAdjustment=Number.isFinite(Number(r&&r.countAdjustment))&&Number(r&&r.countAdjustment)>=0?Number(r.countAdjustment):0;
+ const countInfo=getDailyCountCommissionInfo(iso,savedAdjustment);
+ if(!r)return {distance:0,distanceCommission:0,count,countCommission:countInfo.total,totalCommission:countInfo.total,adjustment:countInfo.adjustment,countByVehicle:countInfo.counts,countCommissionByVehicle:countInfo.amounts,hasUnscheduledCount:countInfo.hasUnscheduledCount,hasCompleted:false};
  const primaryVehicle=(r.primaryVehicle==="4t"||r.primaryVehicle==="10t")?r.primaryVehicle:(r.vehicles&&r.vehicles["4t"]?"4t":"10t");
  const entries=[];
  const primary=r.vehicles&&r.vehicles[primaryVehicle]?r.vehicles[primaryVehicle]:null;
@@ -4955,10 +5015,7 @@ function getDailyCombinedStats(iso){
    distanceCommission+=dp;
    if(Number.isFinite(inn))hasCompleted=true;
  });
- const count=dailyDeliveriesForDate(iso).length;
- const adj=Number.isFinite(Number(r&&r.countAdjustment))&&Number(r.countAdjustment)>=0?Number(r.countAdjustment):0;
- const countCommission=baseCountCommission(count)+(count>=5?adj:0);
- return {distance,distanceCommission,count,countCommission,totalCommission:distanceCommission+countCommission,adjustment:adj,hasCompleted};
+ return {distance,distanceCommission,count,countCommission:countInfo.total,totalCommission:distanceCommission+countInfo.total,adjustment:countInfo.adjustment,countByVehicle:countInfo.counts,countCommissionByVehicle:countInfo.amounts,hasUnscheduledCount:countInfo.hasUnscheduledCount,hasCompleted};
 }
 function updateDailyCalc(){
   const iso=$("dailyReportDate")?.value||isoToday();
@@ -4973,10 +5030,13 @@ function updateDailyCalc(){
   const dp=dist*Number(rate.distance);
   const rate2=(commissionRates&&commissionRates[secondary])?commissionRates[secondary]:defaultCommissionRates()[secondary];
   const dp2=dist2*Number(rate2.distance);
-  const stats=getDailyCombinedStats(iso);
-  renderCountCommission(stats.count,stats.adjustment);
-  $("dailyDistanceFormula").textContent=vehicle+"："+dist+" km × "+Number(rate.distance).toLocaleString("ja-JP")+"円 = "+dp.toLocaleString("ja-JP")+"円"+(dailyRunHasSecondary()?"\n"+secondary+"："+dist2+" km × "+Number(rate2.distance).toLocaleString("ja-JP")+"円 = "+dp2.toLocaleString("ja-JP")+"円":"");
-  $("dailyCommissionTotal").textContent=stats.totalCommission.toLocaleString("ja-JP")+"円";
+  const adjustmentInput=$("dailyCountAdjustment");
+  const adjustmentValue=adjustmentInput&&String(adjustmentInput.value||"").trim()!==""?Number(adjustmentInput.value):getSavedAdjustment(iso);
+  const safeAdjustment=Number.isFinite(adjustmentValue)&&adjustmentValue>=0?adjustmentValue:0;
+  const countInfo=getDailyCountCommissionInfo(iso,safeAdjustment);
+  renderCountCommission(iso,safeAdjustment);
+  const currentDistanceCommission=dp+dp2*(dailyRunHasSecondary()?1:0);
+  $("dailyCommissionTotal").textContent=(currentDistanceCommission+countInfo.total).toLocaleString("ja-JP")+"円";
 }
 function formatDailyMinutes(mins){
  const n=Math.max(0,Math.round(Number(mins)||0));
@@ -5164,26 +5224,131 @@ function calcDailyWorkDurationText(st,ev){const m=(t)=>{const [h,n]=String(t).sp
 function updateDailyViewToggle(){const b=$("dailyViewToggleBtn"); if(!b)return; const listHidden=$("dailyListView")?.classList.contains("hidden"); b.textContent=listHidden?"一覧を見る":"日報に戻る";}
 function showDailyDetailView(){const d=$("dailyDetailView"),l=$("dailyListView");if(d)d.classList.remove("hidden");if(l)l.classList.add("hidden");updateDailyViewToggle();}
 function showDailyListView(){const d=$("dailyDetailView"),l=$("dailyListView");if(d)d.classList.add("hidden");if(l)l.classList.remove("hidden");updateDailyViewToggle();renderDailyList();}
-function baseCountCommission(count){const n=Math.max(0,Math.floor(Number(count)||0));return (n>=2?600:0)+(n>=3?1200:0)+(n>=4?2100:0);}
-function getSavedAdjustment(iso){const r=getDailyReportRecord(iso);const n=Number(r&&r.countAdjustment);return Number.isFinite(n)&&n>=0?n:0;}
-function renderCountCommission(count,adjustment){
- const n=Math.max(0,Math.floor(Number(count)||0));
- const base=baseCountCommission(n),adj=n>=5?Math.max(0,Number(adjustment)||0):0,total=base+adj;
- const row=$("dailyCountAdjustmentRow"),input=$("dailyCountAdjustment");
- if(row)row.style.display=n>=5?"flex":"none";
- if(input&&document.activeElement!==input)input.value=n>=5&&adj>0?String(adj):"";
- $("dailyCountFormula").textContent=n<=4?n+"回："+total.toLocaleString("ja-JP")+"円":n+"回：1～4回分 "+base.toLocaleString("ja-JP")+"円 ＋ 調整歩合 "+adj.toLocaleString("ja-JP")+"円 = "+total.toLocaleString("ja-JP")+"円";
+function getDailyDeliveryCounts(iso){
+ const counts={"4t":0,"10t":0};
+ const report=getDailyReportRecord(iso);
+ const savedVehicle=report&&((report.primaryVehicle==="4t"||report.primaryVehicle==="10t")?report.primaryVehicle:null);
+ const lastVehicle=localStorage.getItem("yakuhin_last_vehicle_type");
+ const fallbackVehicle=savedVehicle||(lastVehicle==="10t"||lastVehicle==="4t"?lastVehicle:"4t");
+ dailyDeliveriesForDate(iso).forEach(item=>{
+  const type=item&&(item.vehicleType==="4t"||item.vehicleType==="10t")?item.vehicleType:fallbackVehicle;
+  counts[type]++;
+ });
+ return counts;
+}
+function getCountSchedule(vehicle){
+ const defaults=defaultCommissionRates();
+ const row=commissionRates&&commissionRates[vehicle]?commissionRates[vehicle]:defaults[vehicle];
+ return Array.isArray(row.countSchedule)?row.countSchedule:defaults[vehicle].countSchedule;
+}
+function countCommissionForVehicle(vehicle,count){
+ const n=Math.max(0,Math.floor(Number(count)||0)),schedule=getCountSchedule(vehicle);
+ let total=0;
+ for(let i=0;i<Math.min(n,schedule.length);i++)total+=Math.max(0,Number(schedule[i])||0);
  return total;
 }
+function getDailyCommissionVehicleTypes(iso){
+ const types=[];
+ const add=v=>{if((v==="4t"||v==="10t")&&!types.includes(v))types.push(v);};
+ // 表示中の日報は、保存前の車種変更・乗換変更もすぐ計算に反映する。
+ if(($("dailyReportDate")?.value||isoToday())===iso){
+  const primary=(($("dailyVehicleType")?.value==="4t"||$("dailyVehicleType")?.value==="10t")?$("dailyVehicleType").value:"4t");
+  add(primary);
+  if(dailyRunHasSecondary())add(getDailySecondaryVehicleType(primary));
+  return types;
+ }
+ const report=getDailyReportRecord(iso);
+ if(report){
+  const primary=(report.primaryVehicle==="4t"||report.primaryVehicle==="10t")?report.primaryVehicle:"";
+  if(primary)add(primary);
+  if(report.secondaryVehicle&&typeof report.secondaryVehicle==="object")add(report.secondaryVehicle.vehicleType);
+  else if(primary){
+   const other=dailySecondaryVehicle(primary);
+   if(report.vehicles&&report.vehicles[other])add(other);
+  }
+  if(!types.length&&report.vehicles&&typeof report.vehicles==="object")Object.keys(report.vehicles).forEach(add);
+ }
+ return types;
+}
+function getDailyCountCommissionInfo(iso,adjustment){
+ const counts=getDailyDeliveryCounts(iso),amounts={"4t":0,"10t":0},lengths={"4t":getCountSchedule("4t").length,"10t":getCountSchedule("10t").length};
+ const activeVehicles=getDailyCommissionVehicleTypes(iso);
+ // 回数歩合は車種ごとに合算しない。10tと4tが入力されている日は10t側、
+ // それ以外はその日に入力された車種側の配達回数・設定金額で計算する。
+ const calculationVehicle=activeVehicles.includes("10t")?"10t":(activeVehicles.includes("4t")?"4t":(counts["10t"]>0?"10t":"4t"));
+ // 回数歩合は車種別の回数ではなく、その日の配達実績の合計回数で計算する。
+ // 金額表は10tがある日は10t、10tがなく4tがある日は4tの設定を使う。
+ const calculationCount=Math.max(0,Math.floor(Number(dailyDeliveriesForDate(iso).length)||0));
+ const scheduledTotal=countCommissionForVehicle(calculationVehicle,calculationCount);
+ amounts[calculationVehicle]=scheduledTotal;
+ const hasUnscheduledCount=calculationCount>lengths[calculationVehicle];
+ const raw=Number(adjustment),safe=Number.isFinite(raw)&&raw>=0?raw:0;
+ const appliedAdjustment=hasUnscheduledCount?safe:0;
+ return {counts,amounts,lengths,activeVehicles,calculationVehicle,calculationCount,scheduledTotal,adjustment:appliedAdjustment,hasUnscheduledCount,total:scheduledTotal+appliedAdjustment};
+}
+function getSavedAdjustment(iso){const r=getDailyReportRecord(iso);const n=Number(r&&r.countAdjustment);return Number.isFinite(n)&&n>=0?n:0;}
+function dailyDistanceRateFor(vehicle){
+ const entry=(commissionRates&&commissionRates[vehicle])?commissionRates[vehicle]:defaultCommissionRates()[vehicle];
+ const n=Number(entry&&entry.distance);
+ return Number.isFinite(n)&&n>=0?n:0;
+}
+function getCurrentDailyDistanceCommissionTotal(){
+ const primaryRaw=$("dailyVehicleType")?.value||"4t";
+ const primary=(primaryRaw==="4t"||primaryRaw==="10t")?primaryRaw:"4t";
+ const secondary=getDailySecondaryVehicleType(primary);
+ const d1=dailyDistanceFromInputs("outOdometer","inOdometer");
+ const d2=dailyRunHasSecondary()?dailyDistanceFromInputs("outOdometer2","inOdometer2"):0;
+ return d1*dailyDistanceRateFor(primary)+d2*dailyDistanceRateFor(secondary);
+}
+function renderDailyCommissionVehicleLines(iso,countInfo){
+ const wrap=$("dailyCommissionVehicleLines");
+ if(!wrap)return;
+ const primaryRaw=$("dailyVehicleType")?.value||"4t";
+ const primary=(primaryRaw==="4t"||primaryRaw==="10t")?primaryRaw:"4t";
+ const secondary=getDailySecondaryVehicleType(primary);
+ const hasSecondary=dailyRunHasSecondary();
+ const distByVehicle={"4t":0,"10t":0},amountByVehicle={"4t":0,"10t":0};
+ const dist1=dailyDistanceFromInputs("outOdometer","inOdometer");
+ const dist2=dailyDistanceFromInputs("outOdometer2","inOdometer2");
+ distByVehicle[primary]+=dist1;
+ amountByVehicle[primary]+=dist1*dailyDistanceRateFor(primary);
+ if(hasSecondary){
+  distByVehicle[secondary]+=dist2;
+  amountByVehicle[secondary]+=dist2*dailyDistanceRateFor(secondary);
+ }
+ // 距離歩合は日報に入力された車種だけ表示。乗換時は入力順を維持する。
+ const order=[primary];
+ if(hasSecondary&&secondary!==primary)order.push(secondary);
+ const info=countInfo||getDailyCountCommissionInfo(iso,getSavedAdjustment(iso));
+ const countAmount=Number(info.total||0).toLocaleString("ja-JP");
+ const countLabel=Number(info.calculationCount||0).toLocaleString("ja-JP")+"回："+countAmount+"円";
+ const countHtml='<div class="commission-main-row"><span class="commission-main-label">回数歩合</span><span class="commission-main-amount">'+countLabel+'</span></div>';
+ const distanceRows=order.map(v=>{
+  const dist=Number(distByVehicle[v]||0).toLocaleString("ja-JP");
+  const rate=dailyDistanceRateFor(v).toLocaleString("ja-JP");
+  const amount=Number(amountByVehicle[v]||0).toLocaleString("ja-JP");
+  return '<div class="commission-distance-row"><span class="commission-distance-vehicle">'+v+'</span><span class="commission-distance-amount">'+dist+' km × '+rate+'円 = '+amount+'円</span></div>';
+ }).join("");
+ wrap.innerHTML=countHtml+'<div class="commission-distance-group"><div class="commission-distance-heading">距離歩合</div>'+distanceRows+'</div>';
+}
+function renderCountCommission(iso,adjustment){
+ const info=getDailyCountCommissionInfo(iso,adjustment);
+ const row=$("dailyCountAdjustmentRow"),input=$("dailyCountAdjustment");
+ if(row)row.style.display=info.hasUnscheduledCount?"flex":"none";
+ if(input&&document.activeElement!==input)input.value=info.hasUnscheduledCount&&info.adjustment>0?String(info.adjustment):"";
+ const lines=["回数歩合　"+info.calculationCount.toLocaleString("ja-JP")+"回："+info.total.toLocaleString("ja-JP")+"円"];
+ if(info.hasUnscheduledCount)lines.push("未設定回数分の調整歩合："+info.adjustment.toLocaleString("ja-JP")+"円");
+ $("dailyCountFormula").textContent=lines.join("\n");
+ renderDailyCommissionVehicleLines(iso,info);
+ return info.total;
+}
 function updateCountAdjustmentInput(){
- const iso=$( "dailyReportDate")?.value||isoToday(),stats=getDailyCombinedStats(iso),count=stats.count;
+ const iso=$( "dailyReportDate")?.value||isoToday();
  const input=$( "dailyCountAdjustment"),adj=input&&String(input.value||"").trim()!==""?Number(input.value):getSavedAdjustment(iso);
  const safe=Number.isFinite(adj)&&adj>=0?adj:0;
- renderCountCommission(count,safe);
- const out=Number(String($("outOdometer")?.value||"").replace(/,/g,"")),inn=Number(String($("inOdometer")?.value||"").replace(/,/g,"")),dist=Number.isFinite(out)&&Number.isFinite(inn)&&inn>=out?inn-out:0;
- const vehicle=$("dailyVehicleType")?.value||"4t",rate=commissionRates[vehicle]||defaultCommissionRates()[vehicle];
- const currentDp=dist*Number(rate.distance);
- const total=stats.distanceCommission-currentDailySavedDistanceCommission(iso,vehicle)+currentDp+baseCountCommission(count)+(count>=5?safe:0);
+ const countInfo=getDailyCountCommissionInfo(iso,safe);
+ renderCountCommission(iso,safe);
+ const total=getCurrentDailyDistanceCommissionTotal()+countInfo.total;
  $("dailyCommissionTotal").textContent=total.toLocaleString("ja-JP")+"円";
 }
 function currentDailySavedDistanceCommission(iso,vehicle){
@@ -5234,8 +5399,8 @@ function renderDailyReport(){
   $("dailyDeliveryTotalKg").textContent=formatQuantity(deliveryTotalKg)+" kg";
   renderDailyDeliveryCards(rows);
   updateDailyDistanceImmediate();
-  renderCountCommission(stats.count,getSavedAdjustment(iso));
-  $("dailyCommissionTotal").textContent=stats.totalCommission.toLocaleString("ja-JP")+"円";
+  renderCountCommission(iso,getSavedAdjustment(iso));
+  updateDailyCalc();
   updateDailyReturnDependentSections();
   markDailyReportSnapshot();
   resetDailyInlineDistanceActions();
@@ -5315,10 +5480,38 @@ function closeDailyDeliveryDetail(){
 }
 window.closeDailyDeliveryDetail=closeDailyDeliveryDetail;
 
+function renderCommissionCountRows(vehicle,schedule){
+ const host=$(vehicle==="4t"?"commissionCountRows4t":"commissionCountRows10t");
+ if(!host)return;
+ host.innerHTML="";
+ (Array.isArray(schedule)?schedule:[]).forEach((amount,index)=>{
+  const row=document.createElement("div");row.className="commission-count-row";
+  const round=document.createElement("span");round.className="commission-count-round";round.textContent=(index+1)+"回目";
+  const input=document.createElement("input");input.type="number";input.min="0";input.step="1";input.inputMode="numeric";input.className="commission-count-input";input.dataset.vehicle=vehicle;input.dataset.round=String(index+1);input.setAttribute("aria-label",vehicle+" "+(index+1)+"回目の金額");input.placeholder="金額";input.value=amount==null?"":String(amount);
+  const yen=document.createElement("span");yen.className="commission-count-yen";yen.textContent="円";
+  const remove=document.createElement("button");remove.type="button";remove.className="gray commission-remove-count";remove.textContent="削除";remove.setAttribute("aria-label",vehicle+" "+(index+1)+"回目を削除");
+  remove.onclick=()=>{const draft=readCommissionCountDraft(vehicle);if(!confirm(vehicle+"の"+(index+1)+"回目の設定を削除しますか？\n削除すると、下の回数が繰り上がります。"))return;draft.splice(index,1);renderCommissionCountRows(vehicle,draft);};
+  row.append(round,input,yen,remove);host.appendChild(row);
+ });
+}
+function readCommissionCountDraft(vehicle){
+ const host=$(vehicle==="4t"?"commissionCountRows4t":"commissionCountRows10t");
+ return host?Array.from(host.querySelectorAll(".commission-count-input")).map(input=>String(input.value||"").trim()===""?null:Number(input.value)):[];
+}
+function addCommissionCountRow(vehicle){
+ if(vehicle!=="4t"&&vehicle!=="10t")return;
+ const draft=readCommissionCountDraft(vehicle);draft.push(null);renderCommissionCountRows(vehicle,draft);
+ const host=$(vehicle==="4t"?"commissionCountRows4t":"commissionCountRows10t");
+ const last=host&&host.querySelector(".commission-count-row:last-child .commission-count-input");
+ if(last)last.focus();
+}
+window.addCommissionCountRow=addCommissionCountRow;
 function openCommissionModal(){
  commissionRates=normalizeCommissionRates(commissionRates);
  $("rate4tDistance").value=commissionRates["4t"].distance;
  $("rate10tDistance").value=commissionRates["10t"].distance;
+ renderCommissionCountRows("4t",commissionRates["4t"].countSchedule);
+ renderCommissionCountRows("10t",commissionRates["10t"].countSchedule);
  $("commissionModal").classList.remove("hidden");$("commissionModal").setAttribute("aria-hidden","false");
 }
 function closeCommissionModal(){$("commissionModal").classList.add("hidden");$("commissionModal").setAttribute("aria-hidden","true")}
@@ -5383,6 +5576,7 @@ function saveDailyReport(saveTarget){
     if(Number.isFinite(secondIn)&&Number.isFinite(secondOut)&&secondIn<secondOut){alert(secondary+"の帰庫kmは出庫km以上の数値を入力してください。");$("inOdometer2").focus();return;}
   }
   const count=dailyDeliveriesForDate(iso).length;
+  const countCommissionStatus=getDailyCountCommissionInfo(iso,getSavedAdjustment(iso));
   let record=getDailyReportRecord(iso);
   if(!record)record={date:iso,vehicles:{},startTime:"",endTime:"",overtimeHours:null,countAdjustment:0,savedAt:null,version:2};
   const rate=commissionRates[vehicle]||defaultCommissionRates()[vehicle];
@@ -5405,7 +5599,7 @@ function saveDailyReport(saveTarget){
   record.startTime=leaveType==="full"?"":($("dailyStartTime").value||"");
   record.endTime=leaveType==="full"?"":($("dailyEndTime").value||"");
   record.overtimeHours=isLeaveDay?0:($("dailyOvertime").value===""?null:Number($("dailyOvertime").value)); record.countAdjustment=Math.max(0,Number(record.countAdjustment)||0);
-  if(count>=5){const raw=String($("dailyCountAdjustment")?.value||"").trim(); if(raw!=="")record.countAdjustment=Number(raw); if(!Number.isFinite(record.countAdjustment)||record.countAdjustment<0){alert("調整歩合は0以上の数値を入力してください。");$("dailyCountAdjustment").focus();return;}}
+  if(countCommissionStatus.hasUnscheduledCount){const raw=String($("dailyCountAdjustment")?.value||"").trim(); if(raw!=="")record.countAdjustment=Number(raw); if(!Number.isFinite(record.countAdjustment)||record.countAdjustment<0){alert("調整歩合は0以上の数値を入力してください。");$("dailyCountAdjustment").focus();return;}}else{record.countAdjustment=0;}
   record.savedAt=new Date().toISOString(); dailyReports[iso]=record; localStorage.setItem(KEY_DR,JSON.stringify(dailyReports));
   try{scheduleCloudSync();}catch(e){console.warn("日報のクラウド同期予約に失敗しました",e);}
   localStorage.setItem("yakuhin_last_vehicle_type",vehicle);
@@ -7044,9 +7238,23 @@ window.saveDailyReport = saveDailyReport;
 window.loadDailyReport = loadDailyReport;
 window.closeCommissionModal = closeCommissionModal;
 function saveCommissionRates(){
- const vals={"4t":{distance:Number($("rate4tDistance").value)},"10t":{distance:Number($("rate10tDistance").value)},countSchedule:{1:0,2:600,3:1200,4:2100}};
- for(const t of ["4t","10t"]){if(!Number.isFinite(vals[t].distance)||vals[t].distance<0){alert("歩合額は0以上の数値を入力してください。");return;}}
- commissionRates=vals;localStorage.setItem(KEY_CR,JSON.stringify(commissionRates));try{scheduleCloudSync();}catch(e){console.warn("歩合給設定のクラウド同期予約に失敗しました",e);}closeCommissionModal();if($("dailyPage")&&!$("dailyPage").classList.contains("hidden"))renderDailyReport();alert("歩合給設定を保存しました。");
+ const vals={
+  "4t":{distance:Number($("rate4tDistance").value),countSchedule:[]},
+  "10t":{distance:Number($("rate10tDistance").value),countSchedule:[]}
+ };
+ for(const t of ["4t","10t"]){
+  if(!Number.isFinite(vals[t].distance)||vals[t].distance<0){alert(t+"の距離歩合は0以上の数値を入力してください。");$(t==="4t"?"rate4tDistance":"rate10tDistance").focus();return;}
+  const draft=readCommissionCountDraft(t);
+  for(let i=0;i<draft.length;i++){
+   if(draft[i]===null||!Number.isFinite(draft[i])||draft[i]<0||!Number.isInteger(draft[i])){alert(t+"の"+(i+1)+"回目に、0以上の整数の金額を入力してください。");const host=$(t==="4t"?"commissionCountRows4t":"commissionCountRows10t");host?.querySelectorAll(".commission-count-input")[i]?.focus();return;}
+  }
+  vals[t].countSchedule=draft;
+ }
+ commissionRates=vals;localStorage.setItem(KEY_CR,JSON.stringify(commissionRates));
+ try{scheduleCloudSync();}catch(e){console.warn("歩合給設定のクラウド同期予約に失敗しました",e);}
+ closeCommissionModal();
+ if($("dailyPage")&&!$("dailyPage").classList.contains("hidden"))renderDailyReport();
+ alert("歩合給設定を保存しました。");
 }
 window.saveCommissionRates = saveCommissionRates;
 
