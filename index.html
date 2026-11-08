@@ -2076,6 +2076,168 @@ nav button{height:45px !important;}
   }
 }
 </style>
+<style id="weekly-pdf-button-style">
+#weeklyPage .weekly-action-buttons{
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+  gap:8px !important;
+  margin:10px 0 !important;
+}
+#weeklyPage .weekly-action-buttons button{
+  width:100% !important;
+  height:42px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+#weeklyPage #weeklyPdfBtn{
+  background:#5856D6 !important;
+  color:#fff !important;
+}
+/* PDF作成専用。通常画面・既存の印刷画面には適用しない。 */
+#weeklyPdfCapture{
+  position:absolute !important;
+  left:0 !important;
+  top:0 !important;
+  visibility:hidden !important;
+  width:287mm !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  color:#111 !important;
+  font-family:Arial,"Yu Gothic",sans-serif !important;
+  display:block !important;
+}
+#weeklyPdfCapture .weekly-print-title{
+  font-size:18px !important;
+  font-weight:700 !important;
+  text-align:center !important;
+  margin:0 0 1.8mm !important;
+}
+#weeklyPdfCapture .weekly-print-period{
+  text-align:left !important;
+  font-size:10pt !important;
+  margin:0 0 2.5mm !important;
+}
+#weeklyPdfCapture table{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  border-collapse:collapse !important;
+  table-layout:fixed !important;
+  font-size:9.5pt !important;
+  background:#fff !important;
+}
+#weeklyPdfCapture th,#weeklyPdfCapture td{
+  border:1px solid #555 !important;
+  height:5.3mm !important;
+  min-height:5.3mm !important;
+  padding:0 3px !important;
+  box-sizing:border-box !important;
+  vertical-align:middle !important;
+  line-height:1.05 !important;
+  overflow-wrap:anywhere !important;
+  font-size:9.5pt !important;
+  color:#111;
+}
+#weeklyPdfCapture th{
+  background:#eee !important;
+  font-weight:700 !important;
+  text-align:center !important;
+}
+#weeklyPdfCapture td.num{text-align:right !important;white-space:nowrap !important;}
+#weeklyPdfCapture td.center{text-align:center !important;}
+#weeklyPdfCapture td.weekly-print-date{
+  white-space:normal !important;
+  line-height:1.05 !important;
+  position:relative !important;
+}
+#weeklyPdfCapture .weekly-print-holiday-name{
+  position:absolute !important;
+  left:0 !important;
+  right:0 !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  display:block !important;
+  font-size:10pt !important;
+  font-weight:400 !important;
+  color:#d00000 !important;
+  line-height:1 !important;
+  margin:0 !important;
+  white-space:normal !important;
+}
+#weeklyPdfCapture td.weekly-print-holiday-date{
+  color:#d00000 !important;
+  font-weight:400 !important;
+}
+#weeklyPdfCapture td.weekly-print-distance{
+  font-size:9.5pt !important;
+  line-height:1.2 !important;
+  white-space:nowrap !important;
+  text-align:left !important;
+  vertical-align:middle !important;
+}
+#weeklyPdfCapture td.weekly-print-distance-note{
+  font-size:9pt !important;
+  line-height:1.08 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-align:left !important;
+}
+#weeklyPdfCapture .weekly-print-distance-line{
+  display:grid !important;
+  grid-template-columns:2.2em minmax(0,1fr) !important;
+  align-items:baseline !important;
+  height:1.15em !important;
+}
+#weeklyPdfCapture .weekly-print-distance-vehicle{
+  display:block !important;
+  width:2.2em !important;
+}
+#weeklyPdfCapture tr{page-break-inside:avoid !important;}
+#weeklyPdfCapture tr.subtotal td{
+  font-weight:700 !important;
+  background:#f6f6f6 !important;
+  padding-top:0 !important;
+  padding-bottom:0 !important;
+}
+#weeklyPdfCapture tr.subtotal td.worktime{
+  text-align:left !important;
+  white-space:nowrap !important;
+}
+#weeklyPdfCapture .weekly-print-worktime-text,
+#weeklyPdfCapture .weekly-print-commission-text{
+  display:inline-block !important;
+  white-space:nowrap !important;
+}
+#weeklyPdfCapture .weekly-print-commission-text{
+  margin-left:3em !important;
+  padding-left:0 !important;
+  border-left:0 !important;
+  font-weight:700 !important;
+  font-size:9.5pt !important;
+}
+#weeklyPdfCapture .weekly-print-summary-totals{
+  display:flex !important;
+  justify-content:flex-end !important;
+  align-items:baseline !important;
+  gap:18mm !important;
+  margin-top:2.8mm !important;
+}
+#weeklyPdfCapture .weekly-print-total{
+  margin-top:0 !important;
+  text-align:right !important;
+  font-weight:700 !important;
+  font-size:10pt !important;
+}
+#weeklyPdfCapture .weekly-print-commission-total{
+  margin-top:0 !important;
+  text-align:left !important;
+  font-weight:700 !important;
+  font-size:10pt !important;
+}
+</style>
 
 </head>
 <body>
@@ -2199,7 +2361,7 @@ nav button{height:45px !important;}
  </div>
 </section>
 
-<section id="weeklyPage" class="hidden"><div class="card weekly-date-picker-source" aria-hidden="true"><input id="weeklyDate" type="date" tabindex="-1" aria-label="週間日報の日付選択" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" role="button" tabindex="0" aria-label="日付を選択してカレンダーを開く" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
+<section id="weeklyPage" class="hidden"><div class="card weekly-date-picker-source" aria-hidden="true"><input id="weeklyDate" type="date" tabindex="-1" aria-label="週間日報の日付選択" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" role="button" tabindex="0" aria-label="日付を選択してカレンダーを開く" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><div class="weekly-action-buttons"><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><button id="weeklyPdfBtn" type="button">PDF作成</button></div><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
 <section id="deliveryHistoryPage" class="hidden">
  <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
  <div id="deliveryHistoryDetailView" class="hidden">
@@ -6219,6 +6381,87 @@ function printWeeklyReport(){
  }
 }
 window.printWeeklyReport=printWeeklyReport;
+
+// 週間日報PDF：既存の印刷処理とは独立してPDFファイルを作成する。
+let weeklyPdfGenerationInProgress=false;
+let weeklyPdfLibraryPromise=null;
+function loadWeeklyPdfLibrary(){
+ if(typeof window.html2pdf==="function")return Promise.resolve(window.html2pdf);
+ if(weeklyPdfLibraryPromise)return weeklyPdfLibraryPromise;
+ weeklyPdfLibraryPromise=new Promise((resolve,reject)=>{
+   const script=document.createElement("script");
+   script.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+   script.integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==";
+   script.crossOrigin="anonymous";
+   script.referrerPolicy="no-referrer";
+   script.async=true;
+   script.onload=()=>{
+     if(typeof window.html2pdf==="function")resolve(window.html2pdf);
+     else reject(new Error("PDF作成ライブラリを利用できません。"));
+   };
+   script.onerror=()=>{
+     weeklyPdfLibraryPromise=null;
+     reject(new Error("PDF作成ライブラリを読み込めませんでした。"));
+   };
+   document.head.appendChild(script);
+ });
+ return weeklyPdfLibraryPromise;
+}
+async function createWeeklyReportPDF(){
+ if(weeklyPdfGenerationInProgress)return;
+ const button=$("weeklyPdfBtn");
+ weeklyPdfGenerationInProgress=true;
+ if(button){button.disabled=true;button.textContent="PDF作成中…";button.setAttribute("aria-busy","true");}
+ let capture=null;
+ try{
+   buildWeeklyPrintArea();
+   const source=$("weeklyPrintArea");
+   if(!source||!source.innerHTML.trim())throw new Error("週間日報の印刷データを作成できませんでした。");
+   const html2pdf=await loadWeeklyPdfLibrary();
+   capture=document.createElement("div");
+   capture.id="weeklyPdfCapture";
+   capture.innerHTML=source.innerHTML;
+   document.body.appendChild(capture);
+   if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   let filename="週間日報.pdf";
+   try{
+     const {from,to}=getWeeklyReportRange();
+     if(from&&to)filename="週間日報_"+from+"～"+to+".pdf";
+   }catch(e){}
+   const options={
+     margin:[5,5,5,5],
+     filename,
+     image:{type:"jpeg",quality:0.98},
+     html2canvas:{
+       scale:2.5,
+       useCORS:true,
+       allowTaint:false,
+       backgroundColor:"#ffffff",
+       logging:false,
+       scrollX:0,
+       scrollY:0,
+       windowWidth:1200,
+       onclone:(clonedDocument)=>{
+         const clonedCapture=clonedDocument.getElementById("weeklyPdfCapture");
+         if(clonedCapture)clonedCapture.style.setProperty("visibility","visible","important");
+       }
+     },
+     jsPDF:{unit:"mm",format:"a4",orientation:"landscape",compress:true},
+     pagebreak:{mode:["css","legacy"],avoid:["tr"]}
+   };
+   await html2pdf().set(options).from(capture).save();
+ }catch(error){
+   console.error("週間日報PDFの作成に失敗しました",error);
+   alert("PDFを作成できませんでした。インターネット接続を確認して、もう一度お試しください。\n"+(error&&error.message?error.message:""));
+ }finally{
+   if(capture&&capture.parentNode)capture.parentNode.removeChild(capture);
+   if(button){button.disabled=false;button.textContent="PDF作成";button.removeAttribute("aria-busy");}
+   weeklyPdfGenerationInProgress=false;
+ }
+}
+window.createWeeklyReportPDF=createWeeklyReportPDF;
+
 window.addEventListener("afterprint",()=>{
  weeklyPrintInProgress=false;
  document.title=weeklyPrintOriginalTitle||"薬品配達・容量計算";
@@ -7052,7 +7295,7 @@ initCloud();
 $("dailyViewToggleBtn").onclick=()=>{if($("dailyListView")?.classList.contains("hidden")){showDailyListView();}else{const d=$("dailyReportDate");if(d)d.value=isoToday();showDailyDetailView();renderDailyReport();try{updateDailyCalc();}catch(e){}try{window.syncDailyReportDateLabel&&window.syncDailyReportDateLabel();}catch(e){}window.scrollTo({top:0,left:0,behavior:"auto"});}}; updateDailyViewToggle();
 $("historyViewToggleBtn").onclick=()=>{if($("historyWeeklyListView")?.classList.contains("hidden"))showHistoryWeeklyListView();else showHistoryDetailView();}; updateHistoryViewToggle();
 $("deliveryHistoryViewToggleBtn").onclick=()=>{if($("deliveryHistoryWeeklyListView")?.classList.contains("hidden"))showDeliveryHistoryWeeklyListView();else showDeliveryHistoryDetailView();}; updateDeliveryHistoryViewToggle();
-renderChemicals();renderCustomers();if($("weeklyDate")){$("weeklyDate").value=isoToday();$("weeklyDate").addEventListener("change",()=>{renderWeeklyReport();buildWeeklyPrintArea();window.scrollTo(0,0);});}if($("weeklyPrintBtn"))$("weeklyPrintBtn").addEventListener("click",printWeeklyReport);setCalcEnabled(false);$("resultCard").style.display="none";calc();$("customer").addEventListener("input",saveDraft);
+renderChemicals();renderCustomers();if($("weeklyDate")){$("weeklyDate").value=isoToday();$("weeklyDate").addEventListener("change",()=>{renderWeeklyReport();buildWeeklyPrintArea();window.scrollTo(0,0);});}if($("weeklyPrintBtn"))$("weeklyPrintBtn").addEventListener("click",printWeeklyReport);if($("weeklyPdfBtn"))$("weeklyPdfBtn").addEventListener("click",createWeeklyReportPDF);setCalcEnabled(false);$("resultCard").style.display="none";calc();$("customer").addEventListener("input",saveDraft);
 $("chemical").addEventListener("change",saveDraft);
 $("density").addEventListener("input",saveDraft);
 $("amount").addEventListener("input",saveDraft);
