@@ -2090,16 +2090,17 @@ nav button{height:45px !important;}
 </style>
 
 <style id="weekly-print-ios-safari-one-page-fix">
-/* iPhone Safariの週間日報印刷だけを圧縮。PC印刷と通常画面には影響させない。 */
+/* iPhone Safariの週間日報印刷だけを圧縮。PCと文字のフォント指定・サイズをそろえ、行高4mmは維持。 */
 @supports (-webkit-touch-callout: none) {
   @media print and (hover: none) and (pointer: coarse) {
-    #weeklyPrintArea .weekly-print-title { font-size:16px !important; margin:0 0 1mm !important; }
-    #weeklyPrintArea .weekly-print-period { font-size:9pt !important; margin:0 0 1.5mm !important; }
+    #weeklyPrintArea { font-family:Arial,"Yu Gothic",sans-serif !important; }
+    #weeklyPrintArea .weekly-print-title { font-size:18px !important; margin:0 0 1mm !important; }
+    #weeklyPrintArea .weekly-print-period { font-size:10pt !important; margin:0 0 1.5mm !important; }
     #weeklyPrintArea table,
     #weeklyPrintArea table th,
     #weeklyPrintArea table td,
     #weeklyPrintArea table td.weekly-print-distance {
-      font-size:8.5pt !important;
+      font-size:9.5pt !important;
       line-height:1 !important;
     }
     #weeklyPrintArea table tr,
@@ -2119,12 +2120,12 @@ nav button{height:45px !important;}
       line-height:1 !important;
     }
     #weeklyPrintArea .weekly-print-distance-line { height:0.9em !important; }
-    #weeklyPrintArea .weekly-print-holiday-name { font-size:8.5pt !important; }
-    #weeklyPrintArea td.weekly-print-distance-note { font-size:8pt !important; }
-    #weeklyPrintArea .weekly-print-commission-text { font-size:8pt !important; margin-left:2em !important; }
+    #weeklyPrintArea .weekly-print-holiday-name { font-size:10pt !important; }
+    #weeklyPrintArea td.weekly-print-distance-note { font-size:9pt !important; }
+    #weeklyPrintArea .weekly-print-commission-text { font-size:9.5pt !important; margin-left:2em !important; }
     #weeklyPrintArea .weekly-print-summary-totals { margin-top:1.5mm !important; gap:12mm !important; }
     #weeklyPrintArea .weekly-print-total,
-    #weeklyPrintArea .weekly-print-commission-total { font-size:9pt !important; }
+    #weeklyPrintArea .weekly-print-commission-total { font-size:10pt !important; }
   }
 }
 </style>
