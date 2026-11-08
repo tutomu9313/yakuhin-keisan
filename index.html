@@ -2078,6 +2078,17 @@ nav button{height:45px !important;}
 </style>
 
 
+<style id="weekly-print-ios-safari-thin-borders">
+/* iPhone Safariの週間日報印刷でも、PC印刷と同じ細い枠線に統一 */
+@supports (-webkit-touch-callout: none) {
+  @media print and (hover: none) and (pointer: coarse) {
+    #weeklyPrintArea table { border-collapse: collapse !important; }
+    #weeklyPrintArea table th,
+    #weeklyPrintArea table td { border: 1px solid #555 !important; }
+  }
+}
+</style>
+
 <style id="weekly-print-ios-safari-one-page-fix">
 /* iPhone Safariの週間日報印刷だけを圧縮。PC印刷と通常画面には影響させない。 */
 @supports (-webkit-touch-callout: none) {
