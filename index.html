@@ -9,7 +9,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:#fff;color:#111;font-family:Arial,"Yu Gothic",sans-serif}
 .app{width:390px;max-width:100%;min-height:100vh;margin:auto;background:#fff;padding-bottom:75px}
-header{text-align:center;font-size:21px;font-weight:600;padding:10px 16px 15px}
+header{text-align:center;font-size:21px;font-weight:bold;padding:10px 16px 15px}
 /* ===== 入力・カード ===== */
 .card{background:#fff;margin:0 14px 12px;padding:16px;border-radius:16px;box-shadow:0 1px 4px #0001}
 label{display:block;color:#666;font-size:13px;margin-bottom:6px}
@@ -17,7 +17,7 @@ input,select{width:100%;height:46px;border:1px solid #ccc;border-radius:11px;pad
 input[readonly]{background:#f7f7f7}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.planned-vehicle-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .amountrow{display:grid;grid-template-columns:1fr 105px;gap:10px}
-button{width:100%;height:46px;border:0;border-radius:12px;background:#007aff;color:#fff;font-weight:600;font-size:16px;margin-top:10px}
+button{width:100%;height:46px;border:0;border-radius:12px;background:#007aff;color:#fff;font-weight:bold;font-size:16px;margin-top:10px}
 button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,input:disabled,select:disabled{opacity:.45;cursor:not-allowed}
 /* ===== 入力計算結果 ===== */
 .resultmain{background:#111;color:#fff;border-radius:15px;padding:15px}.resultmain.warning{background:#ff3b30;color:#fff}.resultmain small{opacity:.75}.resultmain strong{display:block;font-size:27px;margin-top:4px}
@@ -31,22 +31,22 @@ button.gray{background:#8e8e93}button.red{background:#ff3b30}button:disabled,inp
 .modal.hidden{display:none!important}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:100}
 .modal-card{width:350px;max-width:90%;background:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 35px #0004}
 .modal-card h3{margin:0 0 15px;font-size:20px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.modal-actions button{margin:0}.modal-actions .full{grid-column:1/-1}.modal-actions .green{background:#34c759!important;color:#fff!important}
-.suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}.suggest .quick-customer-register-option{padding:0;border:0}.suggest .quick-customer-register-option button{margin:0;width:100%;height:46px;border-radius:10px;background:#fff;color:#007aff;font-weight:600;text-align:left;padding:0 12px}.suggest .quick-customer-register-option button:active{background:#f2f2f7}
+.suggest{position:relative;margin-top:5px;background:#fff;border:1px solid #ccc;border-radius:11px;max-height:170px;overflow:auto;z-index:20;box-shadow:0 3px 10px #0002}.suggest div{padding:12px;border-bottom:1px solid #eee;cursor:pointer}.suggest div:last-child{border:0}.suggest .quick-customer-register-option{padding:0;border:0}.suggest .quick-customer-register-option button{margin:0;width:100%;height:46px;border-radius:10px;background:#fff;color:#007aff;font-weight:700;text-align:left;padding:0 12px}.suggest .quick-customer-register-option button:active{background:#f2f2f7}
 .note{font-size:12px;color:#777;margin-top:7px;line-height:1.4}
 /* ===== 下部ナビゲーション ===== */
 nav{position:fixed;bottom:0;width:390px;max-width:100%;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(6,1fr);padding:7px 5px}
 nav button{margin:0;height:43px;background:transparent;color:#007aff;font-size:13px}
-.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:600}.date-display-button{border:0;background:transparent;margin:0;width:100%;height:46px;font-size:19px;font-weight:600;padding:0;cursor:pointer}.history-date-nav{margin:0}.daily-report-value{font-size:24px;font-weight:700}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:600;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:600}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}
+.daily-report-date-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center}.daily-report-date-nav button{margin:0;height:46px;font-size:20px}.daily-report-date{text-align:center;font-size:19px;font-weight:700}.date-display-button{border:0;background:transparent;margin:0;width:100%;height:46px;font-size:19px;font-weight:700;padding:0;cursor:pointer}.history-date-nav{margin:0}.daily-report-value{font-size:24px;font-weight:700}.daily-report-total{background:#1c1c1e;color:#fff;border-radius:16px;padding:16px}.daily-report-total strong{font-size:28px;display:block;margin-top:4px}.daily-report-list{max-height:300px;overflow:auto}.daily-delivery-summary{display:block;width:100%;text-align:left;position:relative;padding:14px 42px 12px 12px;background:#f2f2f7;border-radius:12px;border:0;color:inherit}.daily-delivery-summary small{display:block;margin-top:6px;color:#777;font-size:12px}.daily-delivery-summary:active{opacity:.75}.daily-delivery-chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:400;color:#888}.rate-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.rate-note{font-size:12px;color:#777;line-height:1.4;margin-top:8px}.daily-view-tabs{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}.daily-view-tabs button{height:42px;margin:0;background:#007aff;color:#fff}.daily-list-period{text-align:center;font-weight:700;margin-bottom:10px}.daily-list-table{width:100%;border-collapse:collapse;font-size:12px}.daily-list-table th,.daily-list-table td{border:1px solid #d1d1d6;padding:6px 4px;text-align:left;vertical-align:middle}.daily-list-table th{background:#f2f2f7;font-weight:700}.daily-list-table td.num{text-align:right;white-space:nowrap}.daily-list-table tr[data-date]{cursor:pointer}.daily-list-table tr[data-date]:active{opacity:.65}
 .history-weekly-table{width:100%;border-collapse:collapse;font-size:13px}
 .history-weekly-table th,.history-weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:middle}
-.history-weekly-table th{font-weight:600;background:#f2f2f7}
+.history-weekly-table th{font-weight:700;background:#f2f2f7}
 .history-weekly-table tr[data-order-index]{cursor:pointer}
 .history-weekly-table tr[data-order-index]:active{opacity:.65}
-.history-weekly-status{display:block;font-size:12px;font-weight:600;margin-top:4px}
+.history-weekly-status{display:block;font-size:12px;font-weight:700;margin-top:4px}
 .history-weekly-status.delivered{color:#007aff}
 .history-weekly-status.undelivered{color:#ff3b30}
-.history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:20px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:600;}
-.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:12px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:600;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
+.history-weekly-nav{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:center;margin-bottom:10px}.history-weekly-nav button{margin:0;height:42px;font-size:20px}.history-weekly-nav .daily-list-period{text-align:center;font-weight:700;}
+.daily-list-empty{text-align:center;color:#777;padding:18px}.cutoff-note{font-size:12px;color:#777;margin-top:7px}.weekly-table{width:100%;border-collapse:collapse;font-size:12px}.weekly-table th,.weekly-table td{border:1px solid #d1d1d6;padding:7px 5px;text-align:left;vertical-align:top}.weekly-table th{font-weight:700;background:#f2f2f7}.weekly-table th:last-child,.weekly-table td:last-child{text-align:right;white-space:nowrap}.weekly-empty{text-align:center;color:#777;padding:18px}
 
 /* 登録済み客先・薬品：常時表示のスクロール式リストボックス（16行） */
 .registered-listbox-static{width:100%;height:calc(10 * 32px + 8px);overflow-y:auto;border:1px solid #d1d1d6;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}
@@ -70,7 +70,7 @@ input,select{height:48px;border:1px solid #d1d1d6;border-radius:12px;padding:0 1
 .history-date-nav{position:relative;}
 input:focus,select:focus{outline:2px solid #007aff30;border-color:#007aff}
 .amountrow{grid-template-columns:1fr 105px;gap:10px}
-button{height:48px;border-radius:13px;font-size:16px;font-weight:600;margin-top:10px}
+button{height:48px;border-radius:13px;font-size:16px;font-weight:700;margin-top:10px}
 .resultmain{background:#1c1c1e;border-radius:16px;padding:16px}
 .resultmain strong{font-size:24px}
 .results{gap:9px;margin-top:9px}
@@ -142,7 +142,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 <style id="v43-delivery-edit-font">
 #deliveryEditModal .modal-card h3{
   font-size:20px !important;
-  font-weight:600 !important;
+  font-weight:700 !important;
   line-height:1.35 !important;
 }
 #deliveryEditInfo{
@@ -152,11 +152,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #deliveryEditInfo b{
   font-size:17px !important;
-  font-weight:600 !important;
+  font-weight:700 !important;
 }
 #deliveryEditModal label{
   font-size:14px !important;
-  font-weight:600 !important;
+  font-weight:700 !important;
   line-height:1.4 !important;
 }
 </style>
@@ -232,7 +232,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 .daily-delivery-card-customer{
   font-size:14px;
-  font-weight:600;
+  font-weight:700;
   line-height:1.25;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -253,7 +253,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   gap:8px;
   flex:0 0 auto;
   font-size:13px;
-  font-weight:600;
+  font-weight:700;
   white-space:nowrap;
 }
 .daily-delivery-card .daily-delivery-chevron{
@@ -469,7 +469,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #calcResultDialog .history-set-values{
   margin-top:5px;
   font-size:18px;
-  font-weight:600;
+  font-weight:700;
   line-height:1.35;
   white-space:nowrap;
 }
@@ -483,7 +483,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #calcPage #calcSetBox .calc-set-line{
   font-size:18px;
-  font-weight:600;
+  font-weight:700;
   line-height:1.5;
   white-space:nowrap;
 }
@@ -508,7 +508,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   background:#f5fbff;
 }
 #deliveryViewTankCheckTitle{
-  font-weight:600;
+  font-weight:700;
   font-size:17px;
   margin-bottom:10px;
   color:#174a7e;
@@ -524,7 +524,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   margin:0;
   color:#1c1c1e;
   font-size:14px;
-  font-weight:600;
+  font-weight:700;
 }
 .delivery-tank-input-wrap{
   display:grid;
@@ -544,7 +544,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   text-align:right;
   font-size:13px;
   color:#245ea8;
-  font-weight:600;
+  font-weight:700;
 }
 .delivery-tank-result{
   margin-top:12px;
@@ -561,7 +561,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   font-size:14px;
 }
 .delivery-tank-result-line:first-child{margin-top:0}
-.delivery-tank-result-value{font-weight:600;white-space:nowrap}
+.delivery-tank-result-value{font-weight:700;white-space:nowrap}
 #deliveryViewTankStatus{
   margin-top:10px;
   padding:10px;
@@ -644,7 +644,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   background:#e7f2ff;
   color:#007aff;
   font-size:13px;
-  font-weight:600;
+  font-weight:700;
 }
 #tankSettingList .tank-setting-group .tank-setting-item{
   padding:10px 0;
@@ -655,7 +655,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 }
 #tankSettingList .tank-setting-group .tank-setting-title{
   font-size:16px;
-  font-weight:600;
+  font-weight:700;
   text-align:left;
   padding-left:8px;
 }
@@ -678,11 +678,11 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 <style id="tank-settings-style">
 #tankSettingList .tank-setting-item{padding:12px 0;border-bottom:1px solid #e5e5ea}
 #tankSettingList .tank-setting-item:last-child{border-bottom:0}
-#tankSettingList .tank-setting-title{font-weight:600;font-size:16px}
+#tankSettingList .tank-setting-title{font-weight:700;font-size:16px}
 #tankSettingList .tank-setting-meta{margin-top:4px;color:#666;font-size:14px;line-height:1.5}
 #tankSettingList .tank-setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 #tankSettingList .tank-setting-actions button{height:40px;margin:0;font-size:14px}
-#deliveryViewTankSelectWrap label{font-size:14px !important;font-weight:600;margin:0;display:flex;align-items:center;white-space:nowrap;line-height:1.2}
+#deliveryViewTankSelectWrap label{font-size:14px !important;font-weight:700;margin:0;display:flex;align-items:center;white-space:nowrap;line-height:1.2}
 #deliveryViewTankSelectWrap .delivery-tank-select-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center}
 #deliveryViewTankSelectWrap .delivery-tank-select-row select{width:100%;margin:0;height:34px !important;font-size:14px !important;box-sizing:border-box !important}
 @media(max-width:420px){
@@ -697,7 +697,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #tankSettingList .tank-setting-item:last-child{margin-bottom:0}
 #tankSettingList .tank-setting-title{font-weight:700;font-size:21px;line-height:1.25;color:#111;margin-bottom:8px}
 #tankSettingList .tank-setting-meta{margin-top:0;color:#5b6573;font-size:15px;line-height:1.65}
-#tankSettingList .tank-setting-capacity{display:flex;align-items:baseline;gap:10px;margin-top:8px;color:#444;font-size:15px;font-weight:600}
+#tankSettingList .tank-setting-capacity{display:flex;align-items:baseline;gap:10px;margin-top:8px;color:#444;font-size:15px;font-weight:700}
 #tankSettingList .tank-setting-capacity strong{font-size:22px;color:#111;letter-spacing:.2px}
 #tankSettingList .tank-setting-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
 #tankSettingList .tank-setting-actions button{height:42px;margin:0;font-size:15px}
@@ -710,28 +710,28 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 .count-adjustment-fixed{display:grid;grid-template-columns:1fr auto;gap:8px;padding:7px 0;border-bottom:1px solid #eee}
 .count-adjustment-input{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
 .count-adjustment-input input{width:150px;text-align:right}
-.count-adjustment-total{margin-top:14px;padding:12px;border-radius:12px;background:#f2f2f7;font-weight:600;text-align:right}
+.count-adjustment-total{margin-top:14px;padding:12px;border-radius:12px;background:#f2f2f7;font-weight:700;text-align:right}
 /* 日報の歩合給：項目と金額が重ならないよう整列 */
 #dailyCommissionSection .commission-line{display:grid;grid-template-columns:minmax(78px,auto) minmax(0,1fr);gap:10px;align-items:center}
 #dailyCommissionSection .commission-line + .commission-line{margin-top:10px}
-#dailyCommissionSection .commission-label{font-weight:600;white-space:nowrap}
+#dailyCommissionSection .commission-label{font-weight:700;white-space:nowrap}
 #dailyCommissionSection .commission-value{text-align:right;min-width:0;line-height:1.45;white-space:pre-line}
 #dailyCommissionSection .commission-adjustment-line{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #e5e5ea}
-#dailyCommissionSection .commission-adjustment-label{font-weight:600;white-space:nowrap}
+#dailyCommissionSection .commission-adjustment-label{font-weight:700;white-space:nowrap}
 #dailyCommissionSection #dailyCountAdjustment{width:125px;height:40px;text-align:right;font-size:17px}
 #dailyCommissionSection .commission-yen{white-space:nowrap}
 #dailyCommissionSection .commission-total-line{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;margin-top:12px;padding-top:12px;border-top:1px solid #e5e5ea}
-#dailyCommissionSection .commission-total-label{font-weight:600}
-#dailyCommissionSection #dailyCommissionTotal{font-weight:600;white-space:nowrap}
+#dailyCommissionSection .commission-total-label{font-weight:700}
+#dailyCommissionSection #dailyCommissionTotal{font-weight:700;white-space:nowrap}
 /* 回数歩合は1行、距離歩合は日報に入力された車種だけ表示 */
 #dailyCommissionSection .daily-commission-vehicle-lines{display:flex;flex-direction:column;gap:9px}
 #dailyCommissionSection .commission-main-row{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:baseline;line-height:1.5}
-#dailyCommissionSection .commission-main-label{font-weight:600;white-space:nowrap}
+#dailyCommissionSection .commission-main-label{font-weight:700;white-space:nowrap}
 #dailyCommissionSection .commission-main-amount{text-align:right;min-width:0;white-space:nowrap;font-size:14px;font-variant-numeric:tabular-nums}
 #dailyCommissionSection .commission-distance-group{display:flex;flex-direction:column;gap:5px}
-#dailyCommissionSection .commission-distance-heading{font-weight:600;line-height:1.5}
+#dailyCommissionSection .commission-distance-heading{font-weight:700;line-height:1.5}
 #dailyCommissionSection .commission-distance-row{display:grid;grid-template-columns:42px minmax(0,1fr);gap:5px;align-items:baseline;line-height:1.45;margin-left:12px}
-#dailyCommissionSection .commission-distance-vehicle{font-weight:600;white-space:nowrap}
+#dailyCommissionSection .commission-distance-vehicle{font-weight:700;white-space:nowrap}
 #dailyCommissionSection .commission-distance-amount{text-align:right;min-width:0;white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}
 @media(max-width:360px){#dailyCommissionSection .commission-distance-amount{font-size:12px}}
 </style>
@@ -740,7 +740,7 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #commissionModal .commission-vehicle-section{padding:12px;margin:0 0 12px;border:1px solid #e1e1e8;border-radius:14px;background:#f8f8fb}
 #commissionModal .commission-vehicle-section h4{font-size:18px;margin:0 0 8px}
 #commissionModal .commission-vehicle-section>input{margin-top:5px}
-#commissionModal .commission-schedule-title{font-weight:600;margin:14px 0 7px}
+#commissionModal .commission-schedule-title{font-weight:700;margin:14px 0 7px}
 #commissionModal .commission-count-rows{display:flex;flex-direction:column;gap:7px}
 #commissionModal .commission-count-row{display:grid;grid-template-columns:52px minmax(0,1fr) 18px 54px;gap:5px;align-items:center}
 #commissionModal .commission-count-round{font-weight:600;white-space:nowrap;font-size:14px}
@@ -784,29 +784,29 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   .app > *{display:none !important}
   #weeklyPrintArea{display:block !important;position:relative !important;left:0 !important;top:0 !important;width:100% !important;max-width:none !important;height:auto !important;min-height:0 !important;margin:0 !important;padding:0 !important;color:#111 !important;background:#fff !important;visibility:visible !important}
   #weeklyPrintArea *{visibility:visible !important}
-  #weeklyPrintArea .weekly-print-title{font-size:18px;font-weight:600;text-align:center;margin:0 0 1.5mm}
+  #weeklyPrintArea .weekly-print-title{font-size:18px;font-weight:700;text-align:center;margin:0 0 1.5mm}
   #weeklyPrintArea .weekly-print-period{text-align:left;font-size:10pt;margin:0 0 2mm}
   #weeklyPrintArea table{width:100% !important;max-width:none !important;margin-right:auto !important;margin-left:0 !important;border-collapse:collapse !important;table-layout:fixed !important;font-size:7.5pt !important}
   #weeklyPrintArea th,#weeklyPrintArea td{border:1px solid #555 !important;padding:2px 3px !important;vertical-align:middle !important;line-height:1.12 !important;overflow-wrap:anywhere}
-  #weeklyPrintArea th{background:#eee !important;font-weight:600 !important;text-align:center !important}
+  #weeklyPrintArea th{background:#eee !important;font-weight:700 !important;text-align:center !important}
   #weeklyPrintArea td.num{text-align:right !important;white-space:nowrap !important}
   #weeklyPrintArea td.center{text-align:center !important}
   /* 祝日名は日付の次の行に重ねて表示し、行の高さを変えない */
   #weeklyPrintArea td.weekly-print-date{white-space:normal !important;line-height:1.08 !important;position:relative !important}
-  #weeklyPrintArea .weekly-print-holiday-name{position:absolute !important;left:0 !important;right:0 !important;top:50% !important;transform:translateY(-50%) !important;display:block !important;font-size:8pt !important;font-weight:600 !important;color:#111 !important;line-height:1 !important;margin:0 !important;white-space:normal !important}
+  #weeklyPrintArea .weekly-print-holiday-name{position:absolute !important;left:0 !important;right:0 !important;top:50% !important;transform:translateY(-50%) !important;display:block !important;font-size:8pt !important;font-weight:700 !important;color:#111 !important;line-height:1 !important;margin:0 !important;white-space:normal !important}
   #weeklyPrintArea td.weekly-print-distance{font-size:7.5pt !important;line-height:1.08 !important;white-space:nowrap !important;text-align:left !important;vertical-align:middle !important}
   #weeklyPrintArea td.weekly-print-distance-note{font-size:7pt !important;line-height:1.08 !important;white-space:nowrap !important;overflow:hidden !important;text-align:left !important;}
   #weeklyPrintArea .weekly-print-distance-line{display:grid !important;grid-template-columns:2.2em minmax(0,1fr) !important;align-items:baseline !important;height:1em !important}
   #weeklyPrintArea .weekly-print-distance-vehicle{display:block !important;width:2.2em !important}
   #weeklyPrintArea tr{page-break-inside:avoid}
-  #weeklyPrintArea tr.subtotal td{font-weight:600;background:#f6f6f6 !important}
+  #weeklyPrintArea tr.subtotal td{font-weight:700;background:#f6f6f6 !important}
   #weeklyPrintArea tr.subtotal td.worktime{text-align:left !important;white-space:nowrap !important}
   #weeklyPrintArea .weekly-print-worktime-text,.weekly-print-commission-text{display:inline-block !important;white-space:nowrap !important}
-  #weeklyPrintArea .weekly-print-commission-text{margin-left:10px !important;padding-left:10px !important;border-left:1px solid #777 !important;font-weight:600 !important;font-size:7.5pt !important}
+  #weeklyPrintArea .weekly-print-commission-text{margin-left:10px !important;padding-left:10px !important;border-left:1px solid #777 !important;font-weight:700 !important;font-size:7.5pt !important}
   #weeklyPrintArea tr.weekly-print-blank td{height:4.2mm !important}
   #weeklyPrintArea .weekly-print-summary-totals{display:flex !important;justify-content:flex-end !important;align-items:baseline !important;gap:18mm !important;margin-top:1.8mm !important}
-  #weeklyPrintArea .weekly-print-total{margin-top:0 !important;text-align:right;font-weight:600;font-size:10pt}
-  #weeklyPrintArea .weekly-print-commission-total{margin-top:0 !important;text-align:left;font-weight:600;font-size:10pt}
+  #weeklyPrintArea .weekly-print-total{margin-top:0 !important;text-align:right;font-weight:700;font-size:10pt}
+  #weeklyPrintArea .weekly-print-commission-total{margin-top:0 !important;text-align:left;font-weight:700;font-size:10pt}
   #weeklyPrintArea .weekly-print-note{margin-top:1mm;font-size:7.5pt;color:#555}
 }
 <style id="weekly-print-row-balance-sample">
@@ -1067,7 +1067,7 @@ nav button{height:45px !important;}
 #deliveryEditModal{display:none !important;}
 #deliveryViewEditBtn{display:none !important;}
 #deliveryViewModal .unified-delivery-edit{margin-top:6px;padding:8px 0 2px;border-top:1px solid #ddd;}
-#deliveryViewModal .unified-delivery-edit label{display:block;margin:5px 0 3px;font-size:13px;font-weight:600;}
+#deliveryViewModal .unified-delivery-edit label{display:block;margin:5px 0 3px;font-size:13px;font-weight:700;}
 #deliveryViewModal .unified-delivery-edit input{width:100%;box-sizing:border-box;height:40px;}
 #deliveryViewModal .unified-delivery-diff{font-size:14px;margin-top:4px;}
 #deliveryViewModal .unified-delivery-note{font-size:10px;margin-top:5px;color:#555;}
@@ -1388,7 +1388,7 @@ nav button{height:45px !important;}
   margin:0 !important;
   white-space:nowrap;
   font-size:14px !important;
-  font-weight:600;
+  font-weight:700;
 }
 #capacityCalcModal .capacity-calc-inline{
   display:grid;
@@ -1422,18 +1422,18 @@ nav button{height:45px !important;}
 #capacityCalcModal .capacity-calc-result-title{
   font-size:13px;
   color:#666;
-  font-weight:600;
+  font-weight:700;
   margin-bottom:5px;
 }
 #capacityCalcModal .capacity-calc-result.warning .capacity-calc-result-title{color:#fff;}
 #capacityCalcModal .capacity-calc-name{
   font-size:17px;
-  font-weight:600;
+  font-weight:700;
   line-height:1.3;
 }
 #capacityCalcModal .capacity-calc-warning{
   color:#ff3b30;
-  font-weight:600;
+  font-weight:700;
   margin-top:3px;
 }
 #capacityCalcModal .capacity-calc-result.warning .capacity-calc-warning{color:#fff;}
@@ -1469,7 +1469,7 @@ nav button{height:45px !important;}
 #capacityCalcModal .capacity-calc-set-line{
   font-size:15px;
   line-height:1.45;
-  font-weight:600;
+  font-weight:700;
   color:#1c1c1e;
   white-space:nowrap;
 }
@@ -1648,7 +1648,7 @@ nav button{height:45px !important;}
 /* 納品重量・納品容量の強調文字を、タンク容量ラベルと同じ落ち着いた黒色・適度な太字に揃える */
 #deliveryViewModal .unified-delivery-edit > label[for="deliveryUnifiedKg"] {
   color:#1c1c1e !important;
-  font-weight:600 !important;
+  font-weight:700 !important;
   -webkit-text-stroke:0 !important;
   text-shadow:none !important;
 }
@@ -1658,7 +1658,7 @@ nav button{height:45px !important;}
 #deliveryViewModal #deliveryUnifiedCapacityDiff,
 #deliveryViewModal #deliveryUnifiedL .unified-delivery-capacity-value {
   color:#1c1c1e !important;
-  font-weight:600 !important;
+  font-weight:700 !important;
   -webkit-text-stroke:0 !important;
   text-shadow:none !important;
 }
@@ -1751,7 +1751,7 @@ nav button{height:45px !important;}
   padding: 0 !important;
   font-size: 17px !important;
   line-height: 1.15 !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   white-space: nowrap !important;
   text-align: center !important;
   overflow: visible !important;
@@ -1764,7 +1764,7 @@ nav button{height:45px !important;}
   padding: 0 !important;
   font-size: 17px !important;
   line-height: 1.15 !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   white-space: nowrap !important;
   text-align: center !important;
 }
@@ -1819,7 +1819,7 @@ nav button{height:45px !important;}
   padding: 0 4px !important;
   text-align: center !important;
   font-size: 16px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   line-height: 1.2 !important;
   white-space: normal !important;
   overflow-wrap: anywhere !important;
@@ -1883,7 +1883,7 @@ nav button{height:45px !important;}
 #dailyOtherReasonWrap{margin-top:8px;}
 #dailyOtherReasonWrap input{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:14px !important;}
 #dailyDistancePrintNoteSection{margin-top:8px !important;}
-#dailyDistancePrintNoteSection label{display:block;margin-bottom:6px;font-size:14px;font-weight:600;}
+#dailyDistancePrintNoteSection label{display:block;margin-bottom:6px;font-size:14px;font-weight:700;}
 #dailyDistancePrintNote{height:38px !important;min-height:38px !important;margin:0 !important;box-sizing:border-box !important;font-size:17px !important;}
 #dailyOtherTimeModal .daily-other-time-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 #dailyOtherTimeModal label{display:block;margin:0 0 5px;font-weight:600;color:#333;}
@@ -2008,7 +2008,7 @@ nav button{height:45px !important;}
 <div class="calc-top-meta"><span id="inputDateText" class="input-date-meta"></span></div>
 <div class="calc-field-row calc-top-date-row">
 <label for="inputDeliveryDate">納品日</label>
-<input id="inputDeliveryDate" type="date" style="font-weight:600">
+<input id="inputDeliveryDate" type="date" style="font-weight:700">
 </div>
 <input id="dateDisplay" class="input-date-hidden" type="date" aria-hidden="true" tabindex="-1">
 </div>
@@ -2059,7 +2059,7 @@ nav button{height:45px !important;}
 </div>
 
 <div id="resultCard" class="card" style="display:none">
-<div id="resultMain" class="resultmain"><strong id="resultName" style="display:block;font-weight:600">—</strong><strong id="resultWarning" style="display:block;margin-top:4px;font-weight:600"></strong></div>
+<div id="resultMain" class="resultmain"><strong id="resultName" style="display:block;font-weight:700">—</strong><strong id="resultWarning" style="display:block;margin-top:4px;font-weight:700"></strong></div>
 <div class="results">
 <div class="box"><small>重量</small><strong id="kg">0.00 kg</strong></div>
 <div class="box"><small>容量</small><strong id="liters">0.00 L</strong></div>
@@ -2109,7 +2109,7 @@ nav button{height:45px !important;}
  </div>
 </section>
 
-<section id="weeklyPage" class="hidden"><div class="card weekly-date-picker-source" aria-hidden="true"><input id="weeklyDate" type="date" tabindex="-1" aria-label="週間日報の日付選択" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:600"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" role="button" tabindex="0" aria-label="日付を選択してカレンダーを開く" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:600;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
+<section id="weeklyPage" class="hidden"><div class="card weekly-date-picker-source" aria-hidden="true"><input id="weeklyDate" type="date" tabindex="-1" aria-label="週間日報の日付選択" style="width:320px;min-width:320px;max-width:320px;box-sizing:border-box;margin-top:8px;font-size:18px;font-weight:bold"></div><div class="card"><div class="history-weekly-nav"><button class="gray" type="button" onclick="window.shiftWeeklyDate(-1)">‹</button><div id="weeklyPeriod" class="daily-list-period" role="button" tabindex="0" aria-label="日付を選択してカレンダーを開く" style="margin:0"></div><button class="gray" type="button" onclick="window.shiftWeeklyDate(1)">›</button></div><button id="weeklyPrintBtn" type="button" style="height:42px;margin:10px 0;position:relative;z-index:10;pointer-events:auto">一覧を印刷</button><table class="weekly-table"><thead><tr><th>月日</th><th>取引先</th><th>部署名</th><th>納品重量（kg）</th></tr></thead><tbody id="weeklyList"></tbody></table><div id="weeklyTotal" style="text-align:right;font-weight:700;margin-top:12px">週間合計：0 kg</div></div></section><div id="weeklyPrintArea" class="weekly-print-only"></div>
 <section id="deliveryHistoryPage" class="hidden">
  <div class="card daily-view-tabs"><button id="deliveryHistoryViewToggleBtn" type="button">一覧を見る</button></div>
  <div id="deliveryHistoryDetailView" class="hidden">
@@ -2258,7 +2258,7 @@ nav button{height:45px !important;}
  </div></div>
  <div class="card">
   <label for="deliveryDate">納品日</label>
-  <input id="deliveryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:600">
+  <input id="deliveryDate" type="date" style="margin-top:8px;font-size:18px;font-weight:bold">
  </div>
  <div class="card"><label>注文数量</label>
   <div style="display:flex;gap:10px;margin-top:8px">
@@ -2273,17 +2273,17 @@ nav button{height:45px !important;}
  <div class="card">
   <div class="grid2" style="margin-top:4px">
    <div class="box">
-    <small style="font-size:13px;color:#666;font-weight:600">正味重量</small>
+    <small style="font-size:13px;color:#666;font-weight:700">正味重量</small>
     <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
      <input id="deliveryKg" type="number" inputmode="decimal" step="0.01" placeholder="—" style="margin-top:0;flex:1;min-width:0;box-sizing:border-box">
-     <span style="font-size:13px;font-weight:600;white-space:nowrap">kg</span>
+     <span style="font-size:13px;font-weight:700;white-space:nowrap">kg</span>
     </div>
    </div>
    <div class="box">
-    <small style="font-size:13px;color:#666;font-weight:600">納品容量</small>
+    <small style="font-size:13px;color:#666;font-weight:700">納品容量</small>
     <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
      <input id="deliveryL" type="text" readonly placeholder="—" style="margin-top:0;flex:1;min-width:0;box-sizing:border-box">
-     <span style="font-size:13px;font-weight:600;white-space:nowrap">L</span>
+     <span style="font-size:13px;font-weight:700;white-space:nowrap">L</span>
     </div>
    </div>
   </div>
@@ -2613,7 +2613,7 @@ nav button{height:45px !important;}
   <h3>納品データの編集</h3>
   <div id="deliveryEditInfo" style="line-height:1.8;margin-bottom:10px"></div>
   <label style="color:#000">納品日</label>
-  <input id="deliveryEditDate" type="date" style="margin-bottom:10px;font-weight:600">
+  <input id="deliveryEditDate" type="date" style="margin-bottom:10px;font-weight:700">
   <label style="color:#000">実納品重量（kg）</label>
   <input id="deliveryEditKg" type="number" inputmode="decimal" step="0.01">
   <label style="margin-top:12px;color:#000">実納品容量（L）</label>
@@ -3365,7 +3365,7 @@ function showCalcResultDialog(rec,fromHistory=false,returnPage="history"){
  calcResultReturnPage=returnPage||"history";
  registeredResultDialog=!fromHistory;
 
- const warning=rec.warning?'<div style="color:#ff3b30;font-weight:600">※譲受書必須</div>':"";
+ const warning=rec.warning?'<div style="color:#ff3b30;font-weight:700">※譲受書必須</div>':"";
  const orderUnit=formatOrderUnit(rec.unit);
  const orderAmount=rec.amount!=null
    ? formatQuantity(rec.amount)
@@ -3661,8 +3661,8 @@ function renderDeliveryHistory(){
       "<div style='font-size:16px;font-weight:400'>取引先："+esc(x.customer||"")+"</div>"+
       (x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")+
       vehicleTimeLabel+
-      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:21px;font-weight:600;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
-      "<div style='color:#000;font-size:21px;margin-top:3px;font-weight:600'>納品容量："+formatDeliveryHistoryNumber(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>"+
+      "<div style='color:"+(isDeliveryWarning(x)?"#ff3b30":"#000000")+";font-size:21px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+"</div>"+
+      "<div style='color:#000;font-size:21px;margin-top:3px;font-weight:700'>納品容量："+formatDeliveryHistoryNumber(deliveryL)+" L <span style='font-size:14px;font-weight:400'>/ 容量差："+signedCapacityDifferenceText+" L</span></div>"+
       "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>納品重量："+formatDeliveryHistoryNumber(x.deliveryKg)+" kg <span style='font-size:14px;font-weight:400'>/ 重量差："+weightDifferenceText+" kg</span></div>"+
       "<div style='color:#000;font-size:16px;font-weight:400;margin-top:6px'>注文数量："+formatDeliveryHistoryNumber(x.orderAmount)+" "+esc(x.orderUnit)+"</div>"+
       "<div style='color:#000;font-size:16px;margin-top:3px;font-weight:400'>注文容量："+formatDeliveryHistoryNumber(orderL)+" L</div>";
@@ -3848,7 +3848,7 @@ function openDeliveryView(i){
   $("deliveryViewInfo").innerHTML=
     "<div style='font-size:17px;font-weight:400;margin-bottom:4px'>納品日："+esc(formatDeliveryViewDate(x.date))+"</div>"+
     "<div style='font-size:16px'>取引先："+esc(x.customer||"")+(x.department?" "+esc(x.department):"")+"</div>"+
-    "<div style='font-size:17px;font-weight:600;margin-top:4px'>薬品名："+esc(x.chemical||"")+((x.warning || (chem&&chem.warning)) ? " <span style='color:#ff3b30;font-weight:600'>※譲受書必須</span>" : "")+"</div>"+
+    "<div style='font-size:17px;font-weight:700;margin-top:4px'>薬品名："+esc(x.chemical||"")+((x.warning || (chem&&chem.warning)) ? " <span style='color:#ff3b30;font-weight:700'>※譲受書必須</span>" : "")+"</div>"+
     "<div style='margin-top:3px'>注文数量："+formatQuantity(x.orderAmount)+" "+esc(x.orderUnit||"")+(x.orderUnit!=="kg"&&Number.isFinite(orderKg)?"／注文重量："+formatQuantity(orderKg)+" kg":"")+"</div>";
   $("deliveryUnifiedKg").value=x.deliveryKg!=null?formatQuantity(x.deliveryKg):"";
   // 納品未登録時も削除・データ修正ボタンは同じ位置に表示し、誤操作防止のため無効にする。
@@ -4067,7 +4067,7 @@ function openDeliveryEdit(i){
   deliveryEditSaved=false;
   const orderUnit=String(x.orderUnit||"");
   $("deliveryEditInfo").innerHTML=
-    "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px;font-weight:600'>薬品名："+esc(x.chemical||"")+"</span>"+
+    "<span>取引先："+esc(x.customer||"")+"</span>"+(x.department?"<br>部署名："+esc(x.department):"")+"<br><span style='font-size:17px;font-weight:700'>薬品名："+esc(x.chemical||"")+"</span>"+
     "<br>注文数量："+formatQuantity(x.orderAmount)+" "+esc(orderUnit)+
     (orderUnit==="kg"?"":"<br>注文重量："+formatQuantity(x.orderKg)+" kg");
   $("deliveryEditDate").value=x.date||isoToday();
@@ -4294,8 +4294,8 @@ function renderHistory(){
  rows.forEach(x=>{
    const div=document.createElement("div");div.className="item";div.onclick=()=>showCalcResultDialog(x,true);
    const isDelivered=!!findLinkedDelivery(x);
-   const chemStyle=x.warning?"color:#ff3b30;font-weight:600":"font-weight:600";
-   const chemStyleWithSize=chemStyle+";font-size:20px;font-weight:600;line-height:1.35";
+   const chemStyle=x.warning?"color:#ff3b30;font-weight:bold":"font-weight:bold";
+   const chemStyleWithSize=chemStyle+";font-size:20px;font-weight:700;line-height:1.35";
    const orderUnit=x.unit||"kg", orderAmount=x.amount!=null?trunc2(x.amount):trunc2(orderUnit==="kg"?x.kg:orderUnit==="L"?x.L:x.m3);
    const orderLabel=orderUnit==="m3"?"m³":orderUnit;
    const histL=formatQuantity(trunc2(x.L!=null?x.L:Number(x.m3||0)*1000));
@@ -4307,7 +4307,7 @@ function renderHistory(){
        : formatQuantity(trunc2(x.kg))+" kg　/　"+histL+" L";
    const displayDeliveryDate=x.deliveryDate||x.date||"";
    const displayDeliveryDateText=displayDeliveryDate?displayDeliveryDate.replace(/-/g,"/"):"";
-   div.innerHTML=(displayDeliveryDateText?"<div style='font-size:14px;font-weight:400'>納品日："+esc(displayDeliveryDateText)+(isDelivered?" <span style=\"color:#007aff;font-weight:600\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#007aff;font-weight:600\">＜納品登録あり＞</span></div>":""))
+   div.innerHTML=(displayDeliveryDateText?"<div style='font-size:14px;font-weight:400'>納品日："+esc(displayDeliveryDateText)+(isDelivered?" <span style=\"color:#007aff;font-weight:700\">＜納品登録あり＞</span>":"")+"</div>":(isDelivered?"<div style='font-size:14px;font-weight:400'><span style=\"color:#007aff;font-weight:700\">＜納品登録あり＞</span></div>":""))
     +(x.plannedTime?"<div style='font-size:16px;font-weight:400;margin-top:3px'>予定時間："+esc(x.plannedTime)+(x.vehicleType?"　　車種："+esc(x.vehicleType):"")+"</div>":"")
     +"<div style='font-size:16px;font-weight:400;margin-top:3px'>取引先："+esc(x.customer)+"</div>"
     +(x.department?"<div style='font-size:16px;font-weight:400;margin-top:3px'>部署名："+esc(x.department)+"</div>":"")
@@ -6197,7 +6197,7 @@ function renderWeeklyReport(){
      const label=statuses.map(x=>x.label).join("・");
      const color=statuses.some(x=>x.kind==="holiday"||x.kind==="leave")?"#d93025":"#007AFF";
      tr.className="weekly-status-row";
-     tr.innerHTML="<td>"+esc(dateText)+"</td><td><span style='font-weight:600;color:"+color+"'>"+esc(label)+"</span></td><td></td><td></td>";
+     tr.innerHTML="<td>"+esc(dateText)+"</td><td><span style='font-weight:700;color:"+color+"'>"+esc(label)+"</span></td><td></td><td></td>";
      tbody.appendChild(tr);
      firstRow=false;
    }
@@ -6221,7 +6221,7 @@ function renderWeeklyReport(){
    // 納品実績がある日だけ従来どおり日計を表示する。
    if(items.length){
      const sub=document.createElement("tr");
-     sub.innerHTML="<td></td><td></td><td style='font-weight:600;text-align:right'>日計</td><td style='font-weight:600'>"+formatQuantity(trunc2(dayTotal))+" kg</td>";
+     sub.innerHTML="<td></td><td></td><td style='font-weight:700;text-align:right'>日計</td><td style='font-weight:700'>"+formatQuantity(trunc2(dayTotal))+" kg</td>";
      tbody.appendChild(sub);
    }
  });
@@ -6285,7 +6285,7 @@ function renderHistoryWeeklyList(){
    lastDate=rowDate;
    const delivered=!!findLinkedDelivery(x);
    const status=delivered?'<span class="history-weekly-status delivered">納品登録あり</span>':'<span class="history-weekly-status undelivered">納品登録なし</span>';
-   tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><span style='font-weight:600'>"+esc(x.chemical||"")+"</span>"+status+"</td>";
+   tr.innerHTML="<td>"+dateText+"</td><td>"+esc(x.customer||"")+"</td><td>"+esc(x.department||"")+"</td><td><span style='font-weight:700'>"+esc(x.chemical||"")+"</span>"+status+"</td>";
    // 日付セルだけを押した場合は、その日の配車履歴一覧へ移動する。
    // 取引先・部署・薬品など、行のほかの部分を押した場合の既存動作は維持する。
    const dateCell=tr.cells[0];
@@ -6372,7 +6372,7 @@ function renderDeliveryHistoryWeeklyList(){
    }
    const kgText = Number.isFinite(deliveryKg) ? formatQuantity(deliveryKg)+" kg" : "— kg";
    const lText = Number.isFinite(deliveryL) ? Number(deliveryL).toFixed(1)+" L" : "— L";
-   tr.innerHTML="<td>"+dateText+"</td><td><div>"+esc(x.customer||"")+"</div><div style='margin-top:3px;font-weight:600'>"+esc(x.chemical||"")+"</div></td><td>"+esc(x.department||"")+"</td><td><div>"+kgText+"</div><div style='margin-top:2px'>"+lText+"</div></td>";
+   tr.innerHTML="<td>"+dateText+"</td><td><div>"+esc(x.customer||"")+"</div><div style='margin-top:3px;font-weight:700'>"+esc(x.chemical||"")+"</div></td><td>"+esc(x.department||"")+"</td><td><div>"+kgText+"</div><div style='margin-top:2px'>"+lText+"</div></td>";
    tr.title="タップして納品データを編集";
    // 日付セルだけを押した場合は、その日の納品履歴詳細へ移動する。
    // 取引先・部署・納品量など、行のほかの部分を押した場合は既存の編集表示を維持する。
@@ -7634,15 +7634,15 @@ restoreLastVehicleType();
 }
 #historyCustomCalendar .hcc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 #historyCustomCalendar .hcc-head button{border:0;background:#f2f2f7;border-radius:9px;width:36px;height:36px;font-size:20px;line-height:1;cursor:pointer}
-#historyCustomCalendar .hcc-title{font-weight:600;font-size:17px}
+#historyCustomCalendar .hcc-title{font-weight:700;font-size:17px}
 #historyCustomCalendar .hcc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px}
 #historyCustomCalendar .hcc-week div{text-align:center;font-size:12px;color:#666;padding:4px 0}
 #historyCustomCalendar .hcc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 #historyCustomCalendar .hcc-day{width:100%;height:38px;min-height:38px;margin:0 !important;padding:0 !important;border:0;background:#fff;color:#1c1c1e !important;border-radius:9px;font-size:15px;line-height:38px;font-weight:400;cursor:pointer;box-sizing:border-box;display:block}
 #historyCustomCalendar .hcc-day:hover{background:#f2f2f7;color:#1c1c1e !important}
 #historyCustomCalendar .hcc-day.other{color:#aaa}
-#historyCustomCalendar .hcc-day.today{font-weight:600;box-shadow:inset 0 0 0 1.5px #007aff}
-#historyCustomCalendar .hcc-day.selected{background:#007aff;color:#fff;font-weight:600}
+#historyCustomCalendar .hcc-day.today{font-weight:700;box-shadow:inset 0 0 0 1.5px #007aff}
+#historyCustomCalendar .hcc-day.selected{background:#007aff;color:#fff;font-weight:700}
 @media(max-width:420px){#historyCustomCalendar{width:calc(100vw - 20px)}}
 </style>
 
@@ -8127,11 +8127,6 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
   opacity:1;
 }
 </style>
-
-<style id="lighter-default-bold-weight">
-/* b・strong・見出し・表見出しの標準太字も少し軽くする。文字サイズや配置は変更しない。 */
-b,strong,h1,h2,h3,h4,h5,h6,th{font-weight:600;}
-</style>
 </body>
 
 <style id="daily-date-display-final-fix">
@@ -8149,7 +8144,7 @@ b,strong,h1,h2,h3,h4,h5,h6,th{font-weight:600;}
   display:inline !important;
   color:#1c1c1e !important;
   font-size:19px !important;
-  font-weight:600 !important;
+  font-weight:700 !important;
 }
 </style>
 <script id="daily-date-display-init-fix">
