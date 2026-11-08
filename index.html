@@ -2042,6 +2042,41 @@ nav button{height:45px !important;}
 }
 </style>
 
+
+<style id="weekly-print-table-font-plus-2pt">
+@media print{
+  #weeklyPrintArea table,
+  #weeklyPrintArea table th,
+  #weeklyPrintArea table td,
+  #weeklyPrintArea table td.weekly-print-distance{
+    font-size:9.5pt !important;
+  }
+  #weeklyPrintArea .weekly-print-holiday-name{
+    font-size:10pt !important;
+  }
+  #weeklyPrintArea td.weekly-print-distance-note{
+    font-size:9pt !important;
+  }
+  #weeklyPrintArea .weekly-print-commission-text{
+    font-size:9.5pt !important;
+  }
+}
+</style>
+
+
+<style id="weekly-print-holiday-red-normal">
+@media print{
+  #weeklyPrintArea td.weekly-print-holiday-date{
+    color:#d00000 !important;
+    font-weight:400 !important;
+  }
+  #weeklyPrintArea .weekly-print-holiday-name{
+    color:#d00000 !important;
+    font-weight:400 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="authGate">
@@ -6013,7 +6048,7 @@ function buildWeeklyPrintArea(){
      const vehicleType=(rec.vehicleType==="4t"||rec.vehicleType==="10t")?rec.vehicleType:String(key).replace(/#2$/,'');
      const vehicleLabel=esc(vehicleType);
      out.push('<div class="weekly-print-distance-line"><span class="weekly-print-distance-vehicle">'+vehicleLabel+'</span><span>出庫：'+esc(outText)+'</span></div>');
-     out.push('<div class="weekly-print-distance-line"><span class="weekly-print-distance-vehicle"></span><span>帰庫：'+esc(inText)+'　走行'+esc(distText)+'</span></div>');
+     out.push('<div class="weekly-print-distance-line"><span class="weekly-print-distance-vehicle"></span><span>帰庫：'+esc(inText)+' 走行'+esc(distText)+'</span></div>');
    });
    return out;
  };
@@ -6082,7 +6117,7 @@ function buildWeeklyPrintArea(){
        const dayStatusName=rowIndex===1?(isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isHoliday?getJapaneseNationalHolidayNameISO(date):"")):"";
        const blankHolidayRow=(isHoliday||isLeaveDay||isOtherDay)&&!o&&!d;
        html+='<tr'+(rowIndex>=dayRows.length?' class="weekly-print-blank"':'')+'>';
-       html+='<td class="center weekly-print-date">'+(dateText?esc(dateText):'')+(dayStatusName?'<span class="weekly-print-holiday-name">'+esc(dayStatusName)+'</span>':'')+'</td>';
+       html+='<td class="center weekly-print-date'+(isHoliday?' weekly-print-holiday-date':'')+'">'+(dateText?esc(dateText):'')+(dayStatusName?'<span class="weekly-print-holiday-name">'+esc(dayStatusName)+'</span>':'')+'</td>';
        html+='<td>'+esc(o?.customer||d?.customer||"")+'</td>';
        html+='<td>'+esc(o?.department||d?.department||"")+'</td>';
        html+='<td>'+esc(o?.chemical||d?.chemical||"")+'</td>';
