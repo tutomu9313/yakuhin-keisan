@@ -2077,63 +2077,6 @@ nav button{height:45px !important;}
 }
 </style>
 
-
-<style id="weekly-print-ios-safari-thin-borders">
-/* iPhone Safariの週間日報印刷でも、PC印刷と同じ細い枠線に統一 */
-@supports (-webkit-touch-callout: none) {
-  @media print and (hover: none) and (pointer: coarse) {
-    #weeklyPrintArea table { border-collapse: collapse !important; }
-    #weeklyPrintArea table th,
-    #weeklyPrintArea table th,
-    #weeklyPrintArea table td {
-      border: 0.8pt solid #333 !important;
-      border-style: solid !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-  }
-}
-</style>
-
-<style id="weekly-print-ios-safari-one-page-fix">
-/* iPhone Safariの週間日報印刷だけを圧縮。PC印刷と通常画面には影響させない。 */
-@supports (-webkit-touch-callout: none) {
-  @media print and (hover: none) and (pointer: coarse) {
-    #weeklyPrintArea .weekly-print-title { font-size:16px !important; margin:0 0 1mm !important; }
-    #weeklyPrintArea .weekly-print-period { font-size:9pt !important; margin:0 0 1.5mm !important; }
-    #weeklyPrintArea table,
-    #weeklyPrintArea table th,
-    #weeklyPrintArea table td,
-    #weeklyPrintArea table td.weekly-print-distance {
-      font-size:8.5pt !important;
-      line-height:1 !important;
-    }
-    #weeklyPrintArea table tr,
-    #weeklyPrintArea table th,
-    #weeklyPrintArea table td {
-      height:4mm !important;
-      min-height:4mm !important;
-      padding:0 2px !important;
-      box-sizing:border-box !important;
-      vertical-align:middle !important;
-    }
-    #weeklyPrintArea table tr.weekly-print-blank > td,
-    #weeklyPrintArea table tr.subtotal > td {
-      height:4mm !important;
-      min-height:4mm !important;
-      padding:0 2px !important;
-      line-height:1 !important;
-    }
-    #weeklyPrintArea .weekly-print-distance-line { height:0.9em !important; }
-    #weeklyPrintArea .weekly-print-holiday-name { font-size:8.5pt !important; }
-    #weeklyPrintArea td.weekly-print-distance-note { font-size:8pt !important; }
-    #weeklyPrintArea .weekly-print-commission-text { font-size:8pt !important; margin-left:2em !important; }
-    #weeklyPrintArea .weekly-print-summary-totals { margin-top:1.5mm !important; gap:12mm !important; }
-    #weeklyPrintArea .weekly-print-total,
-    #weeklyPrintArea .weekly-print-commission-total { font-size:9pt !important; }
-  }
-}
-</style>
 </head>
 <body>
 <div id="authGate">
