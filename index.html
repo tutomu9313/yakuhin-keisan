@@ -802,28 +802,33 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
   #weeklyPrintArea tr.subtotal td{font-weight:700;background:#f6f6f6 !important}
   #weeklyPrintArea tr.subtotal td.worktime{text-align:left !important;white-space:nowrap !important}
   #weeklyPrintArea .weekly-print-worktime-text,.weekly-print-commission-text{display:inline-block !important;white-space:nowrap !important}
-  #weeklyPrintArea .weekly-print-commission-text{margin-left:10px !important;padding-left:10px !important;border-left:1px solid #777 !important;font-weight:700 !important;font-size:7.5pt !important}
+  #weeklyPrintArea .weekly-print-commission-text{margin-left:3em !important;padding-left:0 !important;border-left:0 !important;font-weight:700 !important;font-size:7.5pt !important}
   #weeklyPrintArea tr.weekly-print-blank td{height:4.2mm !important}
   #weeklyPrintArea .weekly-print-summary-totals{display:flex !important;justify-content:flex-end !important;align-items:baseline !important;gap:18mm !important;margin-top:1.8mm !important}
   #weeklyPrintArea .weekly-print-total{margin-top:0 !important;text-align:right;font-weight:700;font-size:10pt}
   #weeklyPrintArea .weekly-print-commission-total{margin-top:0 !important;text-align:left;font-weight:700;font-size:10pt}
   #weeklyPrintArea .weekly-print-note{margin-top:1mm;font-size:7.5pt;color:#555}
 }
+</style>
 <style id="weekly-print-row-balance-sample">
 @media print{
   #weeklyPrintArea .weekly-print-title{margin:0 0 1.8mm !important;}
   #weeklyPrintArea .weekly-print-period{margin:0 0 2.5mm !important;}
-  #weeklyPrintArea th,#weeklyPrintArea td{padding:2.5px 3px !important;line-height:1.18 !important;}
-  #weeklyPrintArea td.weekly-print-distance{line-height:1.12 !important;}
-  #weeklyPrintArea .weekly-print-distance-line{height:1.05em !important;}
-  #weeklyPrintArea tr.weekly-print-blank td{height:5.0mm !important;}
-  #weeklyPrintArea tr.subtotal td{padding-top:2.8px !important;padding-bottom:2.8px !important;}
-  #weeklyPrintArea .weekly-print-summary-totals{margin-top:1.8mm !important;gap:18mm !important;}
+  /* A4横1ページに収めつつ、表の行間をさらに広げて読みやすくする */
+  #weeklyPrintArea th,#weeklyPrintArea td{padding:3.5px 3px !important;line-height:1.25 !important;}
+  #weeklyPrintArea td.weekly-print-distance{line-height:1.2 !important;}
+  #weeklyPrintArea .weekly-print-distance-line{height:1.15em !important;}
+  #weeklyPrintArea tr.weekly-print-blank td{height:6.5mm !important;}
+  #weeklyPrintArea tr.subtotal td{padding-top:3.5px !important;padding-bottom:3.5px !important;}
+  #weeklyPrintArea .weekly-print-summary-totals{margin-top:2.8mm !important;gap:18mm !important;}
   #weeklyPrintArea .weekly-print-total{margin-top:0 !important;}
   #weeklyPrintArea .weekly-print-commission-total{margin-top:0 !important;}
   #weeklyPrintArea .weekly-print-note{margin-top:1.2mm !important;}
+  /* 表の全行（見出し・通常行・空欄行・日計行）を6.5mmに統一 */
+  #weeklyPrintArea table tr,
+  #weeklyPrintArea table th,
+  #weeklyPrintArea table td{height:6.5mm !important;}
 }
-</style>
 </style>
 
 <style id="delivery-view-tank-check-compact">
@@ -1060,6 +1065,7 @@ nav button{height:45px !important;}
 #deliveryViewModal .modal-actions button{height:40px !important;}
 #deliveryEditModal .modal-actions button{height:40px !important;}
 
+</style>
 <style id="prototype-delivery-page-hidden">#deliveryPage{display:none !important;}</style>
 <style id="prototype-unified-delivery">
 /* 試作：納品データと納品データの編集を1画面に統合。既存の保全版には適用しない。 */
@@ -1987,6 +1993,55 @@ nav button{height:45px !important;}
   line-height:38px !important;
 }
 </style>
+
+<style id="weekly-print-all-rows-6-5mm">
+@media print{
+  #weeklyPrintArea table tr{
+    height:6.5mm !important;
+    page-break-inside:avoid !important;
+  }
+  #weeklyPrintArea table th,
+  #weeklyPrintArea table td{
+    height:6.5mm !important;
+    min-height:6.5mm !important;
+    padding-top:3px !important;
+    padding-bottom:3px !important;
+    box-sizing:border-box !important;
+    vertical-align:middle !important;
+  }
+}
+</style>
+
+
+<style id="weekly-print-uniform-row-height-5-3mm">
+@media print{
+  #weeklyPrintArea table tr,
+  #weeklyPrintArea table th,
+  #weeklyPrintArea table td{
+    height:5.3mm !important;
+    min-height:5.3mm !important;
+    padding:0 3px !important;
+    line-height:1.05 !important;
+    box-sizing:border-box !important;
+    vertical-align:middle !important;
+  }
+  #weeklyPrintArea table tr.weekly-print-blank > td,
+  #weeklyPrintArea table tr.subtotal > td{
+    height:5.3mm !important;
+    min-height:5.3mm !important;
+    padding:0 3px !important;
+    line-height:1.05 !important;
+  }
+  #weeklyPrintArea td.weekly-print-date,
+  #weeklyPrintArea td.weekly-print-distance{
+    line-height:1.05 !important;
+  }
+  #weeklyPrintArea .weekly-print-distance-line{
+    height:1em !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="authGate">
@@ -5914,26 +5969,28 @@ function buildWeeklyPrintArea(){
  const wd=["日","月","火","水","木","金","土"];
  const rows=getWeeklyReportRows();
  const formatOrderAmount=(o)=>{
-   if(!o)return "—";
+   if(!o)return "";
    const unit=formatOrderUnit(o.unit||"kg");
    let amount=o.amount;
    if(amount==null) amount=o.unit==="L"?o.L:(o.unit==="m3"?o.m3:o.kg);
-   return Number.isFinite(Number(amount))?formatQuantity(amount)+" "+unit:"—";
+   return Number.isFinite(Number(amount))?formatQuantity(amount)+" "+unit:"";
  };
- const orderWeight=(o)=>Number.isFinite(Number(o?.kg))?formatQuantity(o.kg)+" kg":"—";
- const deliveryWeight=(d)=>Number.isFinite(Number(d?.deliveryKg))?formatQuantity(d.deliveryKg)+" kg":"—";
+ const orderWeight=(o)=>Number.isFinite(Number(o?.kg))?formatQuantity(o.kg)+" kg":"";
+ const deliveryWeight=(d)=>{if(!d)return "";return Number.isFinite(Number(d.deliveryKg))?formatQuantity(d.deliveryKg)+" kg":"";};
  const deliveryCapacity=(d,o)=>{
-   let v=Number(d?.deliveryL);
+   if(!d)return "";
+   let v=Number(d.deliveryL);
    if(!Number.isFinite(v)){
      const density=Number(d?.density||o?.density);
      const kg=Number(d?.deliveryKg);
      if(Number.isFinite(kg)&&density>0)v=kg/density;
    }
-   return Number.isFinite(v)?formatQuantity(v)+" L":"—";
+   return Number.isFinite(v)?formatQuantity(v)+" L":"";
  };
  const weightDiff=(o,d)=>{
-   const a=Number(o?.kg),b=Number(d?.deliveryKg);
-   return Number.isFinite(a)&&Number.isFinite(b)?formatQuantity(b-a)+" kg":"—";
+   if(!d)return "";
+   const a=Number(o?.kg),b=Number(d.deliveryKg);
+   return Number.isFinite(a)&&Number.isFinite(b)?formatQuantity(b-a)+" kg":"";
  };
  const getDistanceRows=(date)=>{
    const dr=(typeof dailyReports!=="undefined"&&dailyReports)?dailyReports[date]:null;
@@ -5950,9 +6007,9 @@ function buildWeeklyPrintArea(){
    orderedVehicles.slice(0,2).forEach(key=>{
      const rec=vehicleMap[key]||{};
      const outOdo=Number(rec.outOdometer),inOdo=Number(rec.inOdometer),dist=Number(rec.distance);
-     const outText=Number.isFinite(outOdo)?formatQuantity(outOdo)+"km":"—";
-     const inText=Number.isFinite(inOdo)?formatQuantity(inOdo)+"km":"—";
-     const distText=Number.isFinite(dist)?formatQuantity(dist)+"km":"—";
+     const outText=Number.isFinite(outOdo)?formatQuantity(outOdo)+"km":"";
+     const inText=Number.isFinite(inOdo)?formatQuantity(inOdo)+"km":"";
+     const distText=Number.isFinite(dist)?formatQuantity(dist)+"km":"";
      const vehicleType=(rec.vehicleType==="4t"||rec.vehicleType==="10t")?rec.vehicleType:String(key).replace(/#2$/,'');
      const vehicleLabel=esc(vehicleType);
      out.push('<div class="weekly-print-distance-line"><span class="weekly-print-distance-vehicle">'+vehicleLabel+'</span><span>出庫：'+esc(outText)+'</span></div>');
@@ -6045,7 +6102,7 @@ function buildWeeklyPrintArea(){
      const endTime=dailyReport&&dailyReport.endTime?String(dailyReport.endTime):"";
      if(dayRows.length===0&&!hasSavedDeliveryAllowance&&(!dailyReport||isLeaveDay||(isOtherDay&&distanceRows.length===0))){
        const emptyOtherText=[
-         isOtherDay?("その他："+String(dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間　"+startTime+" ～ "+endTime:"")):"",
+         isOtherDay?("その他："+String(dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間："+startTime+" 〜 "+endTime:"")):"",
          isLeaveDay?(leaveType==="half"?"半日休":"全日休"):"",
          isHoliday?getJapaneseNationalHolidayNameISO(date):""
        ].filter(Boolean).join("　");
@@ -6053,7 +6110,7 @@ function buildWeeklyPrintArea(){
        html+='<tr class="subtotal weekly-print-empty-subtotal"><td colspan="7" class="worktime"><span class="weekly-print-worktime-text">'+(emptyOtherText?esc(emptyOtherText):'&nbsp;')+'</span></td><td class="center">&nbsp;</td><td class="num">&nbsp;</td><td class="weekly-print-distance weekly-print-distance-note">'+(printDistanceNote?esc(printDistanceNote):'&nbsp;')+'</td></tr>';
        return;
      }
-     const workTimeDetail=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isOtherDay?("その他："+String(dailyReport&&dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間　"+startTime+" ～ "+endTime:"")):(startTime&&endTime?"勤務時間　"+startTime+" ～ "+endTime:"勤務時間　—"));
+     const workTimeDetail=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isOtherDay?("その他："+String(dailyReport&&dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間："+startTime+" 〜 "+endTime:"")):(startTime&&endTime?"勤務時間："+startTime+" 〜 "+endTime:"勤務時間："));
      const workTimeText=[isHoliday?getJapaneseNationalHolidayNameISO(date):"",workTimeDetail].filter(Boolean).join("　");
      // 運転日報の歩合給を同じ行に表示
      let countCommissionText="回数歩合：0円";
@@ -6085,7 +6142,7 @@ function buildWeeklyPrintArea(){
      } catch(commissionError) {
        console.warn("週間日報の歩合給表示をスキップしました", commissionError);
      }
-     const commissionText=[countCommissionText,distanceCommissionText,deliveryAllowanceText,commissionTotalText].filter(Boolean).join("　│　");
+     const commissionText=[countCommissionText,distanceCommissionText,deliveryAllowanceText,commissionTotalText].filter(Boolean).join("　　　");
      const printDistanceNote=String(dailyReport&&dailyReport.distancePrintNote||"").trim();
      html+='<tr class="subtotal"><td colspan="7" class="worktime"><span class="weekly-print-worktime-text">'+esc(workTimeText)+'</span><span class="weekly-print-commission-text">'+esc(commissionText)+'</span></td><td class="center">日計</td><td class="num">'+formatQuantity(dayTotal)+' kg</td><td class="weekly-print-distance weekly-print-distance-note">'+(printDistanceNote?esc(printDistanceNote):'&nbsp;')+'</td></tr>';
    });
@@ -6093,7 +6150,7 @@ function buildWeeklyPrintArea(){
  html+='</tbody></table>';
  const total=(rows.reduce((sum,r)=>sum+(Number(r.delivery?.deliveryKg)||0),0));
  html+='<div class="weekly-print-summary-totals"><div class="weekly-print-commission-total">週間歩合総計：'+weeklyCommissionTotal.toLocaleString("ja-JP")+'円</div><div class="weekly-print-total">週間納品合計：'+formatQuantity(total)+' kg</div></div>';
- html+='<div class="weekly-print-note">注文データと納品データを同一一覧で表示しています。納品未登録の場合は納品欄を「—」で表示します。</div>';
+
  area.innerHTML=html;
 }
 let weeklyPrintInProgress=false;
