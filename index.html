@@ -5326,20 +5326,29 @@ $("dailyOtherTimeConfirmBtn")?.addEventListener("click",()=>{
 });
 $("dailyOtherTimeCancelBtn")?.addEventListener("click",closeDailyOtherTimeDialog);
 $("dailyOtherTimeModal")?.addEventListener("click",e=>{if(e.target===$("dailyOtherTimeModal"))closeDailyOtherTimeDialog();});
+function calculateDailyWorkMinutes(startTime,endTime,leaveType,overtimeHours){
+ if(leaveType==="full")return 0;
+ if(!/^\d{2}:\d{2}$/.test(String(startTime||""))||!/^\d{2}:\d{2}$/.test(String(endTime||"")))return 0;
+ const [sh,sm]=String(startTime).split(":").map(Number),[eh,em]=String(endTime).split(":").map(Number);
+ let diff=(eh*60+em)-(sh*60+sm);
+ if(diff<0)diff+=24*60;
+ // 通常勤務・その他は休憩1時間を差し引く。半日休は休憩控除なし。
+ if(leaveType!=="half")diff=Math.max(0,diff-60);
+ // 残業時間は通常勤務・その他の実働勤務時間に加算する。
+ if(leaveType!=="half"&&leaveType!=="full"){
+  const ot=Number(overtimeHours);
+  if(Number.isFinite(ot)&&ot>0)diff+=Math.round(Math.min(24,ot)*60);
+ }
+ return Math.max(0,Math.round(diff));
+}
 function updateDailyWorkDuration(){
  const st=$("dailyStartTime"), et=$("dailyEndTime"), out=$("dailyWorkDuration");
  if(!st||!et||!out)return;
  const leaveType=getDailyLeaveType();
- if(leaveType==="full"){out.textContent="0時間00分";out.classList.add("leave-duration");return;}
  out.classList.toggle("leave-duration",leaveType==="half"||leaveType==="full");
- const sv=st.value, ev=et.value;
- if(!/^\d{2}:\d{2}$/.test(sv)||!/^\d{2}:\d{2}$/.test(ev)){out.textContent="0時間00分";return;}
- const [sh,sm]=sv.split(":").map(Number),[eh,em]=ev.split(":").map(Number);
- let diff=(eh*60+em)-(sh*60+sm);
- if(diff<0)diff+=24*60;
- // 通常勤務のみ休憩1時間を差し引く。半日休は休憩控除なしで勤務時間を計算する。
- if(leaveType!=="half")diff=Math.max(0,diff-60);
- out.textContent=formatDailyMinutes(diff);
+ const overtime=Number($("dailyOvertime")?.value||0);
+ const minutes=calculateDailyWorkMinutes(st.value,et.value,leaveType,overtime);
+ out.textContent=formatDailyMinutes(minutes);
 }
 function dailyCutoffPeriodFor(refISO){
  const d=localDateFromISO(refISO||isoToday());
@@ -5393,7 +5402,7 @@ function renderDailyList(){
    const isLeaveRecord=leaveType==="half"||leaveType==="full";
    const isOtherRecord=leaveType==="other";
    const vehicleText=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(isOtherRecord?"その他":(vehicleLabels.join(" / ")||"—"));
-   const work=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(r&&r.startTime&&r.endTime?calcDailyWorkDurationText(r.startTime,r.endTime):"—");
+   const work=isLeaveRecord?(leaveType==="half"?"半日休":"全日休"):(r&&r.startTime&&r.endTime?calcDailyWorkDurationText(r.startTime,r.endTime,r.overtimeHours):"—");
    const ot=isLeaveRecord?"—":(r&&r.overtimeHours==null?"—":Number(r&&r.overtimeHours).toLocaleString("ja-JP")+"h");
    const comm=(Number(stats.totalCommission)||0).toLocaleString("ja-JP")+"円";
    tr.innerHTML="<td>"+formatDailyListDate(iso)+"</td><td>"+esc(vehicleText)+"</td><td class='num'>"+(stats.distance==null?"—":formatQuantity(stats.distance)+"km")+"</td><td class='num'>"+stats.count+"回</td><td class='num'>"+work+"</td><td class='num'>"+ot+"</td><td class='num'>"+comm+"</td>";
@@ -5401,7 +5410,7 @@ function renderDailyList(){
    body.appendChild(tr);
  });
 }
-function calcDailyWorkDurationText(st,ev){const m=(t)=>{const [h,n]=String(t).split(":").map(Number);return h*60+n;};let diff=m(ev)-m(st);if(diff<0)diff+=1440;diff=Math.max(0,diff-60);return formatDailyMinutes(diff);}
+function calcDailyWorkDurationText(st,ev,overtimeHours){return formatDailyMinutes(calculateDailyWorkMinutes(st,ev,"none",overtimeHours));}
 function updateDailyViewToggle(){const b=$("dailyViewToggleBtn"); if(!b)return; const listHidden=$("dailyListView")?.classList.contains("hidden"); b.textContent=listHidden?"一覧を見る":"日報に戻る";}
 function showDailyDetailView(){const d=$("dailyDetailView"),l=$("dailyListView");if(d)d.classList.remove("hidden");if(l)l.classList.add("hidden");updateDailyViewToggle();}
 function showDailyListView(){const d=$("dailyDetailView"),l=$("dailyListView");if(d)d.classList.add("hidden");if(l)l.classList.remove("hidden");updateDailyViewToggle();renderDailyList();}
@@ -5782,7 +5791,17 @@ function deleteDailyReport(){
 }
 window.deleteDailyReport=deleteDailyReport;
 ["dailyStartTime","dailyEndTime"].forEach(id=>{const el=$(id);if(el){el.addEventListener("input",updateDailyWorkDuration);el.addEventListener("change",updateDailyWorkDuration);}});
-if($("dailyOvertime")){$("dailyOvertime").addEventListener("change",()=>{const el=$("dailyOvertime");if(el.value!==""){let v=Number(el.value);if(!Number.isFinite(v))v=0;v=Math.round(v*2)/2;v=Math.max(0,Math.min(24,v));el.value=String(v);}});}
+if($("dailyOvertime")){
+ const overtimeEl=$("dailyOvertime");
+ overtimeEl.addEventListener("input",updateDailyWorkDuration);
+ overtimeEl.addEventListener("change",()=>{
+  if(overtimeEl.value!==""){
+   let v=Number(overtimeEl.value);if(!Number.isFinite(v))v=0;
+   v=Math.round(v*2)/2;v=Math.max(0,Math.min(24,v));overtimeEl.value=String(v);
+  }
+  updateDailyWorkDuration();
+ });
+}
 if($("dailyCountAdjustment")){$("dailyCountAdjustment").addEventListener("input",updateCountAdjustmentInput);$("dailyCountAdjustment").addEventListener("change",updateCountAdjustmentInput);}
 if($("dailyDeliveryAllowance")){$("dailyDeliveryAllowance").addEventListener("input",updateDailyCalc);$("dailyDeliveryAllowance").addEventListener("change",updateDailyCalc);}
 if($("dailySpecialDeliveryAllowance")){$("dailySpecialDeliveryAllowance").addEventListener("change",updateDailyCalc);}
@@ -6234,9 +6253,11 @@ function buildWeeklyPrintArea(){
      // 実際の配達データがある日は、実データの表示・日計を従来どおり維持する。
      const startTime=dailyReport&&dailyReport.startTime?String(dailyReport.startTime):"";
      const endTime=dailyReport&&dailyReport.endTime?String(dailyReport.endTime):"";
+     // 週間日報の印刷では、勤務時間の時刻のみ表示し、実働時間の括弧書きは表示しない。
+     const workTimeLabelText=startTime&&endTime?"勤務時間："+startTime+" 〜 "+endTime:"勤務時間：";
      if(dayRows.length===0&&!hasSavedDeliveryAllowance&&(!dailyReport||isLeaveDay||(isOtherDay&&distanceRows.length===0))){
        const emptyOtherText=[
-         isOtherDay?("その他："+String(dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間："+startTime+" 〜 "+endTime:"")):"",
+         isOtherDay?("その他："+String(dailyReport.otherText||"その他")+(startTime&&endTime?"　"+workTimeLabelText:"")):"",
          isLeaveDay?(leaveType==="half"?"半日休":"全日休"):"",
          isHoliday?getJapaneseNationalHolidayNameISO(date):""
        ].filter(Boolean).join("　");
@@ -6244,7 +6265,7 @@ function buildWeeklyPrintArea(){
        html+='<tr class="subtotal weekly-print-empty-subtotal"><td colspan="7" class="worktime"><span class="weekly-print-worktime-text">'+(emptyOtherText?esc(emptyOtherText):'&nbsp;')+'</span></td><td class="center">&nbsp;</td><td class="num">&nbsp;</td><td class="weekly-print-distance weekly-print-distance-note">'+(printDistanceNote?esc(printDistanceNote):'&nbsp;')+'</td></tr>';
        return;
      }
-     const workTimeDetail=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isOtherDay?("その他："+String(dailyReport&&dailyReport.otherText||"その他")+(startTime&&endTime?"　勤務時間："+startTime+" 〜 "+endTime:"")):(startTime&&endTime?"勤務時間："+startTime+" 〜 "+endTime:"勤務時間："));
+     const workTimeDetail=isLeaveDay?(leaveType==="half"?"半日休":"全日休"):(isOtherDay?("その他："+String(dailyReport&&dailyReport.otherText||"その他")+(startTime&&endTime?"　"+workTimeLabelText:"")):workTimeLabelText);
      const workTimeText=[isHoliday?getJapaneseNationalHolidayNameISO(date):"",workTimeDetail].filter(Boolean).join("　");
      // 運転日報の歩合給を同じ行に表示
      let countCommissionText="回数歩合：0円";
@@ -7504,6 +7525,11 @@ $("deliveryKg").oninput=calcDeliveryAmount;
 
 // 日報機能：ページ外のイベントからも呼び出せるよう公開
 window.dailyDateShift = dailyDateShift;
+// 距離引継ぎの追加スクリプトから、アプリ内部の日報データを安全に参照できるよう公開。
+// データ本体は同期処理で差し替わる場合があるため、常に最新の参照を返す関数にする。
+window.getDailyReportsForDistanceCarry = function(){ return dailyReports; };
+window.getDailyReportForDistanceCarry = function(iso){ return getDailyReportRecord(iso); };
+window.getDailyVehicleEntryForDistanceCarry = function(iso, vehicle){ return getDailyVehicleEntry(iso, vehicle); };
 window.goDailyDate = goDailyDate;
 window.shiftHistoryDate = shiftHistoryDate;
 window.shiftDeliveryHistoryDate = shiftDeliveryHistoryDate;
@@ -8950,6 +8976,37 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
     var p=String(iso||"").split("-").map(Number);
     return p.length===3 ? p[0]+"年"+p[1]+"月"+p[2]+"日" : String(iso||"");
   }
+  function formatDateWithWeekday(iso){
+    var p=String(iso||"").split("-").map(Number);
+    if(p.length!==3||!p.every(Number.isFinite))return String(iso||"");
+    var d=new Date(p[0],p[1]-1,p[2]);
+    var weekdays=["日","月","火","水","木","金","土"];
+    return p[1]+"月"+p[2]+"日（"+weekdays[d.getDay()]+"）";
+  }
+  function findLatestHistoricalDistance(beforeDate, vehicle){
+    // dailyReports / getDailyReportRecord はメインアプリのIIFE内にあるため、公開アクセサー経由で取得する。
+    var reports=typeof window.getDailyReportsForDistanceCarry==="function"?window.getDailyReportsForDistanceCarry():null;
+    var getReport=window.getDailyReportForDistanceCarry;
+    var getEntry=window.getDailyVehicleEntryForDistanceCarry;
+    if(!reports||typeof reports!=="object"||typeof getReport!=="function")return null;
+    var dates=Object.keys(reports).filter(function(date){
+      return /^\d{4}-\d{2}-\d{2}$/.test(date)&&date<beforeDate;
+    }).sort(function(a,b){return b.localeCompare(a);});
+    for(var i=0;i<dates.length;i++){
+      var date=dates[i];
+      var report=getReport(date);
+      if(!report)continue;
+      var entry=typeof getEntry==="function"?getEntry(date,vehicle):null;
+      if(!entry&&report.vehicles&&report.vehicles[vehicle])entry=report.vehicles[vehicle];
+      if(!entry||entry.inOdometer==null)continue;
+      var raw=String(entry.inOdometer).trim();
+      var numeric=raw===""?NaN:Number(raw.replace(/,/g,""));
+      if(Number.isFinite(numeric)&&numeric>=0){
+        return {date:date,vehicle:vehicle,odometer:numeric};
+      }
+    }
+    return null;
+  }
   function showDialog(message, canCarry, data){
     var modal=$("dailyDistanceCarryModal");
     var info=$("dailyDistanceCarryInfo");
@@ -8957,6 +9014,8 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
     var actions=modal&&modal.querySelector(".modal-actions");
     if(!modal||!info||!confirmBtn||!actions)return;
     info.textContent=message;
+    var title=modal.querySelector("h3");
+    if(title)title.textContent=data&&data.sourceType==="history"?"過去の日報から距離を引き継ぎ":"前日の帰庫距離を引き継ぎ";
     confirmBtn.disabled=!canCarry;
     confirmBtn.style.display=canCarry?"":"none";
     actions.classList.toggle("single-action",!canCarry);
@@ -8991,56 +9050,67 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
     var previousDate=typeof dailyDateShift==="function"?dailyDateShift(currentDate,-1):"";
     if(!previousDate){showDialog("前日の日付を計算できませんでした。",false,null);return;}
 
-    // まず保存済み日報を検索。見つからない場合や帰庫kmが空の場合は、
-    // 直前の日付画面から退避した主車種・帰庫kmを補助データとして使う。
-    var report=typeof getDailyReportRecord==="function"?getDailyReportRecord(previousDate):null;
+    // まず前日の保存済み日報、または直前画面から退避したデータを確認する。
+    var report=typeof window.getDailyReportForDistanceCarry==="function"?window.getDailyReportForDistanceCarry(previousDate):null;
     var cache=window.__dailyDistanceCarryCache;
     var cacheMatches=!!(cache&&cache.date===previousDate);
-    if(!report&&!cacheMatches){
-      showDialog(formatDate(previousDate)+"の日報・画面データが見つかりません。\n前日の日報を開いてから翌日に移動し、もう一度お試しください。",false,null);
-      return;
-    }
     var previousVehicle=getPreviousPrimary(report);
     if(!validVehicle(previousVehicle)&&cacheMatches&&validVehicle(cache.vehicle))previousVehicle=cache.vehicle;
-    if(!validVehicle(previousVehicle)){
-      showDialog(formatDate(previousDate)+"の主車種を確認できません。\n安全のため、距離の引継ぎを中止しました。",false,null);
+
+    var source=null;
+    if(validVehicle(previousVehicle)&&previousVehicle===currentVehicle){
+      var entry=report&&report.vehicles&&report.vehicles[previousVehicle]?report.vehicles[previousVehicle]:null;
+      if(!entry&&typeof window.getDailyVehicleEntryForDistanceCarry==="function")entry=window.getDailyVehicleEntryForDistanceCarry(previousDate,previousVehicle);
+      var raw=entry&&entry.inOdometer!=null?String(entry.inOdometer).trim():"";
+      if(raw===""&&cacheMatches&&cache.vehicle===currentVehicle)raw=String(cache.inOdometer==null?"":cache.inOdometer).trim();
+      var numeric=raw===""?NaN:Number(raw.replace(/,/g,""));
+      if(Number.isFinite(numeric)&&numeric>=0){
+        source={date:previousDate,vehicle:currentVehicle,odometer:numeric,sourceType:"previous"};
+      }
+    }
+
+    // 前日に使える帰庫kmがない場合は、同じ車種の直近の保存済み帰庫kmを探す。
+    if(!source){
+      var historical=findLatestHistoricalDistance(currentDate,currentVehicle);
+      if(historical){
+        source={date:historical.date,vehicle:historical.vehicle,odometer:historical.odometer,sourceType:"history"};
+      }
+    }
+
+    if(!source){
+      var missingMessage=formatDateWithWeekday(previousDate)+"の距離データがありません。\n同じ車種（"+currentVehicle+"）で、それ以前に保存された帰庫kmも見つかりませんでした。\n過去の日報を保存してから、もう一度お試しください。";
+      showDialog(missingMessage,false,null);
       return;
     }
-    if(previousVehicle!==currentVehicle){
-      showDialog(
-        formatDate(previousDate)+"の主車種："+previousVehicle+"\n"+
-        formatDate(currentDate)+"の車種："+currentVehicle+"\n\n"+
-        "車種が異なるため、帰庫距離は引き継げません。\n同じ車種の日だけ引継ぎできます。",
-        false,null
-      );
-      return;
-    }
-    var entry=report&&report.vehicles&&report.vehicles[previousVehicle]?report.vehicles[previousVehicle]:null;
-    if(!entry&&typeof getDailyVehicleEntry==="function")entry=getDailyVehicleEntry(previousDate,previousVehicle);
-    var raw=entry&&entry.inOdometer!=null?String(entry.inOdometer).trim():"";
-    var source="保存済み日報";
-    if(raw===""&&cacheMatches){raw=String(cache.inOdometer==null?"":cache.inOdometer).trim();source="前日の画面";}
-    var numeric=raw===""?NaN:Number(raw.replace(/,/g,""));
-    if(!Number.isFinite(numeric)||numeric<0){
-      showDialog(formatDate(previousDate)+"の"+previousVehicle+"に帰庫kmが見つかりません。\n前日の帰庫kmを確認してから、もう一度お試しください。",false,null);
-      return;
-    }
+
     var currentOut=String($("outOdometer")&&$("outOdometer").value||"").trim();
     var currentOutNumber=currentOut===""?NaN:Number(currentOut.replace(/,/g,""));
     var overwrite=Number.isFinite(currentOutNumber);
-    var currentDateParts=currentDate.split("-");
-    var currentDateLabel=Number(currentDateParts[1])+"月"+Number(currentDateParts[2])+"日";
-    var message=
-      "車種："+previousVehicle+"\n"+
-      "前日の帰庫距離："+numeric.toLocaleString("ja-JP")+" km\n\n"+
-      currentDateLabel+"の出庫kmへ引き継ぎます。\n\n"+
-      (overwrite?"現在の出庫km「"+currentOut+"」は上書きされます。\n\n":"")+
-      "引き継いでもよろしいですか？";
+    var currentDateLabel=formatDateWithWeekday(currentDate);
+    var sourceDateLabel=formatDateWithWeekday(source.date);
+    var message;
+    if(source.sourceType==="history"){
+      message=
+        formatDateWithWeekday(previousDate)+"の距離データがありません。\n\n"+
+        "直近に入力された距離：「"+sourceDateLabel+"」\n"+
+        "車種："+source.vehicle+"\n"+
+        "帰庫km："+source.odometer.toLocaleString("ja-JP")+" km\n\n"+
+        sourceDateLabel+"の距離を"+currentDateLabel+"の出庫kmへ引き継ぎますか？";
+    }else{
+      message=
+        sourceDateLabel+"の帰庫距離を引き継ぎます。\n"+
+        "車種："+source.vehicle+"\n"+
+        "帰庫km："+source.odometer.toLocaleString("ja-JP")+" km\n\n"+
+        currentDateLabel+"の出庫kmへ引き継ぎますか？";
+    }
+    if(overwrite)message+="\n\n現在の出庫km「"+currentOut+"」は上書きされます。";
     showDialog(message,true,{
       previousDate:previousDate,
+      sourceDate:source.date,
+      sourceType:source.sourceType,
       currentDate:currentDate,
       vehicle:currentVehicle,
-      odometer:numeric,
+      odometer:source.odometer,
       overwrite:overwrite
     });
   }
