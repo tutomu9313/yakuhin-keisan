@@ -735,6 +735,13 @@ nav button.active-nav{background:#007aff !important;color:#fff !important}
 #dailyCommissionSection .commission-distance-amount{text-align:right;min-width:0;white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}
 @media(max-width:360px){#dailyCommissionSection .commission-distance-amount{font-size:12px}}
 </style>
+<style id="daily-commission-extra-controls">
+#dailyCommissionSection #dailySpecialDeliveryAllowanceRow{display:flex;align-items:center}
+#dailyCommissionSection #dailySpecialDeliveryAllowanceRow[style*="display: none"]{display:none !important}
+#dailyCommissionSection #dailySpecialDeliveryAllowance{width:22px;height:22px;min-height:22px;accent-color:#007aff}
+#dailyCommissionSection #dailyCommissionAdjustment{width:125px;height:40px;text-align:right;font-size:17px}
+#dailyCommissionSection .commission-adjustment-line label{margin:0}
+</style>
 <style id="commission-count-schedule-editor-style">
 #commissionModal .modal-card{max-height:85vh;overflow-y:auto;box-sizing:border-box}
 #commissionModal .commission-vehicle-section{padding:12px;margin:0 0 12px;border:1px solid #e1e1e8;border-radius:14px;background:#f8f8fb}
@@ -2307,8 +2314,25 @@ nav button{height:45px !important;}
   <div id="dailyDeliveryCards"></div>
  </div>
  <div class="card" id="dailyCommissionSection">
-  <h3 style="margin:0 0 14px">歩合給</h3>
-  <input id="dailyDeliveryAllowance" type="number" min="0" step="1" inputmode="numeric" placeholder="配達手当" aria-label="配達手当">
+  <div class="daily-commission-heading-row">
+   <h3 style="margin:0">歩合給</h3>
+   <div id="dailyCommissionAdjustmentRow" class="daily-commission-adjustment-inline">
+    <input id="dailyCommissionAdjustment" type="number" step="1" inputmode="numeric" placeholder="歩合調整" aria-label="歩合調整額">
+    <span class="commission-yen">円</span>
+   </div>
+  </div>
+  <div id="dailyCommissionTopControls" class="daily-commission-top-controls">
+   <div id="dailySpecialDeliveryAllowanceRow" class="daily-special-delivery-allowance-row" style="display:none">
+    <span class="commission-adjustment-label">配達手当</span>
+    <label style="display:flex;align-items:center;gap:8px;margin:0;color:#1c1c1e;font-size:15px" aria-label="配達手当を加算">
+     <input id="dailySpecialDeliveryAllowance" type="checkbox" style="width:22px;height:22px;margin:0">
+    </label>
+   </div>
+   <div id="dailyOtherAllowanceRow" class="daily-other-allowance-inline">
+    <input id="dailyDeliveryAllowance" type="number" min="0" step="1" inputmode="numeric" placeholder="その他手当" aria-label="その他手当">
+    <span class="commission-yen">円</span>
+   </div>
+  </div>
   <div class="detail">
    <div id="dailyCommissionVehicleLines" class="daily-commission-vehicle-lines" aria-live="polite"></div>
    <div class="commission-line" style="display:none"><span class="commission-label">距離歩合</span><span id="dailyDistanceFormula" class="commission-value">0 km × 0円 = 0円</span></div>
@@ -3323,7 +3347,7 @@ function markDeliveryRegistrationSnapshot(){deliveryRegistrationSnapshot=getDeli
 function isDeliveryRegistrationDirty(){return !!deliverySourceOrder && !!deliveryRegistrationSnapshot && getDeliveryRegistrationState()!==deliveryRegistrationSnapshot;}
 
 function getDailyReportState(){
-  return JSON.stringify({date:String($("dailyReportDate")?.value||""),leaveType:String($("dailyLeaveType")?.value||"none"),otherText:String($("dailyOtherText")?.value||""),distancePrintNote:String($("dailyDistancePrintNote")?.value||""),vehicle:String($("dailyVehicleType")?.value||""),start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||""),out1:String($("outOdometer")?.value||""),in1:String($("inOdometer")?.value||""),out2:String($("outOdometer2")?.value||""),in2:String($("inOdometer2")?.value||""),adjustment:String($("dailyCountAdjustment")?.value||""),deliveryAllowance:String($("dailyDeliveryAllowance")?.value||"")});
+  return JSON.stringify({date:String($("dailyReportDate")?.value||""),leaveType:String($("dailyLeaveType")?.value||"none"),otherText:String($("dailyOtherText")?.value||""),distancePrintNote:String($("dailyDistancePrintNote")?.value||""),vehicle:String($("dailyVehicleType")?.value||""),start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||""),out1:String($("outOdometer")?.value||""),in1:String($("inOdometer")?.value||""),out2:String($("outOdometer2")?.value||""),in2:String($("inOdometer2")?.value||""),adjustment:String($("dailyCountAdjustment")?.value||""),deliveryAllowance:String($("dailyDeliveryAllowance")?.value||""),specialDeliveryAllowance:!!$("dailySpecialDeliveryAllowance")?.checked,commissionAdjustment:String($("dailyCommissionAdjustment")?.value||"")});
 }
 function markDailyReportSnapshot(){dailyReportSnapshot=getDailyReportState();}
 function isDailyReportDirty(){return !!dailyReportSnapshot && getDailyReportState()!==dailyReportSnapshot;}
@@ -5039,6 +5063,7 @@ function updateDailyReturnDependentSections(){
   },0);
   const totalEl=$("dailyDeliveryTotalKg");
   if(totalEl)totalEl.textContent=formatQuantity(totalKg)+" kg";
+  try{updateDailyDeliveryAllowanceControl();}catch(e){}
 }
 function dailyDistanceFromInputs(outId,inId){
   const outEl=$(outId),inEl=$(inId);
@@ -5072,6 +5097,9 @@ function getDailyReportRecord(iso){
    otherText:String(r.otherText||""),
    distancePrintNote:String(r.distancePrintNote||""),
    countAdjustment:Number.isFinite(Number(r.countAdjustment))?Number(r.countAdjustment):0,
+   deliveryAllowance:Number.isFinite(Number(r.deliveryAllowance))?Number(r.deliveryAllowance):0,
+   specialDeliveryAllowanceEnabled:r.specialDeliveryAllowanceEnabled===true,
+   commissionAdjustment:Number.isFinite(Number(r.commissionAdjustment))?Number(r.commissionAdjustment):0,
    savedAt:r.savedAt||new Date().toISOString(),
    version:2
  };
@@ -5111,9 +5139,14 @@ function getDailyCombinedStats(iso){
  const count=dailyDeliveriesForDate(iso).length;
  const savedAdjustment=Number.isFinite(Number(r&&r.countAdjustment))&&Number(r&&r.countAdjustment)>=0?Number(r.countAdjustment):0;
  const countInfo=getDailyCountCommissionInfo(iso,savedAdjustment);
- if(!r)return {distance:0,distanceCommission:0,count,countCommission:countInfo.total,deliveryAllowance:0,totalCommission:countInfo.total,adjustment:countInfo.adjustment,countByVehicle:countInfo.counts,countCommissionByVehicle:countInfo.amounts,hasUnscheduledCount:countInfo.hasUnscheduledCount,hasCompleted:false};
+ if(!r){
+   const countCommission=count===1?0:countInfo.total;
+   return {distance:0,distanceCommission:0,count,countCommission,deliveryAllowance:0,specialDeliveryAllowance:0,commissionAdjustment:0,totalCommission:countCommission,adjustment:countInfo.adjustment,countByVehicle:countInfo.counts,countCommissionByVehicle:countInfo.amounts,hasUnscheduledCount:countInfo.hasUnscheduledCount,hasCompleted:false};
+ }
  const savedDeliveryAllowance=Number(r.deliveryAllowance);
  const deliveryAllowance=Number.isFinite(savedDeliveryAllowance)&&savedDeliveryAllowance>=0?savedDeliveryAllowance:0;
+ const rawCommissionAdjustment=Number(r.commissionAdjustment);
+ const commissionAdjustment=Number.isFinite(rawCommissionAdjustment)?rawCommissionAdjustment:0;
  const primaryVehicle=(r.primaryVehicle==="4t"||r.primaryVehicle==="10t")?r.primaryVehicle:(r.vehicles&&r.vehicles["4t"]?"4t":"10t");
  const entries=[];
  const primary=r.vehicles&&r.vehicles[primaryVehicle]?r.vehicles[primaryVehicle]:null;
@@ -5134,7 +5167,24 @@ function getDailyCombinedStats(iso){
    distanceCommission+=dp;
    if(Number.isFinite(inn))hasCompleted=true;
  });
- return {distance,distanceCommission,count,countCommission:countInfo.total,deliveryAllowance,totalCommission:distanceCommission+countInfo.total+deliveryAllowance,adjustment:countInfo.adjustment,countByVehicle:countInfo.counts,countCommissionByVehicle:countInfo.amounts,hasUnscheduledCount:countInfo.hasUnscheduledCount,hasCompleted};
+ // 配達が1回だけで走行距離が60km未満の日は、回数歩合・距離歩合ともに0円。
+ const singleDeliveryUnder60km=count===1&&distance<60;
+ if(singleDeliveryUnder60km)distanceCommission=0;
+ const countCommission=singleDeliveryUnder60km?0:countInfo.total;
+ const specialDeliveryAllowance=count===1&&distance>=60&&r.specialDeliveryAllowanceEnabled===true?1000:0;
+ return {distance,distanceCommission,count,countCommission,deliveryAllowance,specialDeliveryAllowance,commissionAdjustment,totalCommission:distanceCommission+countCommission+deliveryAllowance+specialDeliveryAllowance+commissionAdjustment,adjustment:countInfo.adjustment,countByVehicle:countInfo.counts,countCommissionByVehicle:countInfo.amounts,hasUnscheduledCount:countInfo.hasUnscheduledCount,hasCompleted};
+}
+function updateDailyDeliveryAllowanceControl(){
+  const row=$("dailySpecialDeliveryAllowanceRow"),check=$("dailySpecialDeliveryAllowance");
+  if(!row||!check)return false;
+  const iso=$("dailyReportDate")?.value||isoToday();
+  const deliveryCount=dailyDeliveriesForDate(iso).length;
+  const distance=dailyDistanceFromInputs("outOdometer","inOdometer")+
+    (dailyRunHasSecondary()?dailyDistanceFromInputs("outOdometer2","inOdometer2"):0);
+  const eligible=deliveryCount===1&&Number.isFinite(distance)&&distance>=60;
+  row.style.display=eligible?"flex":"none";
+  if(!eligible)check.checked=false;
+  return eligible;
 }
 function updateDailyCalc(){
   const iso=$("dailyReportDate")?.value||isoToday();
@@ -5154,11 +5204,20 @@ function updateDailyCalc(){
   const safeAdjustment=Number.isFinite(adjustmentValue)&&adjustmentValue>=0?adjustmentValue:0;
   const countInfo=getDailyCountCommissionInfo(iso,safeAdjustment);
   renderCountCommission(iso,safeAdjustment);
-  const currentDistanceCommission=dp+dp2*(dailyRunHasSecondary()?1:0);
+  const hasSecondary=dailyRunHasSecondary();
+  const totalDistance=dist+dist2*(hasSecondary?1:0);
+  const singleDeliveryUnder60km=dailyDeliveriesForDate(iso).length===1&&totalDistance<60;
+  const currentDistanceCommission=singleDeliveryUnder60km?0:(dp+dp2*(hasSecondary?1:0));
+  const currentCountCommission=singleDeliveryUnder60km?0:countInfo.total;
+  updateDailyDeliveryAllowanceControl();
   const allowanceRaw=String($("dailyDeliveryAllowance")?.value||"").trim();
   const allowanceValue=allowanceRaw===""?0:Number(allowanceRaw);
   const deliveryAllowance=Number.isFinite(allowanceValue)&&allowanceValue>=0?allowanceValue:0;
-  $("dailyCommissionTotal").textContent=(currentDistanceCommission+countInfo.total+deliveryAllowance).toLocaleString("ja-JP")+"円";
+  const specialDeliveryAllowance=$("dailySpecialDeliveryAllowance")?.checked?1000:0;
+  const commissionAdjustmentRaw=String($("dailyCommissionAdjustment")?.value||"").trim();
+  const commissionAdjustment=commissionAdjustmentRaw===""?0:Number(commissionAdjustmentRaw);
+  const safeCommissionAdjustment=Number.isFinite(commissionAdjustment)?commissionAdjustment:0;
+  $("dailyCommissionTotal").textContent=(currentDistanceCommission+currentCountCommission+deliveryAllowance+specialDeliveryAllowance+safeCommissionAdjustment).toLocaleString("ja-JP")+"円";
 }
 function formatDailyMinutes(mins){
  const n=Math.max(0,Math.round(Number(mins)||0));
@@ -5415,11 +5474,14 @@ function dailyDistanceRateFor(vehicle){
  return Number.isFinite(n)&&n>=0?n:0;
 }
 function getCurrentDailyDistanceCommissionTotal(){
+ const iso=$("dailyReportDate")?.value||isoToday();
  const primaryRaw=$("dailyVehicleType")?.value||"4t";
  const primary=(primaryRaw==="4t"||primaryRaw==="10t")?primaryRaw:"4t";
  const secondary=getDailySecondaryVehicleType(primary);
+ const hasSecondary=dailyRunHasSecondary();
  const d1=dailyDistanceFromInputs("outOdometer","inOdometer");
- const d2=dailyRunHasSecondary()?dailyDistanceFromInputs("outOdometer2","inOdometer2"):0;
+ const d2=hasSecondary?dailyDistanceFromInputs("outOdometer2","inOdometer2"):0;
+ if(dailyDeliveriesForDate(iso).length===1&&d1+d2<60)return 0;
  return d1*dailyDistanceRateFor(primary)+d2*dailyDistanceRateFor(secondary);
 }
 function renderDailyCommissionVehicleLines(iso,countInfo){
@@ -5432,34 +5494,47 @@ function renderDailyCommissionVehicleLines(iso,countInfo){
  const distByVehicle={"4t":0,"10t":0},amountByVehicle={"4t":0,"10t":0};
  const dist1=dailyDistanceFromInputs("outOdometer","inOdometer");
  const dist2=dailyDistanceFromInputs("outOdometer2","inOdometer2");
+ const singleDeliveryUnder60km=dailyDeliveriesForDate(iso).length===1&&(dist1+(hasSecondary?dist2:0))<60;
  distByVehicle[primary]+=dist1;
- amountByVehicle[primary]+=dist1*dailyDistanceRateFor(primary);
+ amountByVehicle[primary]+=singleDeliveryUnder60km?0:dist1*dailyDistanceRateFor(primary);
  if(hasSecondary){
   distByVehicle[secondary]+=dist2;
-  amountByVehicle[secondary]+=dist2*dailyDistanceRateFor(secondary);
+  amountByVehicle[secondary]+=singleDeliveryUnder60km?0:dist2*dailyDistanceRateFor(secondary);
  }
  // 距離歩合は日報に入力された車種だけ表示。乗換時は入力順を維持する。
  const order=[primary];
  if(hasSecondary&&secondary!==primary)order.push(secondary);
  const info=countInfo||getDailyCountCommissionInfo(iso,getSavedAdjustment(iso));
- const countAmount=Number(info.total||0).toLocaleString("ja-JP");
+ const displayedCountAmount=singleDeliveryUnder60km?0:Number(info.total||0);
+ const countAmount=displayedCountAmount.toLocaleString("ja-JP");
  const countLabel=Number(info.calculationCount||0).toLocaleString("ja-JP")+"回："+countAmount+"円";
  const countHtml='<div class="commission-main-row"><span class="commission-main-label">回数歩合</span><span class="commission-main-amount">'+countLabel+'</span></div>';
+ // 配達手当がチェックされ、配達1回・走行距離60km以上の条件を満たす場合、
+ // 距離歩合の直前に内訳を表示する。
+ const specialDeliveryAllowanceEligible=dailyDeliveriesForDate(iso).length===1&&(dist1+(hasSecondary?dist2:0))>=60;
+ const specialAllowanceHtml=$("dailySpecialDeliveryAllowance")?.checked&&specialDeliveryAllowanceEligible
+   ?'<div class="commission-main-row commission-special-delivery-row"><span class="commission-main-label">配達手当</span><span class="commission-main-amount">1,000円</span></div>'
+   :"";
  const distanceRows=order.map(v=>{
   const dist=Number(distByVehicle[v]||0).toLocaleString("ja-JP");
   const rate=dailyDistanceRateFor(v).toLocaleString("ja-JP");
   const amount=Number(amountByVehicle[v]||0).toLocaleString("ja-JP");
   return '<div class="commission-distance-row"><span class="commission-distance-vehicle">'+v+'</span><span class="commission-distance-amount">'+dist+' km × '+rate+'円 = '+amount+'円</span></div>';
  }).join("");
- wrap.innerHTML=countHtml+'<div class="commission-distance-group"><div class="commission-distance-heading">距離歩合</div>'+distanceRows+'</div>';
+ wrap.innerHTML=countHtml+specialAllowanceHtml+'<div class="commission-distance-group"><div class="commission-distance-heading">距離歩合</div>'+distanceRows+'</div>';
 }
 function renderCountCommission(iso,adjustment){
  const info=getDailyCountCommissionInfo(iso,adjustment);
  const row=$("dailyCountAdjustmentRow"),input=$("dailyCountAdjustment");
  if(row)row.style.display=info.hasUnscheduledCount?"flex":"none";
  if(input&&document.activeElement!==input)input.value=info.hasUnscheduledCount&&info.adjustment>0?String(info.adjustment):"";
- const lines=["回数歩合　"+info.calculationCount.toLocaleString("ja-JP")+"回："+info.total.toLocaleString("ja-JP")+"円"];
- if(info.hasUnscheduledCount)lines.push("未設定回数分の調整歩合："+info.adjustment.toLocaleString("ja-JP")+"円");
+ const primary=$("dailyVehicleType")?.value||"4t";
+ const hasSecondary=dailyRunHasSecondary();
+ const liveDistance=dailyDistanceFromInputs("outOdometer","inOdometer")+(hasSecondary?dailyDistanceFromInputs("outOdometer2","inOdometer2"):0);
+ const singleDeliveryUnder60km=dailyDeliveriesForDate(iso).length===1&&liveDistance<60;
+ const displayedCountTotal=singleDeliveryUnder60km?0:info.total;
+ const lines=["回数歩合　"+info.calculationCount.toLocaleString("ja-JP")+"回："+displayedCountTotal.toLocaleString("ja-JP")+"円"];
+ if(info.hasUnscheduledCount)lines.push("未設定回数分の調整歩合："+(singleDeliveryUnder60km?0:info.adjustment).toLocaleString("ja-JP")+"円");
  $("dailyCountFormula").textContent=lines.join("\n");
  renderDailyCommissionVehicleLines(iso,info);
  return info.total;
@@ -5470,10 +5545,17 @@ function updateCountAdjustmentInput(){
  const safe=Number.isFinite(adj)&&adj>=0?adj:0;
  const countInfo=getDailyCountCommissionInfo(iso,safe);
  renderCountCommission(iso,safe);
+ updateDailyDeliveryAllowanceControl();
  const allowanceRaw=String($("dailyDeliveryAllowance")?.value||"").trim();
  const allowanceValue=allowanceRaw===""?0:Number(allowanceRaw);
  const deliveryAllowance=Number.isFinite(allowanceValue)&&allowanceValue>=0?allowanceValue:0;
- const total=getCurrentDailyDistanceCommissionTotal()+countInfo.total+deliveryAllowance;
+ const specialDeliveryAllowance=$("dailySpecialDeliveryAllowance")?.checked?1000:0;
+ const commissionAdjustmentRaw=String($("dailyCommissionAdjustment")?.value||"").trim();
+ const commissionAdjustment=commissionAdjustmentRaw===""?0:Number(commissionAdjustmentRaw);
+ const safeCommissionAdjustment=Number.isFinite(commissionAdjustment)?commissionAdjustment:0;
+ const isoDistance=dailyDistanceFromInputs("outOdometer","inOdometer")+(dailyRunHasSecondary()?dailyDistanceFromInputs("outOdometer2","inOdometer2"):0);
+ const singleDeliveryUnder60km=dailyDeliveriesForDate(iso).length===1&&isoDistance<60;
+ const total=getCurrentDailyDistanceCommissionTotal()+(singleDeliveryUnder60km?0:countInfo.total)+deliveryAllowance+(singleDeliveryUnder60km?0:specialDeliveryAllowance)+safeCommissionAdjustment;
  $("dailyCommissionTotal").textContent=total.toLocaleString("ja-JP")+"円";
 }
 function currentDailySavedDistanceCommission(iso,vehicle){
@@ -5530,7 +5612,10 @@ function renderDailyReport(){
   $("dailyOvertime").value=(leaveType==="half"||leaveType==="full")?"0":((saved&&saved.overtimeHours!=null)?saved.overtimeHours:"");
   $("dailyOtherText").value=leaveType==="other"?String(saved&&saved.otherText||""):"";
   $("dailyDistancePrintNote").value=String(saved&&saved.distancePrintNote||"");
-  $("dailyDeliveryAllowance").value=(saved&&saved.deliveryAllowance!=null&&Number.isFinite(Number(saved.deliveryAllowance))&&Number(saved.deliveryAllowance)>=0)?String(saved.deliveryAllowance):"";
+  // その他手当が未入力または0円の場合は、数値の0ではなくプレースホルダーを表示する。
+  $("dailyDeliveryAllowance").value=(saved&&saved.deliveryAllowance!=null&&Number.isFinite(Number(saved.deliveryAllowance))&&Number(saved.deliveryAllowance)>0)?String(saved.deliveryAllowance):"";
+  $("dailySpecialDeliveryAllowance").checked=!!(saved&&saved.specialDeliveryAllowanceEnabled===true);
+  $("dailyCommissionAdjustment").value=(saved&&Number.isFinite(Number(saved.commissionAdjustment))&&Number(saved.commissionAdjustment)!==0)?String(saved.commissionAdjustment):"";
   updateDailyLeaveControls(leaveType);
   $("outOdometer").value=primarySaved&&primarySaved.outOdometer!=null?primarySaved.outOdometer:"";
   $("inOdometer").value=primarySaved&&primarySaved.inOdometer!=null?primarySaved.inOdometer:"";
@@ -5700,6 +5785,8 @@ window.deleteDailyReport=deleteDailyReport;
 if($("dailyOvertime")){$("dailyOvertime").addEventListener("change",()=>{const el=$("dailyOvertime");if(el.value!==""){let v=Number(el.value);if(!Number.isFinite(v))v=0;v=Math.round(v*2)/2;v=Math.max(0,Math.min(24,v));el.value=String(v);}});}
 if($("dailyCountAdjustment")){$("dailyCountAdjustment").addEventListener("input",updateCountAdjustmentInput);$("dailyCountAdjustment").addEventListener("change",updateCountAdjustmentInput);}
 if($("dailyDeliveryAllowance")){$("dailyDeliveryAllowance").addEventListener("input",updateDailyCalc);$("dailyDeliveryAllowance").addEventListener("change",updateDailyCalc);}
+if($("dailySpecialDeliveryAllowance")){$("dailySpecialDeliveryAllowance").addEventListener("change",updateDailyCalc);}
+if($("dailyCommissionAdjustment")){$("dailyCommissionAdjustment").addEventListener("input",updateDailyCalc);$("dailyCommissionAdjustment").addEventListener("change",updateDailyCalc);}
 function saveDailyReport(saveTarget){
   const iso=$("dailyReportDate").value||isoToday(),vehicle=$("dailyVehicleType").value||"4t",secondary=getDailySecondaryVehicleType(vehicle);
   const leaveType=getDailyLeaveType();
@@ -5709,8 +5796,16 @@ function saveDailyReport(saveTarget){
   const deliveryAllowanceRaw=String($("dailyDeliveryAllowance")?.value||"").trim();
   const deliveryAllowance=deliveryAllowanceRaw===""?0:Number(deliveryAllowanceRaw);
   if(deliveryAllowanceRaw!==""&&(!Number.isFinite(deliveryAllowance)||deliveryAllowance<0||!Number.isInteger(deliveryAllowance))){
-    alert("配達手当は0以上の整数で入力してください。");
+    alert("その他手当は0以上の整数で入力してください。");
     $("dailyDeliveryAllowance")?.focus();
+    return;
+  }
+  const specialDeliveryAllowanceEnabled=!!$("dailySpecialDeliveryAllowance")?.checked&&updateDailyDeliveryAllowanceControl();
+  const commissionAdjustmentRaw=String($("dailyCommissionAdjustment")?.value||"").trim();
+  const commissionAdjustment=commissionAdjustmentRaw===""?0:Number(commissionAdjustmentRaw);
+  if(commissionAdjustmentRaw!==""&&(!Number.isFinite(commissionAdjustment)||!Number.isInteger(commissionAdjustment))){
+    alert("歩合給の調整額は整数で入力してください。");
+    $("dailyCommissionAdjustment")?.focus();
     return;
   }
   if(isOtherDay&&!otherText){alert("その他の内容を入力してください。");$("dailyOtherText")?.focus();return;}
@@ -5763,6 +5858,8 @@ function saveDailyReport(saveTarget){
   record.otherText=isOtherDay?otherText:"";
   record.distancePrintNote=String($("dailyDistancePrintNote")?.value||"").trim();
   record.deliveryAllowance=deliveryAllowance;
+  record.specialDeliveryAllowanceEnabled=specialDeliveryAllowanceEnabled;
+  record.commissionAdjustment=commissionAdjustment;
   // 半日休・その他は始業／終業時刻を保存し、全日休は時刻を保存しない。
   record.startTime=leaveType==="full"?"":($("dailyStartTime").value||"");
   record.endTime=leaveType==="full"?"":($("dailyEndTime").value||"");
@@ -6104,7 +6201,9 @@ function buildWeeklyPrintArea(){
      const isLeaveDay=leaveType==="half"||leaveType==="full";
      const isOtherDay=leaveType==="other";
      const savedDeliveryAllowance=Number(dailyReport&&dailyReport.deliveryAllowance);
-     const hasSavedDeliveryAllowance=Number.isFinite(savedDeliveryAllowance)&&savedDeliveryAllowance>0;
+     const hasSavedDeliveryAllowance=(Number.isFinite(savedDeliveryAllowance)&&savedDeliveryAllowance>0)||
+       !!(dailyReport&&dailyReport.specialDeliveryAllowanceEnabled)||
+       !!(dailyReport&&Number.isFinite(Number(dailyReport.commissionAdjustment))&&Number(dailyReport.commissionAdjustment)!==0);
      const rowCount=Math.max(5,dayRows.length);
      let dayTotal=0;
      for(let rowIndex=0;rowIndex<rowCount;rowIndex++){
@@ -6166,12 +6265,17 @@ function buildWeeklyPrintArea(){
            const savedRate=typeof commissionRates!=="undefined" ? commissionRates[v] : null;
            const rate=Number.isFinite(Number(x.distanceRate))?Number(x.distanceRate):Number((savedRate||rateBase).distance||0);
            const d=Number.isFinite(Number(x.distance))?Number(x.distance):0;
-           const amount=Number.isFinite(Number(x.distanceCommission))?Number(x.distanceCommission):d*rate;
+           const singleDeliveryUnder60km=Number(stats.count)===1&&Number(stats.distance)<60;
+           const amount=singleDeliveryUnder60km?0:(Number.isFinite(Number(x.distanceCommission))?Number(x.distanceCommission):d*rate);
            vehicleParts.push(v+":"+Number(amount).toLocaleString("ja-JP")+"円");
          });
          distanceCommissionText="距離歩合："+(vehicleParts.length?vehicleParts.join(" / "):"0円");
          const savedAllowanceForPrint=Number(stats.deliveryAllowance)||0;
-         if(savedAllowanceForPrint>0)deliveryAllowanceText="配達手当："+savedAllowanceForPrint.toLocaleString("ja-JP")+"円";
+         if(savedAllowanceForPrint>0)deliveryAllowanceText="その他手当："+savedAllowanceForPrint.toLocaleString("ja-JP")+"円";
+         const savedSpecialAllowanceForPrint=Number(stats.specialDeliveryAllowance)||0;
+         if(savedSpecialAllowanceForPrint>0)deliveryAllowanceText+=(deliveryAllowanceText?" / ":"")+"配達手当："+savedSpecialAllowanceForPrint.toLocaleString("ja-JP")+"円";
+         const savedCommissionAdjustment=Number(stats.commissionAdjustment)||0;
+         if(savedCommissionAdjustment!==0)deliveryAllowanceText+=(deliveryAllowanceText?" / ":"")+"調整："+(savedCommissionAdjustment>0?"+":"")+savedCommissionAdjustment.toLocaleString("ja-JP")+"円";
          commissionTotalText="歩合合計："+Number(stats.totalCommission||0).toLocaleString("ja-JP")+"円";
        }
      } catch(commissionError) {
@@ -8203,7 +8307,7 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 </style>
 
 <style id="daily-delivery-allowance-style">
-/* 歩合給見出し直下：配達手当の金額入力欄 */
+/* その他手当の手入力欄：従来の入力表示を維持 */
 #dailyCommissionSection #dailyDeliveryAllowance{
   display:block;
   width:100%;
@@ -8214,9 +8318,79 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
   font-size:16px !important;
   text-align:left;
 }
-#dailyCommissionSection #dailyDeliveryAllowance::placeholder{
-  color:#8e8e93;
-  opacity:1;
+#dailyCommissionSection #dailySpecialDeliveryAllowance{
+  display:inline-block !important;
+  width:22px !important;
+  min-width:22px !important;
+  height:22px !important;
+  min-height:22px !important;
+  margin:0 !important;
+  padding:0 !important;
+  vertical-align:middle;
+  accent-color:#007aff;
+}
+</style>
+<style id="daily-commission-display-label-refine">
+#dailyCommissionSection #dailyCommissionAdjustmentRow{
+  grid-template-columns:minmax(0,1fr) !important;
+}
+#dailyCommissionSection #dailyCommissionAdjustmentRow > div{
+  min-width:0;
+}
+#dailyCommissionSection #dailyCommissionAdjustment{
+  width:150px !important;
+  max-width:100%;
+  box-sizing:border-box;
+}
+</style>
+
+<style id="daily-commission-side-by-side-adjustment">
+/* 歩合給：配達手当と歩合調整欄を同じ行に配置。配達手当が非表示でも調整欄は右端を維持 */
+#dailyCommissionSection .daily-commission-top-controls{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  min-height:48px;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid #e5e5ea;
+  box-sizing:border-box;
+}
+#dailyCommissionSection .daily-special-delivery-allowance-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex:0 1 auto;
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+}
+#dailyCommissionSection #dailySpecialDeliveryAllowanceRow[style*="display: none"]{
+  display:none !important;
+}
+#dailyCommissionSection .daily-commission-adjustment-inline{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:5px;
+  flex:0 0 auto;
+  margin-left:auto;
+  min-width:0;
+}
+#dailyCommissionSection #dailyCommissionAdjustment{
+  display:block !important;
+  width:140px !important;
+  max-width:100%;
+  height:40px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  text-align:right;
+  font-size:15px !important;
+}
+@media(max-width:360px){
+  #dailyCommissionSection #dailyCommissionAdjustment{width:118px !important;}
 }
 </style>
 </body>
@@ -8951,3 +9125,212 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
 }
 </style>
 
+
+
+<style id="daily-commission-label-and-input-balance-v5">
+/* 歩合給：その他手当の文字を配達手当と統一し、2つの金額入力欄を同じ幅にする */
+#dailyCommissionSection .commission-adjustment-label{
+  display:flex !important;
+  align-items:center !important;
+  margin:0 !important;
+  color:#1c1c1e !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  line-height:1.25 !important;
+  white-space:nowrap !important;
+}
+#dailyCommissionSection .daily-commission-adjustment-inline{
+  width:157px !important;
+  flex:0 0 157px !important;
+}
+#dailyCommissionSection #dailyCommissionAdjustment{
+  width:140px !important;
+  min-width:140px !important;
+  max-width:140px !important;
+  flex:0 0 140px !important;
+  box-sizing:border-box !important;
+}
+#dailyCommissionSection > .commission-adjustment-line > div{
+  display:flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  width:157px !important;
+  min-width:157px !important;
+  max-width:157px !important;
+  flex:0 0 157px !important;
+  box-sizing:border-box !important;
+}
+#dailyCommissionSection #dailyDeliveryAllowance{
+  width:140px !important;
+  min-width:140px !important;
+  max-width:140px !important;
+  flex:0 0 140px !important;
+  height:40px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+@media(max-width:360px){
+  #dailyCommissionSection .daily-commission-adjustment-inline,
+  #dailyCommissionSection > .commission-adjustment-line > div{
+    width:135px !important;
+    min-width:135px !important;
+    max-width:135px !important;
+    flex-basis:135px !important;
+  }
+  #dailyCommissionSection #dailyCommissionAdjustment,
+  #dailyCommissionSection #dailyDeliveryAllowance{
+    width:118px !important;
+    min-width:118px !important;
+    max-width:118px !important;
+    flex-basis:118px !important;
+  }
+}
+</style>
+
+
+<style id="daily-commission-layout-v6">
+/* 歩合給：見出し右隣に歩合調整、次の行の右側にその他手当入力欄を配置 */
+#dailyCommissionSection .daily-commission-heading-row{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  min-width:0 !important;
+  margin:0 0 10px !important;
+  padding:0 0 9px !important;
+  border-bottom:1px solid #e5e5ea !important;
+}
+#dailyCommissionSection .daily-commission-heading-row h3{
+  flex:0 0 auto !important;
+  margin:0 !important;
+}
+#dailyCommissionSection #dailyCommissionAdjustmentRow{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:5px !important;
+  width:157px !important;
+  min-width:0 !important;
+  max-width:157px !important;
+  flex:0 1 157px !important;
+  margin:0 !important;
+}
+#dailyCommissionSection #dailyCommissionAdjustment{
+  display:block !important;
+  width:140px !important;
+  min-width:0 !important;
+  max-width:140px !important;
+  flex:1 1 140px !important;
+  height:40px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+}
+#dailyCommissionSection .daily-commission-top-controls{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  min-height:48px !important;
+  margin:0 0 10px !important;
+  padding:0 0 10px !important;
+  border-top:0 !important;
+  border-bottom:1px solid #e5e5ea !important;
+  box-sizing:border-box !important;
+}
+#dailyCommissionSection .daily-special-delivery-allowance-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex:0 1 auto;
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+}
+#dailyCommissionSection #dailySpecialDeliveryAllowanceRow[style*="display: none"]{
+  display:none !important;
+}
+#dailyCommissionSection .daily-other-allowance-inline{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:5px !important;
+  width:157px !important;
+  min-width:0 !important;
+  max-width:157px !important;
+  flex:0 1 157px !important;
+  margin-left:auto !important;
+}
+#dailyCommissionSection #dailyDeliveryAllowance{
+  display:block !important;
+  width:140px !important;
+  min-width:0 !important;
+  max-width:140px !important;
+  flex:1 1 140px !important;
+  height:40px !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  font-size:15px !important;
+  text-align:left !important;
+}
+#dailyCommissionSection .daily-commission-heading-row .commission-yen,
+#dailyCommissionSection .daily-other-allowance-inline .commission-yen{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+@media(max-width:360px){
+  #dailyCommissionSection #dailyCommissionAdjustmentRow,
+  #dailyCommissionSection .daily-other-allowance-inline{
+    width:135px !important;
+    max-width:135px !important;
+    flex-basis:135px !important;
+  }
+  #dailyCommissionSection #dailyCommissionAdjustment,
+  #dailyCommissionSection #dailyDeliveryAllowance{
+    width:118px !important;
+    max-width:118px !important;
+    flex-basis:118px !important;
+  }
+}
+</style>
+
+
+<style id="daily-other-allowance-placeholder-left-v8">
+/* その他手当：入力値・プレースホルダーともに左寄せを明示（表示のみ） */
+#dailyCommissionSection #dailyDeliveryAllowance{
+  direction:ltr !important;
+  text-align:left !important;
+  text-align-last:left !important;
+  padding-left:12px !important;
+  padding-right:27px !important;
+}
+#dailyCommissionSection #dailyDeliveryAllowance::placeholder{
+  text-align:left !important;
+  opacity:1;
+}
+#dailyCommissionSection #dailyDeliveryAllowance::-moz-placeholder{
+  text-align:left !important;
+  opacity:1;
+}
+</style>
+
+
+<style id="daily-other-allowance-value-match-walkpay-adjustment-v9">
+/* その他手当：入力値「0」などの表示を、見出し右隣の歩合調整欄と同じ右寄せに統一。
+   プレースホルダー「その他手当」は従来どおり左寄せを維持する。 */
+#dailyCommissionSection #dailyDeliveryAllowance{
+  text-align:right !important;
+  text-align-last:right !important;
+  padding-left:13px !important;
+  padding-right:13px !important;
+  font-size:15px !important;
+  height:40px !important;
+  box-sizing:border-box !important;
+}
+#dailyCommissionSection #dailyDeliveryAllowance::placeholder{
+  text-align:left !important;
+}
+#dailyCommissionSection #dailyDeliveryAllowance::-moz-placeholder{
+  text-align:left !important;
+}
+</style>
