@@ -6271,7 +6271,7 @@ function buildWeeklyPrintArea(){
      let countCommissionText="回数歩合：0円";
      let distanceCommissionText="距離歩合：0円";
      let deliveryAllowanceText="";
-     let commissionTotalText="歩合合計：0円";
+     let commissionTotalText="歩合計：0円";
      try {
        if(typeof getDailyCombinedStats==="function") {
          const stats=dailyCommissionStats||{};
@@ -6297,7 +6297,7 @@ function buildWeeklyPrintArea(){
          if(savedSpecialAllowanceForPrint>0)deliveryAllowanceText+=(deliveryAllowanceText?" / ":"")+"配達手当："+savedSpecialAllowanceForPrint.toLocaleString("ja-JP")+"円";
          const savedCommissionAdjustment=Number(stats.commissionAdjustment)||0;
          if(savedCommissionAdjustment!==0)deliveryAllowanceText+=(deliveryAllowanceText?" / ":"")+"調整："+(savedCommissionAdjustment>0?"+":"")+savedCommissionAdjustment.toLocaleString("ja-JP")+"円";
-         commissionTotalText="歩合合計："+Number(stats.totalCommission||0).toLocaleString("ja-JP")+"円";
+         commissionTotalText="歩合計："+Number(stats.totalCommission||0).toLocaleString("ja-JP")+"円";
        }
      } catch(commissionError) {
        console.warn("週間日報の歩合給表示をスキップしました", commissionError);
