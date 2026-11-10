@@ -2767,6 +2767,7 @@ let cloudLoaded=false;
 let cloudUserId="";
 let cloudSyncTimer=null;
 let cloudBusy=false;
+let cloudLastSaveResult=true;
 
 function setAuthMessage(msg,ok=false){
  const el=$("authMessage");
@@ -2832,13 +2833,16 @@ function applyCloudData(data){
 async function cloudSaveNow(){
  if(!currentSession||!cloudLoaded||cloudBusy)return false;
  cloudBusy=true;
+ cloudLastSaveResult=null;
  try{
    const payload={user_id:currentSession.user.id,data:collectCloudData(),updated_at:new Date().toISOString()};
    const {error}=await supabaseClient.from(CLOUD_TABLE).upsert(payload,{onConflict:"user_id"});
    if(error)throw error;
+   cloudLastSaveResult=true;
    setCloudStatus("クラウド同期：接続済み（保存済み）","ok");
    return true;
  }catch(e){
+   cloudLastSaveResult=false;
    setCloudStatus("クラウド保存エラー："+(e&&e.message?e.message:"接続を確認してください"),"warn");
    return false;
  }finally{cloudBusy=false;}
@@ -2846,7 +2850,10 @@ async function cloudSaveNow(){
 function scheduleCloudSync(){
  if(!currentSession||!cloudLoaded)return;
  clearTimeout(cloudSyncTimer);
- cloudSyncTimer=setTimeout(()=>{cloudSaveNow();},600);
+ cloudSyncTimer=setTimeout(()=>{
+   cloudSyncTimer=null;
+   cloudSaveNow();
+ },600);
 }
 async function cloudLoadNow(showMessage=true){
  if(!currentSession)return false;
@@ -2873,6 +2880,44 @@ async function cloudLoadNow(showMessage=true){
    return false;
  }
 }
+// 運転日報を開いたときは、既存のクラウド読込処理で最新データを取得してから日報を描画する。
+// 配達履歴だけを独自取得するのではなく、アプリ標準の applyCloudData() を通すことで
+// deliveryHistory と localStorage の内容を同じ状態にそろえる。
+let dailyOpenRefreshToken=0;
+async function reloadDailyReportOnEnter(){
+ const token=++dailyOpenRefreshToken;
+ const isDailyVisible=()=>{
+   const page=$("dailyPage");
+   return !!page&&!page.classList.contains("hidden")&&sessionStorage.getItem("yakuhin_current_page")==="daily";
+ };
+ if(!currentSession||!cloudLoaded)return;
+ try{
+   // この端末で直前に変更したデータの保存予約が残っている場合だけ先に保存する。
+   // 予約がないときは、ローカルの古いデータをクラウドへ上書きせず、そのまま最新値を取得する。
+   if(cloudSyncTimer){
+     clearTimeout(cloudSyncTimer);
+     cloudSyncTimer=null;
+     while(cloudBusy)await new Promise(resolve=>setTimeout(resolve,30));
+     const saved=await cloudSaveNow();
+     if(!saved)throw new Error("保存待ちデータをクラウドへ保存できませんでした。");
+   }else{
+     while(cloudBusy)await new Promise(resolve=>setTimeout(resolve,30));
+   }
+   if(token!==dailyOpenRefreshToken||!isDailyVisible()||!currentSession)return;
+   const loaded=await cloudLoadNow(false);
+   if(!loaded)throw new Error("クラウドから最新データを取得できませんでした。");
+   if(token!==dailyOpenRefreshToken||!isDailyVisible())return;
+   // applyCloudData() の完了後に、現在選択中の日付で配達実績・歩合給を再計算する。
+   renderDailyReport();
+   updateDailyCalc();
+ }catch(e){
+   console.warn("運転日報を開いたときのクラウド再取得に失敗しました。端末内データで表示します。",e);
+   if(token===dailyOpenRefreshToken&&isDailyVisible()){
+     try{renderDailyReport();updateDailyCalc();}catch(renderError){console.warn(renderError);}
+   }
+ }
+}
+
 async function handleAuthSession(session){
  currentSession=session||null;
  const gate=$("authGate");
@@ -2887,6 +2932,10 @@ async function handleAuthSession(session){
    if(gate)gate.classList.add("hidden");
    updateCloudAccountUI();
    await cloudLoadNow(false);
+   if(sessionStorage.getItem("yakuhin_current_page")==="daily"){
+     renderDailyReport();
+     setTimeout(updateDailyCalc,0);
+   }
  }else{
    cloudUserId="";
    cloudLoaded=false;
@@ -6699,7 +6748,15 @@ function show(page){
     refreshAllHistoryDisplays();
     showDeliveryHistoryWeeklyListView();
   }
-  if(page==="daily" && typeof renderDailyReport==="function") { renderDailyReport(); setTimeout(updateDailyCalc,0); }
+  if(page==="daily" && typeof renderDailyReport==="function") {
+    // 日報へ戻ったときに一覧表示のままにならないよう、詳細画面を先に表示する。
+    // 日付変更処理と同じ画面状態にしてから、配達実績を描画する。
+    if(typeof showDailyDetailView==="function") showDailyDetailView();
+    // まず現在の端末データを即時表示し、クラウド取得完了後に最新データで描き直す。
+    renderDailyReport();
+    setTimeout(updateDailyCalc,0);
+    reloadDailyReportOnEnter();
+  }
   if(page==="weekly" && typeof renderWeeklyReport==="function") renderWeeklyReport();
   if(page==="chem" && typeof renderChemList==="function") renderChemList();
   if(page==="customer" && typeof renderCustomers==="function") renderCustomers();
