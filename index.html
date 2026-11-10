@@ -5433,9 +5433,9 @@ function getCountSchedule(vehicle){
 }
 function countCommissionForVehicle(vehicle,count){
  const n=Math.max(0,Math.floor(Number(count)||0)),schedule=getCountSchedule(vehicle);
- let total=0;
- for(let i=0;i<Math.min(n,schedule.length);i++)total+=Math.max(0,Number(schedule[i])||0);
- return total;
+ // 回数歩合は各回の金額を累積せず、該当する配達回数の設定金額を採用する。
+ if(n===0||n>schedule.length)return 0;
+ return Math.max(0,Number(schedule[n-1])||0);
 }
 function getDailyCommissionVehicleTypes(iso){
  const types=[];
