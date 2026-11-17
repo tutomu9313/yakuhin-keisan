@@ -3408,6 +3408,34 @@ function getCalcFormState(){
 }
 function markCalcFormSnapshot(){calcFormSnapshot=getCalcFormState();}
 function isCalcFormDirty(){return !!calcFormSnapshot && getCalcFormState()!==calcFormSnapshot;}
+// 納品データから注文内容を修正している場合は、変更の有無に応じてボタン名を切り替える。
+function updateCalcSaveButtonLabel(){
+  const btn=$("saveBtn");
+  if(!btn||!deliveryDataCorrectionContext)return;
+  btn.textContent=isCalcFormDirty()?"修正して戻る":"戻る";
+}
+// 変更がない場合は注文データを書き換えず、元の納品データ画面へ戻る。
+function returnFromDeliveryDataCorrection(){
+  const context=deliveryDataCorrectionContext;
+  if(!context)return false;
+  const order=history.find(h=>h&&context.orderId&&h.orderId===context.orderId)
+    ||history.find(h=>h&&context.orderKey&&deliveryOrderKey(h)===context.orderKey);
+  let linked=order?findLinkedDelivery(order):null;
+  let deliveryIndex=linked?deliveryHistory.indexOf(linked):-1;
+  if(deliveryIndex<0){
+    deliveryIndex=deliveryHistory.findIndex(d=>d&&(
+      (context.orderId&&d.orderId===context.orderId)||
+      (context.orderKey&&d.orderKey===context.orderKey)
+    ));
+  }
+  deliveryDataCorrectionContext=null;
+  clearDraft();
+  resetDeliveryForm();
+  refreshAllHistoryDisplays();
+  if(deliveryIndex>=0)openDeliveryView(deliveryIndex);
+  else show("deliveryHistory");
+  return true;
+}
 function confirmUnsavedLeave(message){return confirm(message);}
 
 function getDeliveryRegistrationState(){
@@ -4428,6 +4456,7 @@ function loadHistoryRecord(x){
  calc();
  markCalcFormSnapshot();
  updateInputCancelVisibility();
+ updateCalcSaveButtonLabel();
  show("calc");
 }
 
@@ -6898,7 +6927,24 @@ $("density").oninput=calc;
 $("amount").oninput=calc;
 $("unit").onchange=calc;
 
-$("saveBtn").onclick=saveDelivery;
+$("saveBtn").onclick=()=>{
+  if(deliveryDataCorrectionContext&&!isCalcFormDirty()){
+    returnFromDeliveryDataCorrection();
+    return;
+  }
+  saveDelivery();
+};
+// 修正画面で入力値が変わるたび、ボタン表示を「戻る／修正して戻る」に更新する。
+["dateDisplay","inputDeliveryDate","customer","department","plannedTime","vehicleType","chemical","density","amount","unit"].forEach(id=>{
+  const el=$(id);
+  if(!el)return;
+  el.addEventListener("input",updateCalcSaveButtonLabel);
+  el.addEventListener("change",updateCalcSaveButtonLabel);
+});
+// 候補リストから取引先などを選んだ場合は、クリック処理後の値で再判定する。
+document.addEventListener("click",()=>{
+  if(deliveryDataCorrectionContext)updateCalcSaveButtonLabel();
+});
 $("inputCancelBtn").onclick=()=>{
   if(isCalcFormDirty()&&!confirmUnsavedLeave("入力内容が保存されていません。保存せずに画面を離れてもよろしいですか？"))return;
   resetDeliveryForm();
@@ -7134,7 +7180,7 @@ $("vehicleType").addEventListener("change",function(){
   const old=(typeof editingHistoryRecord!=="undefined"&&editingHistoryRecord)
     ?editingHistoryRecord
     :((idx>=0&&typeof history!=="undefined")?history[idx]:null);
-  const editingByButton=$("saveBtn")?.textContent==="修正";
+  const editingByButton=$("saveBtn")?.textContent==="修正" || !!deliveryDataCorrectionContext;
   const effectiveOldVehicle=validVehicle(originalVehicle)
     ?originalVehicle
     :(old&&validVehicle(old.vehicleType)?old.vehicleType:"");
