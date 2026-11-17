@@ -2084,6 +2084,27 @@ nav button{height:45px !important;}
 }
 </style>
 
+
+<style id="delivery-tank-after-emphasis-v1">
+/* タンク確認：「納品後の量」を最重要結果として見やすく強調（表示のみ） */
+#deliveryViewTankCheck .delivery-tank-result-line:nth-child(2){
+  margin:5px -2px !important;
+  padding:7px 8px !important;
+  border:1px solid #8fc5ff !important;
+  border-radius:8px !important;
+  background:#eaf4ff !important;
+  color:#164f89 !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+}
+#deliveryViewTankCheck #deliveryViewTankAfter{
+  color:#005bbb !important;
+  font-size:19px !important;
+  font-weight:800 !important;
+  letter-spacing:.1px;
+}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -3398,8 +3419,15 @@ function isDeliveryRegistrationDirty(){return !!deliverySourceOrder && !!deliver
 function getDailyReportState(){
   return JSON.stringify({date:String($("dailyReportDate")?.value||""),leaveType:String($("dailyLeaveType")?.value||"none"),otherText:String($("dailyOtherText")?.value||""),distancePrintNote:String($("dailyDistancePrintNote")?.value||""),vehicle:String($("dailyVehicleType")?.value||""),start:String($("dailyStartTime")?.value||""),end:String($("dailyEndTime")?.value||""),overtime:String($("dailyOvertime")?.value||""),out1:String($("outOdometer")?.value||""),in1:String($("inOdometer")?.value||""),out2:String($("outOdometer2")?.value||""),in2:String($("inOdometer2")?.value||""),adjustment:String($("dailyCountAdjustment")?.value||""),deliveryAllowance:String($("dailyDeliveryAllowance")?.value||""),specialDeliveryAllowance:!!$("dailySpecialDeliveryAllowance")?.checked,commissionAdjustment:String($("dailyCommissionAdjustment")?.value||"")});
 }
-function markDailyReportSnapshot(){dailyReportSnapshot=getDailyReportState();}
-function isDailyReportDirty(){return !!dailyReportSnapshot && getDailyReportState()!==dailyReportSnapshot;}
+function markDailyReportSnapshot(){
+  // 保存・取消・日報再読込後は、距離引継ぎを含む変更状態を解除する。
+  window.__dailyDistanceCarryPending=false;
+  dailyReportSnapshot=getDailyReportState();
+}
+function isDailyReportDirty(){
+  // 距離引継ぎは入力欄へ直接値を設定する専用処理のため、操作自体も未保存として扱う。
+  return !!window.__dailyDistanceCarryPending || (!!dailyReportSnapshot && getDailyReportState()!==dailyReportSnapshot);
+}
 function updateDailyInlineDistanceActions(){
   const primaryBox=$("dailyInlineDistanceActions");
   const secondaryBox=$("dailyInlineDistanceActions2");
@@ -9187,6 +9215,8 @@ openDeliveryEdit=function(i){openDeliveryView(i);};
     var out=$("outOdometer");
     if(!out){closeDialog();return;}
     out.value=String(data.odometer);
+    // 引継ぎ操作そのものを未保存として記録し、画面移動時の確認対象にする。
+    window.__dailyDistanceCarryPending=true;
     if(typeof window.formatDailyOdometerDisplay==="function")window.formatDailyOdometerDisplay(out);
     closeDialog();
     // 手入力と同じ更新経路を通し、登録／キャンセル操作も表示する。
